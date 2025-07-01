@@ -26,10 +26,10 @@
     max-width: 1400px;
     margin: 0 auto;
     padding: 1.2rem 2rem;
-    display: grid;
-    grid-template-columns: auto 1fr auto auto;
-    gap: 2.5rem;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
+    gap: 1.5rem;
 }
 
 .logo-neon {
@@ -96,19 +96,19 @@
 .nav-menu-neon {
     display: flex;
     list-style: none;
-    gap: 3.5rem;
-    justify-self: center;
+    gap: 1.5rem;
+    margin: 0 auto 0 2rem;
 }
 
 .nav-link-neon {
     text-decoration: none;
     color: rgba(255, 255, 255, 0.8);
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-family: 'Orbitron', monospace;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    padding: 1rem 2rem;
+    letter-spacing: 1px;
+    padding: 0.7rem 1.2rem;
     position: relative;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     background: rgba(0, 0, 0, 0.3);
@@ -164,14 +164,14 @@
 }
 
 .search-input-neon {
-    width: 320px;
-    padding: 1rem 1.5rem 1rem 3.5rem;
+    width: 250px;
+    padding: 0.8rem 1.5rem 0.8rem 3rem;
     border: 2px solid rgba(139, 92, 246, 0.5);
     background:
         linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(26, 10, 26, 0.6)),
         rgba(0, 0, 0, 0.9);
     color: #ffffff;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-family: 'Orbitron', monospace;
     outline: none;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -225,12 +225,12 @@
         radial-gradient(circle at center, rgba(255, 107, 53, 0.1), transparent);
     border: 2px solid #ff6b35;
     color: #ff6b35;
-    padding: 1rem 2rem;
+    padding: 0.7rem 1.5rem;
     cursor: pointer;
     font-weight: 700;
     font-family: 'Orbitron', monospace;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
@@ -238,6 +238,7 @@
     box-shadow:
         0 0 25px rgba(255, 107, 53, 0.4),
         inset 0 0 25px rgba(255, 107, 53, 0.1);
+    white-space: nowrap;
 }
 
 .cart-neon::before {
@@ -285,15 +286,20 @@
         0 15px 35px rgba(0, 0, 0, 0.5);
 }
 
+.cart-container {
+    position: relative;
+    display: inline-block;
+}
+
 .cart-count-neon {
     position: absolute;
-    top: -10px;
-    right: -10px;
+    top: -12px;
+    right: -12px;
     background: linear-gradient(45deg, #8b5cf6, #ff6b35);
     color: white;
     border-radius: 50%;
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -303,6 +309,8 @@
         0 0 20px rgba(139, 92, 246, 0.8),
         0 0 30px rgba(255, 107, 53, 0.5);
     animation: countPulse 2.5s infinite;
+    z-index: 10;
+    border: 2px solid rgba(0, 0, 0, 0.8);
 }
 
 @keyframes countPulse {
@@ -318,5 +326,69 @@
         box-shadow:
             0 0 30px rgba(139, 92, 246, 1),
             0 0 50px rgba(255, 107, 53, 0.8);
+    }
+}
+
+/* Media queries para responsividad */
+@media (max-width: 1200px) {
+    .search-input-neon {
+        width: 200px;
+    }
+    
+    .nav-link-neon {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .nav-neon {
+        padding: 1rem 1.5rem;
+        gap: 1rem;
+    }
+    
+    .nav-menu-neon {
+        gap: 1rem;
+        margin: 0 auto 0 1rem;
+    }
+    
+    .search-input-neon {
+        width: 180px;
+        padding: 0.7rem 1.2rem 0.7rem 2.8rem;
+    }
+    
+    .cart-neon {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-neon {
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    
+    .logo-neon {
+        font-size: 2rem;
+    }
+    
+    .nav-menu-neon {
+        order: 3;
+        width: 100%;
+        margin: 1rem 0 0;
+        justify-content: space-between;
+        padding: 0;
+    }
+    
+    .search-neon {
+        order: 2;
+        flex: 1;
+        margin-left: auto;
+        margin-right: 1rem;
+    }
+    
+    .search-input-neon {
+        width: 100%;
     }
 }

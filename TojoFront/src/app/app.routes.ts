@@ -6,9 +6,9 @@ import { CategoriesComponent } from './components/categories/categories.componen
 export const routes: Routes = [
     {
         path: '', component: HomeComponent,
-        children: [
+        /*children: [
             { path: '', component: HeroComponent },
             { path: '', component: CategoriesComponent }
-        ]
+        ]*/
     }
 ];

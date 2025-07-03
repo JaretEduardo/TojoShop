@@ -1,1 +1,93 @@
-<p>auth works!</p>
+<div class="auth-container">
+    <!-- Background Effects -->
+    <div class="retro-background"></div>
+    <div class="perspective-grid"></div>
+
+    <div class="neon-particles">
+        <div class="neon-orb"></div>
+        <div class="neon-orb"></div>
+        <div class="neon-orb"></div>
+        <div class="neon-orb"></div>
+        <div class="neon-orb"></div>
+        <div class="neon-orb"></div>
+    </div>
+
+    <!-- Main Grid Layout -->
+    <div class="parent">
+        <!-- Title Area + Panel de Bienvenida -->
+        <div class="div1">
+            <!-- Header con TOJO SHOP -->
+            <div class="div2">
+                <h1 class="logo-neon" [routerLink]="['/']">TOJO SHOP</h1>
+            </div>
+            
+            <!-- Contenido central -->
+            <div class="div4">
+                <div class="welcome-message">
+                    <h3 class="welcome-title">Bienvenido al Futuro</h3>
+                    <p class="welcome-subtitle">Donde la tecnología encuentra el estilo</p>
+                    <p class="welcome-description">
+                        Únete a nuestra comunidad digital y descubre una nueva forma de experimentar 
+                        el comercio electrónico con la última tecnología.
+                    </p>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">⚡</div>
+                        <span class="feature-text">Súper Rápido</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🔒</div>
+                        <span class="feature-text">Ultra Seguro</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🌟</div>
+                        <span class="feature-text">Experiencia Única</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🚀</div>
+                        <span class="feature-text">Innovación Constante</span>
+                    </div>
+                </div>
+                
+                <div class="toggle-section">
+                    <p class="toggle-text">{{ toggleText }}</p>
+                    <button class="toggle-btn" [routerLink]="toggleRoute">{{ toggleButtonText }}</button>
+                </div>
+            </div>
+            
+            <!-- Footer con estadísticas -->
+            <div class="div3">
+                <div class="social-proof">
+                    <div class="stat-item">
+                        <span class="stat-number">10K+</span>
+                        <span class="stat-label">Usuarios</span>
+                    </div>
+                    <div class="stat-separator">•</div>
+                    <div class="stat-item">
+                        <span class="stat-number">99.9%</span>
+                        <span class="stat-label">Uptime</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Container Background -->
+        <div class="div5">
+            <div class="form-border"></div>
+        </div>
+
+        <!-- Form Content -->
+        <div class="div6">
+            <router-outlet></router-outlet>
+        </div>
+
+        <!-- Submit Button Area -->
+        <div class="div7">
+            <button class="submit-btn" type="submit" form="authForm">
+                {{ isLoginPage ? 'Iniciar Sesión' : 'Registrarse' }}
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,77 @@
+<div class="register-form">
+    <h2 class="form-title">Crear Cuenta</h2>
+    
+    <form class="auth-form" id="authForm" (ngSubmit)="onSubmit()">
+        <div class="form-field">
+            <label for="name" class="field-label">Nombre Completo</label>
+            <input 
+                type="text" 
+                id="name" 
+                class="field-input"
+                [(ngModel)]="registerData.name"
+                name="name"
+                placeholder="Tu nombre completo"
+                required>
+        </div>
+
+        <div class="form-field">
+            <label for="email" class="field-label">Email</label>
+            <input 
+                type="email" 
+                id="email" 
+                class="field-input"
+                [(ngModel)]="registerData.email"
+                name="email"
+                placeholder="tu@email.com"
+                required>
+        </div>
+        
+        <div class="form-field">
+            <label for="password" class="field-label">Contraseña</label>
+            <div class="password-field">
+                <input 
+                    [type]="showPassword ? 'text' : 'password'" 
+                    id="password" 
+                    class="field-input"
+                    [(ngModel)]="registerData.password"
+                    name="password"
+                    placeholder="••••••••"
+                    required>
+                <button 
+                    type="button" 
+                    class="password-toggle-btn"
+                    (click)="togglePasswordVisibility()">
+                    {{ showPassword ? 'OCULTAR' : 'VER' }}
+                </button>
+            </div>
+        </div>
+        
+        <div class="form-field">
+            <label for="confirmPassword" class="field-label">Confirmar Contraseña</label>
+            <div class="password-field">
+                <input 
+                    [type]="showConfirmPassword ? 'text' : 'password'" 
+                    id="confirmPassword" 
+                    class="field-input"
+                    [(ngModel)]="registerData.confirmPassword"
+                    name="confirmPassword"
+                    placeholder="••••••••"
+                    required>
+                <button 
+                    type="button" 
+                    class="password-toggle-btn"
+                    (click)="toggleConfirmPasswordVisibility()">
+                    {{ showConfirmPassword ? 'OCULTAR' : 'VER' }}
+                </button>
+            </div>
+        </div>
+        
+        <div class="form-options">
+            <label class="checkbox-container">
+                <input type="checkbox" [(ngModel)]="acceptTerms" name="terms" required>
+                <span class="checkbox-custom"></span>
+                Acepto los términos y condiciones
+            </label>
+        </div>
+    </form>
+</div>

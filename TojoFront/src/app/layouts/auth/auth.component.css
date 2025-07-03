@@ -1,0 +1,608 @@
+/* ===== MAIN CONTAINER ===== */
+.auth-container {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ===== BACKGROUND EFFECTS ===== */
+.retro-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(255, 107, 53, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 60%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+        linear-gradient(135deg, 
+            rgba(10, 10, 10, 0.95) 0%,
+            rgba(26, 10, 26, 0.90) 30%,
+            rgba(26, 15, 10, 0.90) 70%,
+            rgba(10, 10, 10, 0.95) 100%);
+    z-index: 1;
+}
+
+.perspective-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(255, 107, 53, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 107, 53, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.3;
+    transform: perspective(1000px) rotateX(45deg);
+    z-index: 2;
+}
+
+.neon-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+}
+
+.neon-orb {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ff6b35, transparent);
+    animation: orbFloat 8s ease-in-out infinite;
+}
+
+.neon-orb:nth-child(1) {
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.neon-orb:nth-child(2) {
+    top: 60%;
+    left: 20%;
+    background: radial-gradient(circle, #8b5cf6, transparent);
+    animation-delay: 2s;
+}
+
+.neon-orb:nth-child(3) {
+    top: 30%;
+    right: 15%;
+    animation-delay: 4s;
+}
+
+.neon-orb:nth-child(4) {
+    bottom: 20%;
+    left: 30%;
+    background: radial-gradient(circle, #8b5cf6, transparent);
+    animation-delay: 6s;
+}
+
+.neon-orb:nth-child(5) {
+    top: 80%;
+    right: 25%;
+    animation-delay: 1s;
+}
+
+.neon-orb:nth-child(6) {
+    top: 40%;
+    left: 60%;
+    background: radial-gradient(circle, #8b5cf6, transparent);
+    animation-delay: 3s;
+}
+
+/* ===== GRID LAYOUT ===== */
+.parent {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(12, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 10;
+}
+
+.div1 { 
+    grid-area: 1 / 1 / 13 / 5;
+    background: linear-gradient(135deg, 
+        rgba(255, 107, 53, 0.1), 
+        rgba(139, 92, 246, 0.1),
+        rgba(255, 107, 53, 0.05));
+    border-right: 2px solid rgba(255, 107, 53, 0.4);
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 2rem 1.5rem;
+    backdrop-filter: blur(20px);
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.1);
+}
+
+/* Sub-grids dentro de div1 */
+.div1 .div2 {
+    /* Área del título TOJO SHOP */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 1rem;
+}
+
+.div1 .div3 {
+    /* Área de estadísticas */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.div1 .div4 {
+    /* Área del contenido central (bienvenida, características, toggle) */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    flex: 1;
+    max-width: 90%;
+    margin: 0 auto;
+}
+
+.div5 { 
+    grid-area: 2 / 6 / 12 / 12;
+    background: linear-gradient(135deg, 
+        rgba(255, 107, 53, 0.03),
+        rgba(139, 92, 246, 0.03));
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 25px;
+    background-clip: padding-box;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.div6 { 
+    grid-area: 3 / 7 / 9 / 11;
+    background: transparent;
+    border-radius: 0;
+    padding: 2rem 1.5rem;
+    border: none;
+    position: relative;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.div7 { 
+    grid-area: 10 / 8 / 11 / 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== LOGO STYLES ===== */
+.logo-neon {
+    font-size: 3.2rem;
+    font-weight: 900;
+    font-family: 'Orbitron', monospace;
+    text-transform: uppercase;
+    letter-spacing: 6px;
+    background: linear-gradient(45deg, #ff6b35, #8b5cf6, #ff6b35, #8b5cf6);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: logoShimmer 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(255, 107, 53, 0.7));
+    position: relative;
+    margin: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.logo-neon:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 25px rgba(255, 107, 53, 0.9));
+}
+
+.logo-neon::before {
+    content: 'TOJO SHOP';
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: linear-gradient(45deg, #ff6b35, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: logoGlitch 6s ease-in-out infinite;
+    opacity: 0;
+}
+
+/* ===== CONTENT STYLES ===== */
+
+.welcome-message {
+    margin-bottom: 0.5rem;
+}
+
+.welcome-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 0.8rem 0;
+    background: linear-gradient(45deg, #ff6b35, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 2px;
+    line-height: 1.2;
+}
+
+.welcome-subtitle {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 1rem 0;
+    letter-spacing: 1px;
+    font-style: italic;
+    font-weight: 500;
+}
+
+.welcome-description {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+    line-height: 1.4;
+    letter-spacing: 0.5px;
+    font-weight: 400;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    width: 100%;
+    margin: 1rem 0;
+}
+
+.feature-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1.2rem 0.8rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.4);
+    transform: translateY(-2px);
+}
+
+.feature-icon {
+    font-size: 1.6rem;
+    filter: grayscale(100%) sepia(100%) hue-rotate(260deg) brightness(1.2);
+    margin-bottom: 0.2rem;
+}
+
+.feature-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+.toggle-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    margin: 1rem 0;
+}
+
+.toggle-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-family: 'Orbitron', monospace;
+    font-size: 1.2rem;
+    margin: 0;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+.toggle-btn {
+    background: linear-gradient(45deg, #ff6b35, #8b5cf6);
+    border: none;
+    color: white;
+    padding: 1.2rem 2.4rem;
+    border-radius: 25px;
+    font-family: 'Orbitron', monospace;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(255, 107, 53, 0.3);
+}
+
+.toggle-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.toggle-btn:hover::before {
+    left: 100%;
+}
+
+.toggle-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(255, 107, 53, 0.5);
+}
+
+.social-proof {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.stat-number {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ff6b35;
+    letter-spacing: 1px;
+}
+
+.stat-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.stat-separator {
+    color: rgba(139, 92, 246, 0.6);
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+/* ===== SUBMIT BUTTON (DIV7) ===== */
+.submit-btn {
+    background: linear-gradient(45deg, #8b5cf6, #ff6b35);
+    border: none;
+    color: white;
+    padding: 1.3rem 3.5rem;
+    border-radius: 30px;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+    border: 2px solid transparent;
+}
+
+.submit-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.submit-btn:hover::before {
+    left: 100%;
+}
+
+.submit-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(139, 92, 246, 0.6);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.submit-btn:active {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(139, 92, 246, 0.5);
+}
+
+/* ===== FORM CONTAINER ===== */
+.form-border {
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    background: linear-gradient(45deg, 
+        rgba(255, 107, 53, 0.3), 
+        rgba(139, 92, 246, 0.3), 
+        rgba(255, 107, 53, 0.3), 
+        rgba(139, 92, 246, 0.3));
+    background-size: 300% 300%;
+    animation: borderGlow 6s ease-in-out infinite;
+    border-radius: 25px;
+    z-index: -1;
+}
+
+/* ===== SUBMIT AREA ===== */
+.submit-area {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes orbFloat {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.6;
+    }
+    25% {
+        transform: translateY(-20px) scale(1.2);
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(10px) scale(0.8);
+        opacity: 0.8;
+    }
+    75% {
+        transform: translateY(-15px) scale(1.1);
+        opacity: 0.9;
+    }
+}
+
+@keyframes logoShimmer {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+@keyframes logoGlitch {
+    0%, 90%, 100% {
+        opacity: 0;
+        transform: translateX(0);
+    }
+    95% {
+        opacity: 0.8;
+        transform: translateX(2px);
+    }
+    97% {
+        opacity: 0.6;
+        transform: translateX(-1px);
+    }
+}
+
+@keyframes borderGlow {
+    0%, 100% {
+        background-position: 0% 50%;
+        opacity: 0.3;
+    }
+    50% {
+        background-position: 100% 50%;
+        opacity: 0.5;
+    }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .parent {
+        grid-template-columns: repeat(6, 1fr);
+        grid-template-rows: repeat(10, 1fr);
+    }
+    
+    .div1 { 
+        grid-area: 1 / 1 / 5 / 7; 
+        padding: 1.5rem 1rem;
+        margin: 0.5rem;
+    }
+    
+    .div5 { 
+        grid-area: 5 / 1 / 9 / 7; 
+        margin: 0.5rem;
+    }
+    
+    .div6 { 
+        grid-area: 5 / 2 / 8 / 6; 
+        padding: 1.5rem 1rem;
+    }
+    
+    .div7 { 
+        grid-area: 8 / 2 / 9 / 6; 
+    }
+    
+    .logo-neon {
+        font-size: 1.8rem;
+        letter-spacing: 2px;
+    }
+    
+    .welcome-title {
+        font-size: 1.2rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 0.6rem;
+    }
+    
+    .feature-item {
+        padding: 0.6rem 0.4rem;
+    }
+    
+    .auth-form {
+        gap: 1.2rem;
+    }
+    
+    .field-input {
+        padding: 1rem 1.2rem;
+        font-size: 1.1rem;
+    }
+    
+    .field-label {
+        font-size: 0.9rem;
+    }
+    
+    .toggle-text {
+        font-size: 0.8rem;
+    }
+    
+    .toggle-btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .submit-btn {
+        padding: 1.1rem 2.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .stat-number {
+        font-size: 0.9rem;
+    }
+    
+    .stat-label {
+        font-size: 0.6rem;
+    }
+}

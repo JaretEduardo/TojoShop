@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SpinnerComponent } from './shared/spinner/spinner.component';
-import { SpinnerService } from './shared/spinner/spinner.service';
+import { SpinnerService } from './services/spinner.service';
 import { SpinnerGuard } from './shared/spinner/spinner.guard';
 
 @Component({

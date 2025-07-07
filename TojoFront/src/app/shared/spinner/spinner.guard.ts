@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router, NavigationEnd, NavigationStart } from '@angular/router';
-import { SpinnerService } from './spinner.service';
+import { SpinnerService } from '../../services/spinner.service';
 import { filter } from 'rxjs/operators';
 
 @Injectable({

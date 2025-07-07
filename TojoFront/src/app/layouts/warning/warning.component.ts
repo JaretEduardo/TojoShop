@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FeedComponent } from '../../components/experience/feed/feed.component';
 import { NfcComponent } from '../../components/experience/nfc/nfc.component';
-import { SpinnerService } from '../../shared/spinner/spinner.service';
+import { SpinnerService } from '../../services/spinner.service';
 
 @Component({
   selector: 'app-warning',

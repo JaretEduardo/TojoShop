@@ -1,0 +1,380 @@
+/* ===== NFC CONTAINER ===== */
+.nfc-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #ffffff;
+    gap: 1rem;
+}
+
+/* ===== SCANNING AREA ===== */
+.scanning-area {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 0.5rem;
+}
+
+.scan-animation {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border-radius: 20px;
+    background: radial-gradient(circle, rgba(255, 107, 53, 0.1), transparent);
+    animation: scanPulse 2s ease-in-out infinite;
+}
+
+.scan-line {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ff6b35, transparent);
+    top: 0;
+    animation: scanLineMove 2s ease-in-out infinite;
+    box-shadow: 0 0 10px #ff6b35;
+}
+
+.scan-corners {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.corner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #8b5cf6;
+    background: transparent;
+}
+
+.corner-tl {
+    top: 0;
+    left: 0;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 10px 0 0 0;
+}
+
+.corner-tr {
+    top: 0;
+    right: 0;
+    border-left: none;
+    border-bottom: none;
+    border-radius: 0 10px 0 0;
+}
+
+.corner-bl {
+    bottom: 0;
+    left: 0;
+    border-right: none;
+    border-top: none;
+    border-radius: 0 0 0 10px;
+}
+
+.corner-br {
+    bottom: 0;
+    right: 0;
+    border-left: none;
+    border-top: none;
+    border-radius: 0 0 10px 0;
+}
+
+/* ===== TITLES ===== */
+.nfc-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(45deg, #ff6b35, #8b5cf6, #ff6b35);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 2px;
+    animation: titleShimmer 3s ease-in-out infinite;
+}
+
+.nfc-subtitle {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+/* ===== METHODS CONTAINER ===== */
+.methods-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+    width: 100%;
+    max-width: 500px;
+}
+
+.method-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 150px;
+    position: relative;
+    overflow: hidden;
+}
+
+.method-option::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.method-option:hover::before {
+    left: 100%;
+}
+
+.method-option:hover {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.4);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+}
+
+.method-icon {
+    position: relative;
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+/* ===== NFC WAVES ===== */
+.nfc-waves {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.wave {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid rgba(255, 107, 53, 0.6);
+    border-radius: 50%;
+    animation: nfcWave 2s ease-in-out infinite;
+}
+
+.wave-1 {
+    width: 60px;
+    height: 60px;
+    animation-delay: 0s;
+}
+
+.wave-2 {
+    width: 80px;
+    height: 80px;
+    animation-delay: 0.5s;
+}
+
+.wave-3 {
+    width: 100px;
+    height: 100px;
+    animation-delay: 1s;
+}
+
+/* ===== CAMERA FOCUS ===== */
+.camera-focus {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.focus-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px solid rgba(139, 92, 246, 0.6);
+    border-radius: 50%;
+    animation: cameraFocus 1.5s ease-in-out infinite;
+}
+
+.method-option h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0;
+    color: #ffffff;
+    letter-spacing: 1px;
+}
+
+.method-option p {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.method-separator {
+    width: 2px;
+    height: 60px;
+    background: linear-gradient(180deg, transparent, rgba(139, 92, 246, 0.5), transparent);
+    animation: separatorGlow 3s ease-in-out infinite;
+}
+
+/* ===== STATUS MESSAGE ===== */
+.status-message {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 15px;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    max-width: 400px;
+}
+
+.status-message.active {
+    opacity: 1;
+    border-color: rgba(255, 107, 53, 0.6);
+    background: rgba(255, 107, 53, 0.1);
+}
+
+.status-icon {
+    font-size: 1.5rem;
+    animation: statusPulse 1s ease-in-out infinite;
+}
+
+.status-message p {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes scanPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+}
+
+@keyframes scanLineMove {
+    0% {
+        top: 0;
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        top: 100%;
+        opacity: 0;
+    }
+}
+
+@keyframes nfcWave {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+    }
+}
+
+@keyframes cameraFocus {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.6;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+    }
+}
+
+@keyframes separatorGlow {
+    0%, 100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+        box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+    }
+}
+
+@keyframes statusPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes titleShimmer {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .methods-container {
+        flex-direction: column;
+        gap: 2rem;
+    }
+    
+    .method-separator {
+        width: 60px;
+        height: 2px;
+        transform: rotate(90deg);
+    }
+    
+    .scanning-area {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .nfc-title {
+        font-size: 1.8rem;
+    }
+    
+    .method-option {
+        min-width: 200px;
+        padding: 1.5rem 1rem;
+    }
+    
+    .method-icon {
+        font-size: 2.5rem;
+    }
+}

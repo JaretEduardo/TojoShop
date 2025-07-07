@@ -4,6 +4,8 @@ import { LoginFormComponent } from './components/login-form/login-form.component
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { HomeComponent } from './layouts/home/home.component';
 import { DashboardUserComponent } from './layouts/dashboard-user/dashboard-user.component';
+import { WarningComponent } from './layouts/warning/warning.component';
+import { StartComponent } from './components/user/start/start.component';
 
 export const routes: Routes = [
     {
@@ -23,7 +25,8 @@ export const routes: Routes = [
     {
         path: '', component: DashboardUserComponent,
         children: [
-            /*{ path: '', component: HeroComponent }*/
+            { path: 'warning', component: WarningComponent },
+            { path: 'home', component: StartComponent }
         ]
     }
 ];

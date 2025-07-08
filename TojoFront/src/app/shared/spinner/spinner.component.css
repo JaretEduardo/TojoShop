@@ -1,0 +1,300 @@
+/* ===== SPINNER OVERLAY ===== */
+.spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== GRID LAYOUT ===== */
+.parent {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(12, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    width: 100vw;
+    height: 100vh;
+}
+
+.div1 { 
+    grid-area: 6 / 6 / 8 / 8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== CYBER SPINNER ===== */
+.cyber-spinner {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== SPINNER RING ===== */
+.spinner-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        rgba(255, 107, 53, 0.3) 45deg,
+        rgba(255, 107, 53, 0.8) 90deg,
+        rgba(139, 92, 246, 0.8) 135deg,
+        rgba(139, 92, 246, 0.3) 180deg,
+        transparent 225deg,
+        rgba(255, 107, 53, 0.3) 270deg,
+        rgba(255, 107, 53, 0.8) 315deg,
+        transparent 360deg
+    );
+    animation: spinRing 2s linear infinite;
+    mask: radial-gradient(circle, transparent 35px, black 36px, black 55px, transparent 56px);
+    -webkit-mask: radial-gradient(circle, transparent 35px, black 36px, black 55px, transparent 56px);
+}
+
+.ring-segment {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ff6b35;
+    box-shadow: 0 0 10px #ff6b35;
+}
+
+.ring-segment:nth-child(1) {
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: segmentPulse 2s ease-in-out infinite;
+}
+
+.ring-segment:nth-child(2) {
+    top: 50%;
+    right: 5px;
+    transform: translateY(-50%);
+    background: #8b5cf6;
+    box-shadow: 0 0 10px #8b5cf6;
+    animation: segmentPulse 2s ease-in-out infinite 0.5s;
+}
+
+.ring-segment:nth-child(3) {
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: segmentPulse 2s ease-in-out infinite 1s;
+}
+
+.ring-segment:nth-child(4) {
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    background: #8b5cf6;
+    box-shadow: 0 0 10px #8b5cf6;
+    animation: segmentPulse 2s ease-in-out infinite 1.5s;
+}
+
+/* ===== SPINNER CORE ===== */
+.spinner-core {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, 
+        rgba(255, 107, 53, 0.2),
+        rgba(139, 92, 246, 0.2));
+    border: 2px solid rgba(255, 107, 53, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 
+        0 0 20px rgba(255, 107, 53, 0.3),
+        inset 0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+.core-pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle, 
+        rgba(255, 107, 53, 0.3) 0%, 
+        transparent 70%);
+    animation: corePulse 1.5s ease-in-out infinite;
+}
+
+.core-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px rgba(255, 107, 53, 0.8);
+    z-index: 1;
+}
+
+/* ===== DATA STREAMS ===== */
+.data-streams {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.stream {
+    position: absolute;
+    width: 2px;
+    height: 20px;
+    background: linear-gradient(to bottom, 
+        rgba(255, 107, 53, 0.8), 
+        transparent);
+    border-radius: 1px;
+    animation: streamFlow 3s ease-in-out infinite;
+}
+
+.stream-1 {
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation-delay: 0s;
+}
+
+.stream-2 {
+    top: 50%;
+    right: -10px;
+    transform: translateY(-50%) rotate(90deg);
+    background: linear-gradient(to bottom, 
+        rgba(139, 92, 246, 0.8), 
+        transparent);
+    animation-delay: 0.75s;
+}
+
+.stream-3 {
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%) rotate(180deg);
+    animation-delay: 1.5s;
+}
+
+.stream-4 {
+    top: 50%;
+    left: -10px;
+    transform: translateY(-50%) rotate(270deg);
+    background: linear-gradient(to bottom, 
+        rgba(139, 92, 246, 0.8), 
+        transparent);
+    animation-delay: 2.25s;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes spinRing {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes segmentPulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: translateX(-50%) scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1.2);
+    }
+}
+
+@keyframes segmentPulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+.ring-segment:nth-child(2),
+.ring-segment:nth-child(4) {
+    animation-name: segmentPulseY;
+}
+
+@keyframes segmentPulseY {
+    0%, 100% {
+        opacity: 0.3;
+        transform: translateY(-50%) scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-50%) scale(1.2);
+    }
+}
+
+@keyframes corePulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes streamFlow {
+    0% {
+        opacity: 0;
+        height: 0px;
+    }
+    50% {
+        opacity: 1;
+        height: 20px;
+    }
+    100% {
+        opacity: 0;
+        height: 0px;
+    }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .parent {
+        grid-template-columns: repeat(6, 1fr);
+        grid-template-rows: repeat(10, 1fr);
+    }
+    
+    .div1 { 
+        grid-area: 5 / 3 / 6 / 5;
+    }
+    
+    .cyber-spinner {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .spinner-core {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .core-text {
+        font-size: 0.7rem;
+    }
+}

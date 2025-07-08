@@ -1,0 +1,56 @@
+<div class="warning-container">
+    <!-- Background Effects -->
+    <div class="retro-background"></div>
+    <div class="perspective-grid"></div>
+
+    <div class="neon-particles">
+        <div class="neon-orb"></div>
+        <div class="neon-orb"></div>
+        <div class="neon-orb"></div>
+        <div class="neon-orb"></div>
+        <div class="neon-orb"></div>
+        <div class="neon-orb"></div>
+    </div>
+
+    <!-- Main Grid Layout -->
+    <div class="parent">
+        <!-- Base Warning Container (fondo visual) -->
+        <div class="div1">
+            <div class="warning-border"></div>
+            <div class="base-content">
+                <div class="base-pattern"></div>
+                <div class="base-glow"></div>
+            </div>
+        </div>
+
+        <!-- Continue/Next Button -->
+        <div class="div2">
+            <button 
+                *ngIf="currentStep === 'feed'" 
+                class="continue-btn"
+                (click)="showNfcComponent()">
+                CONTINUAR
+            </button>
+            <button 
+                *ngIf="currentStep === 'nfc'" 
+                class="back-btn"
+                (click)="resetToFeed()">
+                VOLVER
+            </button>
+        </div>
+
+        <!-- Skip/Later Button -->
+        <div class="div3">
+            <button class="skip-btn" [routerLink]="['/home']">
+                MÁS TARDE
+            </button>
+        </div>
+
+        <!-- Dynamic Content Area (Feed/NFC Components) -->
+        <div class="div4">
+            <!-- DEBUG: currentStep = {{ currentStep }} -->
+            <app-feed *ngIf="currentStep === 'feed'" class="feed-wrapper"></app-feed>
+            <app-nfc *ngIf="currentStep === 'nfc'" class="nfc-wrapper"></app-nfc>
+        </div>
+    </div>
+</div>

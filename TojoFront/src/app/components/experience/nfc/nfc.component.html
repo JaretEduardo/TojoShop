@@ -1,0 +1,49 @@
+<div class="nfc-container">
+    <div class="scanning-area">
+        <div class="scan-animation">
+            <div class="scan-line"></div>
+            <div class="scan-corners">
+                <div class="corner corner-tl"></div>
+                <div class="corner corner-tr"></div>
+                <div class="corner corner-bl"></div>
+                <div class="corner corner-br"></div>
+            </div>
+        </div>
+    </div>
+    
+    <h2 class="nfc-title">CONECTANDO...</h2>
+    <p class="nfc-subtitle">Elige tu método preferido</p>
+    
+    <div class="methods-container">
+        <div class="method-option" (click)="activateNFC()">
+            <div class="method-icon nfc-icon">
+                <div class="nfc-waves">
+                    <div class="wave wave-1"></div>
+                    <div class="wave wave-2"></div>
+                    <div class="wave wave-3"></div>
+                </div>
+                📱
+            </div>
+            <h3>NFC</h3>
+            <p>Aproxima tu teléfono al sensor</p>
+        </div>
+        
+        <div class="method-separator"></div>
+        
+        <div class="method-option" (click)="activateCamera()">
+            <div class="method-icon camera-icon">
+                <div class="camera-focus">
+                    <div class="focus-ring"></div>
+                </div>
+                📷
+            </div>
+            <h3>CÁMARA</h3>
+            <p>Escanea el código QR</p>
+        </div>
+    </div>
+    
+    <div class="status-message" [ngClass]="{'active': isScanning}">
+        <div class="status-icon">⚡</div>
+        <p>{{ statusMessage }}</p>
+    </div>
+</div>

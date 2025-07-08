@@ -1,0 +1,372 @@
+/* ===== MAIN CONTAINER ===== */
+.warning-container {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ===== BACKGROUND EFFECTS (similar al hero y auth) ===== */
+.retro-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(255, 107, 53, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 60%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+        linear-gradient(135deg, 
+            rgba(10, 10, 10, 0.95) 0%,
+            rgba(26, 10, 26, 0.90) 30%,
+            rgba(26, 15, 10, 0.90) 70%,
+            rgba(10, 10, 10, 0.95) 100%);
+    z-index: 1;
+}
+
+.perspective-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(255, 107, 53, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 107, 53, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.3;
+    transform: perspective(1000px) rotateX(45deg);
+    z-index: 2;
+}
+
+.neon-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+}
+
+.neon-orb {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ff6b35, transparent);
+    animation: orbFloat 8s ease-in-out infinite;
+}
+
+.neon-orb:nth-child(1) {
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.neon-orb:nth-child(2) {
+    top: 60%;
+    left: 20%;
+    background: radial-gradient(circle, #8b5cf6, transparent);
+    animation-delay: 2s;
+}
+
+.neon-orb:nth-child(3) {
+    top: 30%;
+    right: 15%;
+    animation-delay: 4s;
+}
+
+.neon-orb:nth-child(4) {
+    bottom: 20%;
+    left: 30%;
+    background: radial-gradient(circle, #8b5cf6, transparent);
+    animation-delay: 6s;
+}
+
+.neon-orb:nth-child(5) {
+    top: 80%;
+    right: 25%;
+    animation-delay: 1s;
+}
+
+.neon-orb:nth-child(6) {
+    top: 40%;
+    left: 60%;
+    background: radial-gradient(circle, #8b5cf6, transparent);
+    animation-delay: 3s;
+}
+
+/* ===== GRID LAYOUT ===== */
+.parent {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(12, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 20;
+}
+
+.div1 { 
+    grid-area: 2 / 4 / 12 / 10;
+    background: linear-gradient(135deg, 
+        rgba(255, 107, 53, 0.15),
+        rgba(139, 92, 246, 0.15));
+    border: 2px solid rgba(139, 92, 246, 0.6);
+    border-radius: 25px;
+    background-clip: padding-box;
+    position: relative;
+    box-shadow: 
+        0 10px 25px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.div2 { 
+    grid-area: 9 / 5 / 10 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.div3 { 
+    grid-area: 10 / 5 / 11 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.div4 { 
+    grid-area: 3 / 5 / 9 / 9;
+    background: transparent;
+    border-radius: 0;
+    padding: 2rem;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* ===== COMPONENT CONTAINERS ===== */
+.div4 app-feed,
+.div4 app-nfc {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.feed-wrapper,
+.nfc-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* ===== CONTENT CONTAINER ===== */
+.content-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== BORDER EFFECT ===== */
+.warning-border {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+        rgba(255, 107, 53, 0.7), 
+        rgba(139, 92, 246, 0.7), 
+        rgba(255, 107, 53, 0.7), 
+        rgba(139, 92, 246, 0.7));
+    background-size: 300% 300%;
+    animation: borderGlow 6s ease-in-out infinite;
+    border-radius: 27px;
+    z-index: -1;
+    opacity: 0.8;
+}
+
+/* ===== BASE CONTENT ELEMENTS ===== */
+.base-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 25px;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.base-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 25% 25%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+    background-size: 100px 100px;
+    animation: patternFloat 8s ease-in-out infinite;
+}
+
+.base-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80%;
+    height: 80%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(ellipse, 
+        rgba(255, 107, 53, 0.05) 0%, 
+        rgba(139, 92, 246, 0.05) 50%, 
+        transparent 100%);
+    animation: glowPulse 4s ease-in-out infinite;
+}
+
+/* ===== BUTTONS ===== */
+.continue-btn, .back-btn, .skip-btn {
+    background: linear-gradient(45deg, #ff6b35, #8b5cf6);
+    border: none;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 25px;
+    font-family: 'Orbitron', monospace;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(255, 107, 53, 0.3);
+    min-width: 120px;
+}
+
+.skip-btn {
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    box-shadow: 0 5px 20px rgba(139, 92, 246, 0.2);
+}
+
+.continue-btn::before, .back-btn::before, .skip-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.continue-btn:hover::before, .back-btn:hover::before, .skip-btn:hover::before {
+    left: 100%;
+}
+
+.continue-btn:hover, .back-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(255, 107, 53, 0.5);
+}
+
+.skip-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(139, 92, 246, 0.4);
+    border-color: rgba(139, 92, 246, 0.5);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes orbFloat {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(-20px) rotate(180deg);
+        opacity: 0.8;
+    }
+}
+
+@keyframes borderGlow {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+@keyframes patternFloat {
+    0%, 100% {
+        transform: translateY(0px);
+        opacity: 0.3;
+    }
+    50% {
+        transform: translateY(-10px);
+        opacity: 0.6;
+    }
+}
+
+@keyframes glowPulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .parent {
+        grid-template-columns: repeat(6, 1fr);
+        grid-template-rows: repeat(10, 1fr);
+    }
+    
+    .div1 { 
+        grid-area: 1 / 1 / 9 / 7; 
+        margin: 0.5rem;
+    }
+    
+    .div2 { 
+        grid-area: 8 / 2 / 9 / 6; 
+    }
+    
+    .div3 { 
+        grid-area: 9 / 2 / 10 / 6; 
+    }
+    
+    .div4 { 
+        grid-area: 2 / 2 / 8 / 6; 
+        padding: 1rem;
+    }
+    
+    .continue-btn, .back-btn, .skip-btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+        min-width: 100px;
+    }
+}

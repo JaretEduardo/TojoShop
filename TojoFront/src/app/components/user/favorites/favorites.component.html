@@ -1,0 +1,43 @@
+<app-start>
+    <div class="content-container">
+        <div class="content-header">
+            <h1 class="content-title">MIS FAVORITOS</h1>
+            <div class="content-line"></div>
+        </div>
+
+        <div class="favorites-content" *ngIf="favoriteItems.length > 0; else emptyFavorites">
+            <div class="favorites-grid">
+                <div class="favorite-card" *ngFor="let item of favoriteItems">
+                    <div class="favorite-image">
+                        <img [src]="item.image" [alt]="item.name">
+                        <div class="favorite-overlay">
+                            <button class="action-btn remove-btn" (click)="removeFromFavorites(item)">
+                                <span class="btn-icon">💔</span>
+                            </button>
+                            <button class="action-btn cart-btn" (click)="addToCart(item)">
+                                <span class="btn-icon">🛒</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="favorite-info">
+                        <h3 class="favorite-name">{{ item.name }}</h3>
+                        <p class="favorite-description">{{ item.description }}</p>
+                        <div class="favorite-price">${{ item.price }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ng-template #emptyFavorites>
+            <div class="empty-favorites">
+                <div class="empty-icon">💔</div>
+                <h3>No tienes favoritos aún</h3>
+                <p>Agrega productos a tu lista de favoritos</p>
+                <button class="browse-btn" (click)="goToProducts()">
+                    <span class="btn-text">EXPLORAR PRODUCTOS</span>
+                </button>
+            </div>
+        </ng-template>
+    </div>
+</app-start>

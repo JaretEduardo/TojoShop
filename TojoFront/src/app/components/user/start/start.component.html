@@ -1,0 +1,103 @@
+<div class="parent">
+    <!-- Navbar base (div1) -->
+    <div class="div1">
+        <header class="header-neon">
+            <nav class="nav-neon">
+                <div class="logo-neon">Tojo</div>
+            </nav>
+        </header>
+    </div>
+
+    <!-- Nombre del usuario (div2) -->
+    <div class="div2">
+        <div class="user-info">
+            <span class="user-icon">👤</span>
+            <span class="user-name">{{ userName }}</span>
+        </div>
+    </div>
+
+    <!-- Notificaciones (div3) -->
+    <div class="div3">
+        <button class="notification-btn" (click)="openNotifications()">
+            <span class="notification-icon">🔔</span>
+            <span class="notification-count" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
+        </button>
+    </div>
+
+    <!-- Logo/Icono sidebar (div4) -->
+    <div class="div4">
+        <div class="sidebar-logo">
+            <span class="logo-icon">⚡</span>
+        </div>
+    </div>
+
+    <!-- Título de la página (div5) -->
+    <div class="div5">
+        <div class="page-title">
+            <h1 class="title-main">TOJO</h1>
+            <h2 class="title-sub">SHOP</h2>
+        </div>
+    </div>
+
+    <!-- Contenedor principal sidebar (div6) -->
+    <div class="div6">
+        <div class="sidebar-container">
+            <div class="sidebar-header">
+                <h3 class="sidebar-title">MENÚ</h3>
+                <div class="sidebar-line"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón Inicio (div7) -->
+    <div class="div7">
+        <button class="sidebar-btn home-btn" (click)="goToHome()">
+            <div class="btn-icon">🏠</div>
+            <span class="btn-text">INICIO</span>
+            <div class="btn-glow"></div>
+        </button>
+    </div>
+
+    <!-- Botón Favoritos (div8) -->
+    <div class="div8">
+        <button class="sidebar-btn favorites-btn" (click)="goToFavorites()">
+            <div class="btn-icon">❤️</div>
+            <span class="btn-text">FAVORITOS</span>
+            <div class="btn-glow"></div>
+        </button>
+    </div>
+
+    <!-- Botón Carrito (div9) -->
+    <div class="div9">
+        <button class="sidebar-btn cart-btn" (click)="goToCart()">
+            <div class="btn-icon">🛒</div>
+            <span class="btn-text">CARRITO</span>
+            <div class="btn-glow"></div>
+        </button>
+    </div>
+
+    <!-- Botón Compras/Órdenes (div10) -->
+    <div class="div10">
+        <button class="sidebar-btn orders-btn" (click)="goToOrders()">
+            <div class="btn-icon">📦</div>
+            <span class="btn-text">COMPRAS</span>
+            <div class="btn-glow"></div>
+        </button>
+    </div>
+
+    <!-- Botón Cerrar Sesión (div11) -->
+    <div class="div11">
+        <button class="sidebar-btn logout-btn" (click)="logout()">
+            <div class="btn-icon">🚪</div>
+            <span class="btn-text">SALIR</span>
+            <div class="btn-glow"></div>
+        </button>
+    </div>
+
+    <!-- Área de contenido principal (div12) -->
+    <div class="div12">
+        <div class="content-area">
+            <ng-content></ng-content>
+        </div>
+    </div>
+</div>

@@ -32,97 +32,30 @@ body {
     animation: gridPerspective 20s linear infinite;
 }
 
-@keyframes gridPerspective {
-    0% {
-        background-position: 0 0;
-    }
-    100% {
-        background-position: 0 200px;
-    }
+/* ===== GRID LAYOUT ===== */
+.parent {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(12, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    width: 100vw;
+    height: 100vh;
+    position: relative;
 }
 
-.retro-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(ellipse at center, 
-        rgba(139, 92, 246, 0.15) 0%,
-        rgba(10, 10, 10, 0.8) 50%,
-        rgba(255, 107, 53, 0.1) 100%);
-    z-index: -2;
-}
-
-.neon-particles {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: -1;
-}
-
-.neon-orb {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: radial-gradient(circle, #ff6b35, transparent);
-    border-radius: 50%;
-    filter: blur(1px);
-    animation: float 6s ease-in-out infinite;
-}
-
-.neon-orb:nth-child(1) {
-    top: 20%;
-    left: 10%;
-    animation-delay: 0s;
-}
-
-.neon-orb:nth-child(2) {
-    top: 50%;
-    left: 90%;
-    animation-delay: 2s;
-}
-
-.neon-orb:nth-child(3) {
-    top: 80%;
-    left: 30%;
-    animation-delay: 4s;
-}
-
-.neon-orb:nth-child(4) {
-    top: 30%;
-    left: 70%;
-    background: radial-gradient(circle, #8b5cf6, transparent);
-    animation-delay: 1s;
-}
-
-.neon-orb:nth-child(5) {
-    top: 70%;
-    left: 60%;
-    background: radial-gradient(circle, #8b5cf6, transparent);
-    animation-delay: 3s;
-}
-
-.neon-orb:nth-child(6) {
-    top: 40%;
-    left: 20%;
-    background: radial-gradient(circle, #8b5cf6, transparent);
-    animation-delay: 5s;
-}
-
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0px);
-        opacity: 0.7;
-    }
-    50% {
-        transform: translateY(-20px);
-        opacity: 1;
-    }
-}
+.div1 { grid-area: 1 / 1 / 2 / 13; }
+.div2 { grid-area: 1 / 11 / 2 / 13; }
+.div3 { grid-area: 1 / 10 / 2 / 11; }
+.div4 { grid-area: 1 / 1 / 2 / 2; }
+.div5 { grid-area: 1 / 2 / 2 / 4; }
+.div6 { grid-area: 2 / 1 / 13 / 4; }
+.div7 { grid-area: 3 / 1 / 4 / 4; }
+.div8 { grid-area: 5 / 1 / 6 / 4; }
+.div9 { grid-area: 7 / 1 / 8 / 4; }
+.div10 { grid-area: 9 / 1 / 10 / 4; }
+.div11 { grid-area: 11 / 1 / 12 / 4; }
+.div12 { grid-area: 2 / 4 / 13 / 13; }
 
 /* ===== NAVBAR STYLES (div1) ===== */
 .header-neon {

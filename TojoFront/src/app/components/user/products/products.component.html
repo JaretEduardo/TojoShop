@@ -1,30 +1,73 @@
 <app-start>
-  <div class="content-container">
-    <div class="content-header">
-      <h1 class="content-title">PRODUCTOS</h1>
-      <div class="content-line"></div>
-    </div>
-    
-    <div class="products-grid">
-      <div class="product-card" *ngFor="let product of products">
-        <div class="product-image">
-          <img [src]="product.image" [alt]="product.name">
-          <div class="product-overlay">
-            <button class="action-btn favorite-btn" (click)="toggleFavorite(product)">
-              <span class="btn-icon">❤️</span>
-            </button>
-            <button class="action-btn cart-btn" (click)="addToCart(product)">
-              <span class="btn-icon">🛒</span>
-            </button>
-          </div>
+    <div class="parent">
+        <!-- Área principal de contenido (div1) -->
+        <div class="div1">
+            <div class="products-grid">
+                <div class="product-card" *ngFor="let product of filteredProducts">
+                    <div class="product-image">
+                        <img [src]="product.image" [alt]="product.name">
+                        <div class="product-overlay">
+                            <button class="action-btn favorite-btn" (click)="toggleFavorite(product)">
+                                <span class="btn-icon">❤️</span>
+                            </button>
+                            <button class="action-btn cart-btn" (click)="addToCart(product)">
+                                <span class="btn-icon">🛒</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="product-info">
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <p class="product-description">{{ product.description }}</p>
+                        <div class="product-price">${{ product.price }}</div>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <div class="product-info">
-          <h3 class="product-name">{{ product.name }}</h3>
-          <p class="product-description">{{ product.description }}</p>
-          <div class="product-price">${{ product.price }}</div>
+
+        <!-- Título PRODUCTOS (div2) -->
+        <div class="div2">
+            <div class="content-header">
+                <h1 class="content-title">PRODUCTOS</h1>
+                <div class="content-line"></div>
+            </div>
         </div>
-      </div>
+
+        <!-- Área de filtros (div3) -->
+        <div class="div3">
+            <div class="filters-container">
+                <!-- Buscador -->
+                <div class="search-filter">
+                    <input type="text" class="search-input" placeholder="Buscar productos..." [(ngModel)]="searchTerm"
+                        (input)="filterProducts()">
+                    <div class="search-icon">🔍</div>
+                </div>
+
+                <!-- Filtro por categoría -->
+                <div class="category-filter">
+                    <select class="filter-select" [(ngModel)]="selectedCategory" (change)="filterProducts()">
+                        <option value="">Todas las categorías</option>
+                        <option value="electronics">Electrónicos</option>
+                        <option value="clothing">Ropa</option>
+                        <option value="accessories">Accesorios</option>
+                    </select>
+                </div>
+
+                <!-- Filtro por stock -->
+                <div class="stock-filter">
+                    <select class="filter-select" [(ngModel)]="stockFilter" (change)="filterProducts()">
+                        <option value="">Todo el stock</option>
+                        <option value="available">Disponible</option>
+                        <option value="low">Stock bajo</option>
+                    </select>
+                </div>
+
+                <!-- Botón limpiar filtros -->
+                <button class="clear-filters-btn" (click)="clearFilters()">
+                    <span class="btn-icon">🗑️</span>
+                    <span class="btn-text">LIMPIAR</span>
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 </app-start>

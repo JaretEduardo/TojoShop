@@ -6,6 +6,9 @@ import { HomeComponent } from './layouts/home/home.component';
 import { DashboardUserComponent } from './layouts/dashboard-user/dashboard-user.component';
 import { WarningComponent } from './layouts/warning/warning.component';
 import { StartComponent } from './components/user/start/start.component';
+import { CartComponent } from './components/user/cart/cart.component';
+import { FavoritesComponent } from './components/user/favorites/favorites.component';
+import { OrdersComponent } from './components/user/orders/orders.component';
 
 export const routes: Routes = [
     {
@@ -20,28 +23,19 @@ export const routes: Routes = [
         component: AuthComponent,
         children: [
             { path: '', redirectTo: 'login', pathMatch: 'full' },
-            { 
-                path: 'login', 
-                component: LoginFormComponent
-            },
-            { 
-                path: 'register', 
-                component: RegisterFormComponent
-            }
+            { path: 'login', component: LoginFormComponent },
+            { path: 'register', component: RegisterFormComponent }
         ]
     },
     {
         path: '', 
         component: DashboardUserComponent,
         children: [
-            { 
-                path: 'warning', 
-                component: WarningComponent
-            },
-            { 
-                path: 'home', 
-                component: StartComponent
-            }
+            { path: 'warning', component: WarningComponent },
+            { path: 'home', component: StartComponent },
+            { path: 'cart', component: CartComponent},
+            { path: 'favorites', component: FavoritesComponent},
+            { path: 'orders', component: OrdersComponent}
         ]
     }
 ];

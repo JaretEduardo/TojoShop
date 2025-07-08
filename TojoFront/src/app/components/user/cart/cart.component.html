@@ -1,1 +1,66 @@
-<p>cart works!</p>
+<app-start>
+  <div class="content-container">
+    <div class="content-header">
+      <h1 class="content-title">CARRITO DE COMPRAS</h1>
+      <div class="content-line"></div>
+    </div>
+    
+    <div class="cart-content" *ngIf="cartItems.length > 0; else emptyCart">
+      <div class="cart-items">
+        <div class="cart-item" *ngFor="let item of cartItems">
+          <div class="item-image">
+            <img [src]="item.image" [alt]="item.name">
+          </div>
+          
+          <div class="item-details">
+            <h3 class="item-name">{{ item.name }}</h3>
+            <p class="item-description">{{ item.description }}</p>
+          </div>
+          
+          <div class="item-quantity">
+            <button class="qty-btn" (click)="decreaseQuantity(item)">-</button>
+            <span class="qty-value">{{ item.quantity }}</span>
+            <button class="qty-btn" (click)="increaseQuantity(item)">+</button>
+          </div>
+          
+          <div class="item-price">${{ item.price * item.quantity }}</div>
+          
+          <button class="remove-btn" (click)="removeFromCart(item)">
+            <span class="btn-icon">🗑️</span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="cart-summary">
+        <div class="summary-item">
+          <span>Subtotal:</span>
+          <span>${{ getSubtotal() }}</span>
+        </div>
+        <div class="summary-item">
+          <span>Envío:</span>
+          <span>${{ getShipping() }}</span>
+        </div>
+        <div class="summary-total">
+          <span>Total:</span>
+          <span>${{ getTotal() }}</span>
+        </div>
+        
+        <button class="checkout-btn" (click)="checkout()">
+          <span class="btn-text">PROCEDER AL PAGO</span>
+          <div class="btn-glow"></div>
+        </button>
+      </div>
+    </div>
+    
+    <ng-template #emptyCart>
+      <div class="empty-cart">
+        <div class="empty-icon">🛒</div>
+        <h3>Tu carrito está vacío</h3>
+        <p>Agrega algunos productos para comenzar</p>
+        <button class="browse-btn" (click)="goToProducts()">
+          <span class="btn-text">EXPLORAR PRODUCTOS</span>
+        </button>
+      </div>
+    </ng-template>
+  </div>
+</app-start>

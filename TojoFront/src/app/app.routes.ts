@@ -5,7 +5,7 @@ import { RegisterFormComponent } from './components/register-form/register-form.
 import { HomeComponent } from './layouts/home/home.component';
 import { DashboardUserComponent } from './layouts/dashboard-user/dashboard-user.component';
 import { WarningComponent } from './layouts/warning/warning.component';
-import { StartComponent } from './components/user/start/start.component';
+import { ProductsComponent } from './components/user/products/products.component';
 import { CartComponent } from './components/user/cart/cart.component';
 import { FavoritesComponent } from './components/user/favorites/favorites.component';
 import { OrdersComponent } from './components/user/orders/orders.component';
@@ -32,7 +32,7 @@ export const routes: Routes = [
         component: DashboardUserComponent,
         children: [
             { path: 'warning', component: WarningComponent },
-            { path: 'home', component: StartComponent },
+            { path: 'home', component: ProductsComponent },
             { path: 'cart', component: CartComponent},
             { path: 'favorites', component: FavoritesComponent},
             { path: 'orders', component: OrdersComponent}

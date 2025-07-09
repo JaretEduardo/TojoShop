@@ -9,6 +9,8 @@ import { ProductsComponent } from './components/user/products/products.component
 import { CartComponent } from './components/user/cart/cart.component';
 import { FavoritesComponent } from './components/user/favorites/favorites.component';
 import { OrdersComponent } from './components/user/orders/orders.component';
+import { EmployeeDashboardComponent } from './layouts/employee-dashboard/employee-dashboard.component';
+import { TasksComponent } from './components/employee/tasks/tasks.component';
 
 export const routes: Routes = [
     {
@@ -36,6 +38,13 @@ export const routes: Routes = [
             { path: 'cart', component: CartComponent},
             { path: 'favorites', component: FavoritesComponent},
             { path: 'orders', component: OrdersComponent}
+        ]
+    },
+    {
+        path: '',
+        component: EmployeeDashboardComponent,
+        children: [
+            { path: 'tasks', component: TasksComponent }
         ]
     }
 ];

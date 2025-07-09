@@ -9,3 +9,87 @@
     <div class="neon-orb"></div>
     <div class="neon-orb"></div>
 </div>
+
+<!-- Main Grid Layout -->
+<div class="parent">
+    <!-- Navbar (div1) -->
+    <div class="div1"></div>
+
+    <!-- Navegación de pestañas (div2) -->
+    <div class="div2"></div>
+
+    <!-- Punto de Venta (div3) -->
+    <div class="div3">
+        <button class="nav-tab pos-tab" [class.active]="activeTab === 'pos'" (click)="setActiveTab('pos')">
+            <div class="tab-icon">💳</div>
+            <span class="tab-text">POS</span>
+            <div class="tab-glow"></div>
+        </button>
+    </div>
+
+    <!-- Tareas (div4) -->
+    <div class="div4">
+        <button class="nav-tab tasks-tab" [class.active]="activeTab === 'tasks'" (click)="setActiveTab('tasks')">
+            <div class="tab-icon">📋</div>
+            <span class="tab-text">TAREAS</span>
+            <div class="tab-glow"></div>
+        </button>
+    </div>
+
+    <!-- Alertas de Reabastecimiento (div5) -->
+    <div class="div5">
+        <button class="nav-tab alerts-tab" [class.active]="activeTab === 'alerts'" (click)="setActiveTab('alerts')">
+            <div class="tab-icon">⚠️</div>
+            <span class="tab-text">ALERTAS</span>
+            <div class="tab-glow"></div>
+            <span class="alert-count" *ngIf="alertCount > 0">{{ alertCount }}</span>
+        </button>
+    </div>
+
+    <!-- Inventario (div6) -->
+    <div class="div6">
+        <button class="nav-tab inventory-tab" [class.active]="activeTab === 'inventory'" (click)="setActiveTab('inventory')">
+            <div class="tab-icon">📦</div>
+            <span class="tab-text">INVENTARIO</span>
+            <div class="tab-glow"></div>
+        </button>
+    </div>
+
+    <!-- Logo (div7) -->
+    <div class="div7">
+        <div class="logo-container">
+            <div class="logo-icon">⚡</div>
+            <span class="logo-text">TOJO</span>
+        </div>
+    </div>
+
+    <!-- Perfil del usuario (div8) -->
+    <div class="div8">
+        <div class="user-profile">
+            <div class="user-avatar">👤</div>
+            <div class="user-info">
+                <span class="user-name">{{ userName }}</span>
+                <span class="user-role">{{ userRole }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificaciones (div9) -->
+    <div class="div9">
+        <button class="notification-btn" (click)="openNotifications()">
+            <div class="notification-icon">🔔</div>
+            <span class="notification-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
+        </button>
+    </div>
+
+    <!-- Aquí irán los demás divs cuando me los especifiques -->
+    <div class="div10"></div>
+    <div class="div11"></div>
+    <div class="div12">
+        <!-- Contenido principal del dashboard -->
+        <router-outlet></router-outlet>
+    </div>
+    <div class="div13"></div>
+    <div class="div14"></div>
+    <div class="div15"></div>
+</div>

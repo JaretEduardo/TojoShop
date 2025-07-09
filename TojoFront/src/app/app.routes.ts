@@ -11,6 +11,9 @@ import { FavoritesComponent } from './components/user/favorites/favorites.compon
 import { OrdersComponent } from './components/user/orders/orders.component';
 import { EmployeeDashboardComponent } from './layouts/employee-dashboard/employee-dashboard.component';
 import { TasksComponent } from './components/employee/tasks/tasks.component';
+import { PosComponent } from './components/employee/pos/pos.component';
+import { AlertsComponent } from './components/employee/alerts/alerts.component';
+import { InventoryComponent } from './components/employee/inventory/inventory.component';
 
 export const routes: Routes = [
     {
@@ -44,7 +47,10 @@ export const routes: Routes = [
         path: '',
         component: EmployeeDashboardComponent,
         children: [
-            { path: 'tasks', component: TasksComponent }
+            { path: 'pos', component: PosComponent },
+            { path: 'tasks', component: TasksComponent },
+            { path: 'alerts', component: AlertsComponent },
+            { path: 'inventory', component: InventoryComponent }
         ]
     }
 ];

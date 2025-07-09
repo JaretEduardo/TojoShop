@@ -81,15 +81,5 @@
             <span class="notification-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
         </button>
     </div>
-
-    <!-- Aquí irán los demás divs cuando me los especifiques -->
-    <div class="div10"></div>
-    <div class="div11"></div>
-    <div class="div12">
-        <!-- Contenido principal del dashboard -->
-        <router-outlet></router-outlet>
-    </div>
-    <div class="div13"></div>
-    <div class="div14"></div>
-    <div class="div15"></div>
+    <app-tasks></app-tasks>
 </div>

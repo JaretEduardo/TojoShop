@@ -81,5 +81,9 @@
             <span class="notification-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
         </button>
     </div>
-    <app-tasks></app-tasks>
+
+    <!-- Área de contenido principal -->
+    <div class="content-area">
+        <router-outlet></router-outlet>
+    </div>
 </div>

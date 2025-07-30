@@ -1,1 +1,132 @@
-<p>pos works!</p>
+<div class="pos-container">
+    <div class="parent">
+        <!-- DIV 1: Botón Agregar Producto -->
+        <div class="div1 action-button add-product">
+            <button class="pos-btn primary" (click)="addProduct()">
+                <i class="btn-icon">➕</i>
+                <span>Agregar Producto</span>
+            </button>
+        </div>
+
+        <!-- DIV 2: Botón Repetir Último -->
+        <div class="div2 action-button repeat-last">
+            <button class="pos-btn secondary" (click)="repeatLast()">
+                <i class="btn-icon">🔄</i>
+                <span>Repetir Último</span>
+            </button>
+        </div>
+
+        <!-- DIV 3: Botón Quitar Último -->
+        <div class="div3 action-button remove-last">
+            <button class="pos-btn warning" (click)="removeLast()">
+                <i class="btn-icon">⬅️</i>
+                <span>Quitar Último</span>
+            </button>
+        </div>
+
+        <!-- DIV 4: Botón Cancelar Todo -->
+        <div class="div4 action-button cancel-all">
+            <button class="pos-btn danger" (click)="cancelAll()">
+                <i class="btn-icon">❌</i>
+                <span>Cancelar Todo</span>
+            </button>
+        </div>
+
+        <!-- DIV 5: Totales -->
+        <div class="div5 totals-section">
+            <div class="total-info">
+                <div class="total-header">
+                    <h4 class="totals-title">
+                        <i class="totals-icon">💰</i>
+                        Resumen de Venta
+                    </h4>
+                </div>
+                
+                <div class="total-row">
+                    <span class="total-label">Artículos:</span>
+                    <span class="total-value">{{ getUniqueItems() }}</span>
+                </div>
+                
+                <div class="total-row">
+                    <span class="total-label">Unidades:</span>
+                    <span class="total-value">{{ getTotalUnits() }}</span>
+                </div>
+                
+                <div class="total-row">
+                    <span class="total-label">Subtotal:</span>
+                    <span class="total-value">${{ getTotalAmount() }}</span>
+                </div>
+                
+                <div class="total-row">
+                    <span class="total-label">IVA (16%):</span>
+                    <span class="total-value tax">${{ getTax() }}</span>
+                </div>
+                
+                <div class="total-divider"></div>
+                
+                <div class="total-row final-total">
+                    <span class="total-label">TOTAL:</span>
+                    <span class="total-value">${{ getFinalTotal() }}</span>
+                </div>
+                
+                <div class="payment-actions">
+                    <button class="payment-btn cash" (click)="processCashPayment()">
+                        <i class="payment-icon">💵</i>
+                        Efectivo
+                    </button>
+                    <button class="payment-btn card" (click)="processCardPayment()">
+                        <i class="payment-icon">💳</i>
+                        Tarjeta
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIV 6: Input Código de Producto -->
+        <div class="div6 product-input-section">
+            <div class="input-container">
+                <label class="input-label">Código del Producto</label>
+                <div class="input-wrapper">
+                    <input type="text" class="product-code-input" placeholder="Escanear o escribir código..."
+                        [(ngModel)]="productCode" (keyup.enter)="searchProduct()" #codeInput>
+                    <button class="search-btn" (click)="searchProduct()">
+                        <i class="search-icon">🔍</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIV 7: Lista de Productos -->
+        <div class="div7 products-list-section">
+            <div class="products-header">
+                <h3 class="section-title">
+                    <i class="title-icon">🛒</i>
+                    Productos en Venta
+                </h3>
+            </div>
+            <div class="products-list" *ngIf="cartItems.length > 0; else emptyCart">
+                <div class="product-item" *ngFor="let item of cartItems; let i = index">
+                    <div class="product-info">
+                        <span class="product-name">{{ item.name }}</span>
+                        <span class="product-details">{{ item.code }} - ${{ item.price }}</span>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="qty-btn" (click)="decreaseQuantity(i)">-</button>
+                        <span class="quantity">{{ item.quantity }}</span>
+                        <button class="qty-btn" (click)="increaseQuantity(i)">+</button>
+                    </div>
+                    <div class="product-total">${{ item.price * item.quantity }}</div>
+                    <button class="remove-item-btn" (click)="removeItem(i)">
+                        <i class="remove-icon">🗑️</i>
+                    </button>
+                </div>
+            </div>
+            <ng-template #emptyCart>
+                <div class="empty-cart">
+                    <i class="empty-icon">🛒</i>
+                    <p>No hay productos agregados</p>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</div>

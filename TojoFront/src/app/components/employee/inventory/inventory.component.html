@@ -1,1 +1,70 @@
-<p>inventory works!</p>
+<div class="parent">
+    <!-- Navegación por categorías (div1) -->
+    <div class="div1">
+        <div class="category-nav">
+            <h2 class="inventory-title">
+                <span class="title-icon">📦</span>
+                INVENTARIO DE PRODUCTOS
+            </h2>
+            <div class="category-filters">
+                <button class="category-btn" [class.active]="activeCategory === 'all'" (click)="setActiveCategory('all')">
+                    <span class="category-icon">🌟</span>
+                    TODOS
+                </button>
+                <button class="category-btn" [class.active]="activeCategory === 'bebidas'" (click)="setActiveCategory('bebidas')">
+                    <span class="category-icon">🥤</span>
+                    BEBIDAS
+                </button>
+                <button class="category-btn" [class.active]="activeCategory === 'snacks'" (click)="setActiveCategory('snacks')">
+                    <span class="category-icon">🍿</span>
+                    SNACKS
+                </button>
+                <button class="category-btn" [class.active]="activeCategory === 'dulces'" (click)="setActiveCategory('dulces')">
+                    <span class="category-icon">🍬</span>
+                    DULCES
+                </button>
+                <button class="category-btn" [class.active]="activeCategory === 'lacteos'" (click)="setActiveCategory('lacteos')">
+                    <span class="category-icon">🥛</span>
+                    LÁCTEOS
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid de tarjetas de productos -->
+    <div class="products-grid">
+        <div class="product-card" *ngFor="let product of getFilteredProducts()">
+            <!-- Nombre del producto y ID -->
+            <div class="product-header">
+                <h3 class="product-name">{{ product.name }}</h3>
+                <span class="product-id">ID: {{ product.id }}</span>
+            </div>
+            
+            <!-- Stock total -->
+            <div class="stock-info total">
+                <span class="stock-label">STOCK TOTAL</span>
+                <span class="stock-value">{{ product.stockTotal }}</span>
+            </div>
+            
+            <!-- Stock en góndola -->
+            <div class="stock-info gondola">
+                <span class="stock-label">GÓNDOLA</span>
+                <span class="stock-value">{{ product.stockGondola }}</span>
+            </div>
+            
+            <!-- Stock en almacén -->
+            <div class="stock-info warehouse">
+                <span class="stock-label">ALMACÉN</span>
+                <span class="stock-value">{{ product.stockAlmacen }}</span>
+            </div>
+            
+            <!-- Botón actualizar -->
+            <div class="button-container">
+                <button class="update-btn" (click)="updateStock(product.id)">
+                    <span class="btn-icon">🔄</span>
+                    ACTUALIZAR
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

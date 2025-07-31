@@ -1,0 +1,82 @@
+<div class="parent">
+    <!-- Sección izquierda - Tareas Pendientes con Scroll -->
+    <div class="div1">
+        <!-- Título: Tareas Pendientes -->
+        <div class="section-header">
+            <h2 class="section-title pending-title">
+                <span class="title-icon">📋</span>
+                TAREAS PENDIENTES ({{ pendingTasks.length }})
+            </h2>
+        </div>
+        
+        <!-- Contenedor con scroll para tareas pendientes -->
+        <div class="tasks-container">
+            <div class="task-item" *ngFor="let task of pendingTasks">
+                <div class="task-card pending-card">
+                    <div class="task-info">
+                        <h3 class="task-title">{{ task.title }}</h3>
+                        <p class="task-description">{{ task.description }}</p>
+                        <span class="task-time">{{ task.time }}</span>
+                    </div>
+                    <button class="complete-btn" (click)="completeTask(task.id)">
+                        <span class="btn-icon">✓</span>
+                        COMPLETAR
+                    </button>
+                    <div class="priority-indicator" [ngClass]="getPriorityClass(task.priority)">
+                        <span class="priority-text">{{ getPriorityText(task.priority) }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Estado vacío para tareas pendientes -->
+            <div class="task-item" *ngIf="pendingTasks.length === 0">
+                <div class="task-card pending-card empty-state">
+                    <div class="empty-message">
+                        <span class="empty-icon">✨</span>
+                        <p>No hay tareas pendientes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sección derecha - Tareas Completadas con Scroll -->
+    <div class="div2">
+        <!-- Título: Tareas Completadas -->
+        <div class="section-header">
+            <h2 class="section-title completed-title">
+                <span class="title-icon">✅</span>
+                TAREAS COMPLETADAS ({{ completedTasks.length }})
+            </h2>
+        </div>
+        
+        <!-- Contenedor con scroll para tareas completadas -->
+        <div class="tasks-container completed">
+            <div class="task-item" *ngFor="let task of completedTasks">
+                <div class="task-card completed-card">
+                    <div class="task-info">
+                        <h3 class="task-title">{{ task.title }}</h3>
+                        <p class="task-description">{{ task.description }}</p>
+                        <span class="task-time">{{ task.time }}</span>
+                        <span class="completed-time" *ngIf="task.completedTime">
+                            Completada: {{ task.completedTime }}
+                        </span>
+                    </div>
+                    <div class="priority-indicator completed">
+                        <span class="priority-text">{{ getPriorityText(task.priority) }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Estado vacío para tareas completadas -->
+            <div class="task-item" *ngIf="completedTasks.length === 0">
+                <div class="task-card completed-card empty-state">
+                    <div class="empty-message">
+                        <span class="empty-icon">🎉</span>
+                        <p>No hay tareas completadas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

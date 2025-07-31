@@ -1,0 +1,131 @@
+<div class="alerts-container">
+    <div class="parent">
+        <!-- DIV 1: Contenedor de Botones de Sensores -->
+        <div class="div1 sensors-panel">
+            <div class="sensors-header">
+                <h3 class="panel-title">
+                    <i class="title-icon">🔬</i>
+                    Panel de Sensores
+                </h3>
+            </div>
+
+            <!-- DIV 2: Sensor de Presencia -->
+            <div class="div2 sensor-button" [class.active]="selectedSensor === 'presence'"
+                (click)="selectSensor('presence')">
+                <button class="sensor-btn presence">
+                    <i class="sensor-icon">👁️</i>
+                    <span class="sensor-name">Presencia</span>
+                    <span class="sensor-type">PIR/Ultrasónico</span>
+                </button>
+            </div>
+
+            <!-- DIV 3: Sensor de Temperatura -->
+            <div class="div3 sensor-button" [class.active]="selectedSensor === 'temperature'"
+                (click)="selectSensor('temperature')">
+                <button class="sensor-btn temperature">
+                    <i class="sensor-icon">🌡️</i>
+                    <span class="sensor-name">Temperatura</span>
+                    <span class="sensor-type">DHT22/DS18B20</span>
+                </button>
+            </div>
+
+            <!-- DIV 4: Sensor de Apertura/Servo -->
+            <div class="div4 sensor-button" [class.active]="selectedSensor === 'door'" (click)="selectSensor('door')">
+                <button class="sensor-btn door">
+                    <i class="sensor-icon">🚪</i>
+                    <span class="sensor-name">Apertura</span>
+                    <span class="sensor-type">Servo Motor</span>
+                </button>
+            </div>
+
+            <!-- DIV 5: Sensor de Peso -->
+            <div class="div5 sensor-button" [class.active]="selectedSensor === 'weight'"
+                (click)="selectSensor('weight')">
+                <button class="sensor-btn weight">
+                    <i class="sensor-icon">⚖️</i>
+                    <span class="sensor-name">Peso</span>
+                    <span class="sensor-type">Celda de Carga</span>
+                </button>
+            </div>
+
+            <!-- DIV 6: Sensor RFID -->
+            <div class="div6 sensor-button" [class.active]="selectedSensor === 'rfid'" (click)="selectSensor('rfid')">
+                <button class="sensor-btn rfid">
+                    <i class="sensor-icon">🏷️</i>
+                    <span class="sensor-name">RFID</span>
+                    <span class="sensor-type">RC522/MFRC522</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- DIV 7: Contenedor de Información del Sensor -->
+        <div class="div7 sensor-info-panel">
+        </div>
+
+        <!-- DIV 8: Nombre del Sensor Seleccionado -->
+        <div class="div8 sensor-title">
+            <h2 class="selected-sensor-name">
+                <i class="selected-icon">{{ getSensorIcon() }}</i>
+                {{ getSensorName() }}
+            </h2>
+        </div>
+
+        <!-- DIV 9: Valor Mínimo -->
+        <div class="div9 sensor-stat min-value">
+            <span class="stat-label">Valor Mínimo</span>
+            <span class="stat-value">{{ getSensorData().minValue }}</span>
+            <span class="stat-unit">{{ getSensorData().unit }}</span>
+        </div>
+
+        <!-- DIV 10: Valor Máximo -->
+        <div class="div10 sensor-stat max-value">
+            <span class="stat-label">Valor Máximo</span>
+            <span class="stat-value">{{ getSensorData().maxValue }}</span>
+            <span class="stat-unit">{{ getSensorData().unit }}</span>
+        </div>
+
+        <!-- DIV 11: Estado del Sensor -->
+        <div class="div11 sensor-status">
+            <span class="status-label">Estado</span>
+            <span class="status-indicator" [class]="getSensorData().status">
+                <i class="status-icon">{{ getStatusIcon() }}</i>
+                {{ getSensorData().statusText }}
+            </span>
+        </div>
+
+        <!-- DIV 12: Lista de Datos del Sensor -->
+        <div class="div12 sensor-data-list">
+            <div class="data-header">
+                <h4 class="data-title">
+                    <i class="data-icon">📊</i>
+                    Lecturas Recientes
+                </h4>
+                <button class="refresh-btn" (click)="refreshData()">
+                    <i class="refresh-icon">🔄</i>
+                </button>
+            </div>
+
+            <div class="data-list" *ngIf="getSensorReadings().length > 0; else noData">
+                <div class="data-item" *ngFor="let reading of getSensorReadings(); let i = index">
+                    <div class="reading-info">
+                        <span class="reading-value">{{ reading.value }} {{ getSensorData().unit }}</span>
+                        <span class="reading-time">{{ reading.timestamp | date:'HH:mm:ss' }}</span>
+                    </div>
+                    <div class="reading-status">
+                        <span class="reading-indicator" [class]="reading.status">
+                            {{ reading.statusText }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <ng-template #noData>
+                <div class="no-data">
+                    <i class="no-data-icon">📭</i>
+                    <p>No hay lecturas disponibles</p>
+                    <p class="no-data-subtitle">Selecciona un sensor para ver los datos</p>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</div>

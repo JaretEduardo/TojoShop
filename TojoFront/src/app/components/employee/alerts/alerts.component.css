@@ -1,0 +1,558 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.alerts-container {
+    width: 100%;
+    height: 75vh;
+    max-height: 75vh;
+    background: linear-gradient(135deg, 
+        rgba(0, 0, 0, 0.9) 0%, 
+        rgba(20, 20, 30, 0.95) 50%, 
+        rgba(0, 0, 0, 0.9) 100%);
+    padding: 15px;
+    font-family: 'Orbitron', monospace;
+    overflow: hidden;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.alerts-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ===== GRID LAYOUT ===== */
+.parent {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    grid-template-rows: repeat(11, 1fr);
+    grid-column-gap: 15px;
+    grid-row-gap: 15px;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 2;
+    box-sizing: border-box;
+}
+
+/* ===== POSICIONES DEL GRID ===== */
+.div1 { grid-area: 1 / 1 / 13 / 6; }
+.div2 { grid-area: 2 / 2 / 3 / 5; }
+.div3 { grid-area: 4 / 2 / 5 / 5; }
+.div4 { grid-area: 6 / 2 / 7 / 5; }
+.div5 { grid-area: 8 / 2 / 9 / 5; }
+.div6 { grid-area: 10 / 2 / 11 / 5; }
+.div7 { grid-area: 1 / 6 / 3 / 12; }
+.div8 { grid-area: 1 / 7 / 2 / 11; }
+.div9 { grid-area: 2 / 6 / 3 / 8; }
+.div10 { grid-area: 2 / 8 / 3 / 10; }
+.div11 { grid-area: 2 / 10 / 3 / 12; }
+.div12 { grid-area: 3 / 6 / 12 / 12; }
+
+/* ===== PANEL DE SENSORES (DIV 1) ===== */
+.sensors-panel {
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 15px;
+    padding: 20px;
+    border: 2px solid rgba(255, 107, 53, 0.3);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+.sensors-header {
+    border-bottom: 2px solid rgba(255, 107, 53, 0.3);
+    padding-bottom: 15px;
+    margin-bottom: 10px;
+}
+
+.panel-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #ff6b35;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-shadow: 0 0 15px rgba(255, 107, 53, 0.8);
+}
+
+.title-icon {
+    font-size: 1.4rem;
+    filter: drop-shadow(0 0 10px currentColor);
+}
+
+/* ===== BOTONES DE SENSORES (DIV 2-6) ===== */
+.sensor-button {
+    position: relative;
+}
+
+.sensor-btn {
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    font-family: 'Orbitron', monospace;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    backdrop-filter: blur(5px);
+    min-height: 80px;
+}
+
+.sensor-btn:hover {
+    border-color: rgba(255, 107, 53, 0.4);
+    background: rgba(0, 0, 0, 0.7);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.2);
+}
+
+.sensor-button.active .sensor-btn {
+    border-color: rgba(255, 107, 53, 0.8);
+    background: linear-gradient(135deg, 
+        rgba(255, 107, 53, 0.2) 0%, 
+        rgba(255, 107, 53, 0.05) 100%);
+    box-shadow: 0 0 25px rgba(255, 107, 53, 0.4);
+}
+
+.sensor-icon {
+    font-size: 1.8rem;
+    filter: drop-shadow(0 0 10px currentColor);
+}
+
+.sensor-name {
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sensor-type {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 400;
+}
+
+/* Colores específicos por sensor */
+.sensor-btn.presence:hover,
+.sensor-button.active .sensor-btn.presence {
+    border-color: rgba(139, 92, 246, 0.8);
+    box-shadow: 0 0 25px rgba(139, 92, 246, 0.4);
+}
+
+.sensor-btn.temperature:hover,
+.sensor-button.active .sensor-btn.temperature {
+    border-color: rgba(239, 68, 68, 0.8);
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+}
+
+.sensor-btn.door:hover,
+.sensor-button.active .sensor-btn.door {
+    border-color: rgba(34, 197, 94, 0.8);
+    box-shadow: 0 0 25px rgba(34, 197, 94, 0.4);
+}
+
+.sensor-btn.weight:hover,
+.sensor-button.active .sensor-btn.weight {
+    border-color: rgba(245, 158, 11, 0.8);
+    box-shadow: 0 0 25px rgba(245, 158, 11, 0.4);
+}
+
+.sensor-btn.rfid:hover,
+.sensor-button.active .sensor-btn.rfid {
+    border-color: rgba(168, 85, 247, 0.8);
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+}
+
+/* ===== PANEL DE INFORMACIÓN (DIV 7) ===== */
+.sensor-info-panel {
+    background: transparent;
+    border: none;
+    padding: 0;
+    display: block;
+}
+
+/* ===== TÍTULO DEL SENSOR (DIV 8) ===== */
+.sensor-title {
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 15px;
+    padding: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid rgba(255, 107, 53, 0.3);
+}
+
+.selected-sensor-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #ff6b35;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-shadow: 0 0 15px rgba(255, 107, 53, 0.8);
+}
+
+.selected-icon {
+    font-size: 1.6rem;
+    filter: drop-shadow(0 0 10px currentColor);
+}
+
+/* ===== ESTADÍSTICAS DEL SENSOR (DIV 9, 10, 11) ===== */
+.sensor-stat {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    padding: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    backdrop-filter: blur(5px);
+}
+
+.stat-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.stat-unit {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 400;
+}
+
+.min-value {
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+.min-value .stat-value {
+    color: #22c55e;
+    text-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+}
+
+.max-value {
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.max-value .stat-value {
+    color: #ef4444;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+}
+
+/* ===== ESTADO DEL SENSOR (DIV 11) ===== */
+.sensor-status {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    padding: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+    backdrop-filter: blur(5px);
+}
+
+.status-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.status-indicator {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.status-indicator.online {
+    color: #22c55e;
+    text-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+}
+
+.status-indicator.warning {
+    color: #f59e0b;
+    text-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+}
+
+.status-indicator.offline {
+    color: #ef4444;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+}
+
+.status-icon {
+    font-size: 1.2rem;
+    filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* ===== LISTA DE DATOS (DIV 12) ===== */
+.sensor-data-list {
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 15px;
+    padding: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow: hidden;
+}
+
+.data-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid rgba(255, 107, 53, 0.3);
+    padding-bottom: 15px;
+}
+
+.data-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: #ff6b35;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-shadow: 0 0 15px rgba(255, 107, 53, 0.8);
+}
+
+.data-icon {
+    font-size: 1.2rem;
+    filter: drop-shadow(0 0 8px currentColor);
+}
+
+.refresh-btn {
+    background: linear-gradient(135deg, 
+        rgba(139, 92, 246, 0.3) 0%, 
+        rgba(139, 92, 246, 0.1) 100%);
+    border: 2px solid rgba(139, 92, 246, 0.4);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: #8b5cf6;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+}
+
+.refresh-btn:hover {
+    background: linear-gradient(135deg, 
+        rgba(139, 92, 246, 0.5) 0%, 
+        rgba(139, 92, 246, 0.2) 100%);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+    transform: scale(1.05);
+}
+
+.refresh-icon {
+    font-size: 1rem;
+    filter: drop-shadow(0 0 5px currentColor);
+}
+
+.data-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: calc(100% - 80px);
+}
+
+.data-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.data-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.data-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 107, 53, 0.5);
+    border-radius: 3px;
+}
+
+.data-item {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.data-item:hover {
+    border-color: rgba(255, 107, 53, 0.3);
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.reading-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.reading-value {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    color: #ffffff;
+    font-size: 1rem;
+}
+
+.reading-time {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.reading-status {
+    display: flex;
+    align-items: center;
+}
+
+.reading-indicator {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.reading-indicator.normal {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.reading-indicator.warning {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.reading-indicator.critical {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: 'Orbitron', monospace;
+    text-align: center;
+    min-height: 200px;
+    flex: 1;
+}
+
+.no-data-icon {
+    font-size: 3rem;
+    opacity: 0.5;
+}
+
+.no-data-subtitle {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1200px) {
+    .parent {
+        grid-template-columns: repeat(8, 1fr);
+        grid-template-rows: repeat(8, 1fr);
+    }
+    
+    .div1 { grid-area: 1 / 1 / 9 / 4; }
+    .div7 { grid-area: 1 / 4 / 4 / 9; }
+    .div12 { grid-area: 4 / 4 / 9 / 9; }
+}
+
+@media (max-width: 768px) {
+    .alerts-container {
+        padding: 10px;
+    }
+    
+    .parent {
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(12, 1fr);
+        grid-gap: 10px;
+    }
+    
+    .div1 { grid-area: 1 / 1 / 5 / 5; }
+    .div7 { grid-area: 5 / 1 / 8 / 5; }
+    .div12 { grid-area: 8 / 1 / 13 / 5; }
+    
+    .panel-title {
+        font-size: 1rem;
+    }
+    
+    .sensor-btn {
+        min-height: 60px;
+        padding: 10px;
+    }
+    
+    .sensor-icon {
+        font-size: 1.4rem;
+    }
+}

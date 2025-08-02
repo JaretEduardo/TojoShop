@@ -14,6 +14,10 @@ import { TasksComponent } from './components/employee/tasks/tasks.component';
 import { PosComponent } from './components/employee/pos/pos.component';
 import { AlertsComponent } from './components/employee/alerts/alerts.component';
 import { InventoryComponent } from './components/employee/inventory/inventory.component';
+import { BossDashboardComponent } from './layouts/boss-dashboard/boss-dashboard.component';
+import { FeedComponent } from './components/boss/feed/feed.component';
+import { IdentityComponent } from './components/boss/identity/identity.component';
+import { ProductsBossComponent } from './components/boss/products/products.component';
 
 export const routes: Routes = [
     {
@@ -51,6 +55,15 @@ export const routes: Routes = [
             { path: 'tasks', component: TasksComponent },
             { path: 'alerts', component: AlertsComponent },
             { path: 'inventory', component: InventoryComponent }
+        ]
+    },
+    {
+        path: '',
+        component: BossDashboardComponent,
+        children: [
+            { path: 'feed', component: FeedComponent },
+            { path: 'identity', component: IdentityComponent },
+            { path: 'products', component: ProductsBossComponent }
         ]
     }
 ];

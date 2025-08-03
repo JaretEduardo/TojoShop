@@ -1,1 +1,39 @@
-<p>feed works!</p>
+<div class="parent">
+    <!-- div1: filtro de sensores activos -->
+    <div class="div1" [class.filtro-activo]="filtroActual === 'activos'" (click)="cambiarFiltro('activos')">
+        <h3>Sensores Activos</h3>
+        <span class="contador">{{ getSensoresActivos() }}</span>
+    </div>
+
+    <!-- div2: filtro de sensores inactivos -->
+    <div class="div2" [class.filtro-activo]="filtroActual === 'inactivos'" (click)="cambiarFiltro('inactivos')">
+        <h3>Sensores Inactivos</h3>
+        <span class="contador">{{ getSensoresInactivos() }}</span>
+    </div>
+
+    <!-- div3: botón para agregar sensor -->
+    <div class="div3">
+        <button class="btn-agregar">
+            <span>➕</span>
+            Agregar Sensor
+        </button>
+    </div>
+
+    <!-- div4 a div9: tarjetas dinámicas de sensores filtrados -->
+    <div *ngFor="let sensor of getSensoresFiltrados(); let i = index" [ngClass]="getTarjetaClass(i)"
+        class="tarjeta-sensor" [class.sensor-activo]="isSensorActivo(i)" [class.sensor-inactivo]="!isSensorActivo(i)">
+
+        <button class="btn-toggle-esquina" [class.toggle-activo]="!isSensorActivo(i)"
+            [class.toggle-inactivo]="isSensorActivo(i)" (click)="toggleSensor(i)">
+            {{ isSensorActivo(i) ? 'OFF' : 'ON' }}
+        </button>
+
+        <h4>{{ sensor }}</h4>
+        <div class="sensor-icon">📡</div>
+        <span class="sensor-status">Estado: {{ isSensorActivo(i) ? 'Activo' : 'Inactivo' }}</span>
+
+        <button class="btn-datos-tarjeta">
+            Ver Datos
+        </button>
+    </div>
+</div>

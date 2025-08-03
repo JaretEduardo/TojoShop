@@ -1,0 +1,650 @@
+.parent {
+    display: grid;
+    grid-template-columns: repeat(13, 1fr);
+    grid-template-rows: repeat(12, 1fr);
+    grid-column-gap: 1rem;
+    grid-row-gap: 4rem;
+    height: 100vh;
+    padding: 1.5rem;
+    background:
+        linear-gradient(135deg,
+            rgba(10, 10, 10, 0.9) 0%,
+            rgba(26, 10, 26, 0.7) 25%,
+            rgba(26, 15, 10, 0.7) 50%,
+            rgba(15, 10, 26, 0.7) 75%,
+            rgba(10, 10, 10, 0.9) 100%),
+        radial-gradient(ellipse at 20% 30%, rgba(255, 107, 53, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 70%, rgba(139, 92, 246, 0.12) 0%, transparent 60%);
+    color: #00ffff;
+    font-family: 'Arial', monospace;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Líneas de escaneo retro */
+.parent::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: repeating-linear-gradient(0deg,
+            transparent,
+            transparent 2px,
+            rgba(255, 107, 53, 0.03) 2px,
+            rgba(255, 107, 53, 0.03) 4px);
+    pointer-events: none;
+    animation: scanLines 3s linear infinite;
+    z-index: 1;
+}
+
+@keyframes scanLines {
+    0% {
+        transform: translateY(-100%);
+    }
+    100% {
+        transform: translateY(100%);
+    }
+}
+
+.div1 {
+    grid-area: 2 / 2 / 3 / 5;
+    position: relative;
+    z-index: 2;
+}
+
+.div2 {
+    grid-area: 2 / 6 / 3 / 9;
+    position: relative;
+    z-index: 2;
+}
+
+.div3 {
+    grid-area: 2 / 10 / 3 / 13;
+    position: relative;
+    z-index: 2;
+}
+
+.div4 {
+    grid-area: 4 / 2 / 8 / 5;
+    position: relative;
+    z-index: 2;
+}
+
+.div5 {
+    grid-area: 4 / 6 / 8 / 9;
+    position: relative;
+    z-index: 2;
+}
+
+.div6 {
+    grid-area: 4 / 10 / 8 / 13;
+    position: relative;
+    z-index: 2;
+}
+
+.div7 {
+    grid-area: 8 / 2 / 12 / 5;
+    position: relative;
+    z-index: 2;
+}
+
+.div8 {
+    grid-area: 8 / 6 / 12 / 9;
+    position: relative;
+    z-index: 2;
+}
+
+.div9 {
+    grid-area: 8 / 10 / 12 / 13;
+    position: relative;
+    z-index: 2;
+}
+
+/* Estilos para contadores/filtros */
+.div1,
+.div2 {
+    background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
+    border: 0.125rem solid #00ffff;
+    border-radius: 0.625rem;
+    padding: 0.9375rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0.25rem 0.9375rem rgba(0, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.div1:hover,
+.div2:hover {
+    transform: translateY(-0.1875rem);
+    box-shadow: 0 0.375rem 1.25rem rgba(0, 255, 255, 0.5);
+}
+
+/* Estado activo de filtros */
+.filtro-activo {
+    background: linear-gradient(145deg, #2d2d2d, #3d3d3d) !important;
+    border-color: #ff0066 !important;
+    box-shadow: 0 0.375rem 1.25rem rgba(255, 0, 102, 0.5) !important;
+    transform: translateY(-0.1875rem);
+}
+
+.div1 h3,
+.div2 h3 {
+    margin: 0 0 0.625rem 0;
+    font-size: 1rem;
+    color: #ffffff;
+    text-transform: uppercase;
+}
+
+.contador {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #00ff00;
+    text-shadow: 0 0 0.625rem #00ff00;
+}
+
+/* Botón agregar sensor */
+.div3 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-agregar {
+    background: linear-gradient(145deg, #2d2d2d, #1a1a1a);
+    border: 0.125rem dashed #00ffff;
+    border-radius: 0.625rem;
+    color: #00ffff;
+    padding: 0.9375rem;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3125rem;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.btn-agregar:hover {
+    background: linear-gradient(145deg, #3d3d3d, #2a2a2a);
+    border-color: #ff0066;
+    color: #ff0066;
+}
+
+.btn-agregar span {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Tarjetas de sensores */
+.tarjeta-sensor {
+    background:
+        linear-gradient(135deg,
+            rgba(10, 10, 10, 0.95) 0%,
+            rgba(26, 10, 26, 0.85) 30%,
+            rgba(26, 15, 10, 0.85) 70%,
+            rgba(10, 10, 10, 0.95) 100%),
+        radial-gradient(circle at center, rgba(0, 255, 255, 0.05) 0%, transparent 70%);
+    border: 0.1875rem solid transparent;
+    background-clip: padding-box;
+    border-radius: 0.625rem;
+    padding: 0.9375rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+        0 0.9375rem 2.5rem rgba(0, 0, 0, 0.6),
+        inset 0 0 2.5rem rgba(0, 255, 255, 0.05);
+    z-index: 1;
+}
+
+.tarjeta-sensor::before {
+    content: '';
+    position: absolute;
+    top: -0.1875rem;
+    left: -0.1875rem;
+    right: -0.1875rem;
+    bottom: -0.1875rem;
+    background: linear-gradient(45deg,
+            #00ffff 0%,
+            #ff0066 25%,
+            #00ff00 50%,
+            #ff0066 75%,
+            #00ffff 100%);
+    background-size: 300% 300%;
+    border-radius: 0.625rem;
+    z-index: -1;
+    animation: sensorBorder 6s linear infinite;
+    opacity: 0.6;
+}
+
+.tarjeta-sensor::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.1),
+            transparent);
+    transition: left 0.7s;
+    z-index: 5;
+}
+
+@keyframes sensorBorder {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 300% 50%;
+    }
+}
+
+.tarjeta-sensor:hover {
+    transform: translateY(-0.9375rem) rotateX(5deg);
+    box-shadow:
+        0 1.5625rem 3.75rem rgba(0, 255, 255, 0.4),
+        0 0 5rem rgba(255, 0, 102, 0.3),
+        inset 0 0 3.75rem rgba(0, 255, 255, 0.1);
+    z-index: 2;
+}
+
+.tarjeta-sensor:hover::before {
+    opacity: 1;
+}
+
+.tarjeta-sensor:hover::after {
+    left: 100%;
+}
+
+/* Botón toggle en esquina superior izquierda */
+.btn-toggle-esquina {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    background: linear-gradient(145deg, #000000, #1a1a1a);
+    border: 0.1875rem solid #ffffff;
+    border-radius: 0.5rem;
+    color: #ffffff;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.0625rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: inherit;
+    z-index: 10;
+    min-width: 3.5rem;
+    text-align: center;
+    box-shadow: 
+        0 0 1.25rem rgba(255, 255, 255, 0.4),
+        0 0.25rem 0.75rem rgba(0, 0, 0, 0.8),
+        inset 0 0 0.5rem rgba(255, 255, 255, 0.1);
+    text-shadow: 0 0 0.5rem rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(0.25rem);
+}
+
+.btn-toggle-esquina.toggle-activo {
+    border-color: #00ff00 !important;
+    color: #ffffff !important;
+    background: linear-gradient(145deg, rgba(0, 255, 0, 0.8), rgba(0, 255, 0, 0.6)) !important;
+    box-shadow: 
+        0 0 1.875rem rgba(0, 255, 0, 0.8),
+        0 0 3.125rem rgba(0, 255, 0, 0.5),
+        0 0.375rem 1rem rgba(0, 0, 0, 0.9),
+        inset 0 0 0.75rem rgba(0, 255, 0, 0.2) !important;
+    text-shadow: 
+        0 0 0.75rem #000000,
+        0 0 1.25rem rgba(0, 0, 0, 0.8) !important;
+}
+
+.btn-toggle-esquina.toggle-inactivo {
+    border-color: #ff0066 !important;
+    color: #ffffff !important;
+    background: linear-gradient(145deg, rgba(255, 0, 102, 0.8), rgba(255, 0, 102, 0.6)) !important;
+    box-shadow: 
+        0 0 1.875rem rgba(255, 0, 102, 0.8),
+        0 0 3.125rem rgba(255, 0, 102, 0.5),
+        0 0.375rem 1rem rgba(0, 0, 0, 0.9),
+        inset 0 0 0.75rem rgba(255, 0, 102, 0.2) !important;
+    text-shadow: 
+        0 0 0.75rem #000000,
+        0 0 1.25rem rgba(0, 0, 0, 0.8) !important;
+}
+
+.btn-toggle-esquina:hover {
+    transform: scale(1.15) translateY(-0.125rem);
+    box-shadow: 
+        0 0 2.5rem rgba(255, 255, 255, 0.9),
+        0 0.625rem 1.5rem rgba(0, 0, 0, 0.8),
+        inset 0 0 1rem rgba(255, 255, 255, 0.3);
+    border-width: 0.25rem;
+}
+
+.btn-toggle-esquina.toggle-activo:hover {
+    box-shadow: 
+        0 0 3.125rem rgba(0, 255, 0, 1),
+        0 0 5rem rgba(0, 255, 0, 0.7),
+        0 0.75rem 2rem rgba(0, 0, 0, 0.9),
+        inset 0 0 1.25rem rgba(0, 255, 0, 0.4) !important;
+    text-shadow: 
+        0 0 1rem #000000,
+        0 0 2rem rgba(0, 0, 0, 1) !important;
+    background: linear-gradient(145deg, rgba(0, 255, 0, 0.9), rgba(0, 255, 0, 0.7)) !important;
+}
+
+.btn-toggle-esquina.toggle-inactivo:hover {
+    box-shadow: 
+        0 0 3.125rem rgba(255, 0, 102, 1),
+        0 0 5rem rgba(255, 0, 102, 0.7),
+        0 0.75rem 2rem rgba(0, 0, 0, 0.9),
+        inset 0 0 1.25rem rgba(255, 0, 102, 0.4) !important;
+    text-shadow: 
+        0 0 1rem #000000,
+        0 0 2rem rgba(0, 0, 0, 1) !important;
+    background: linear-gradient(145deg, rgba(255, 0, 102, 0.9), rgba(255, 0, 102, 0.7)) !important;
+}
+
+/* Estados específicos de sensores */
+.sensor-activo {
+    border-color: #00ff00 !important;
+}
+
+.sensor-activo::before {
+    background: linear-gradient(45deg,
+            #00ff00 0%,
+            #00ffff 25%,
+            #00ff00 50%,
+            #00ffff 75%,
+            #00ff00 100%);
+    background-size: 300% 300%;
+}
+
+.sensor-activo:hover {
+    box-shadow:
+        0 1.5625rem 3.75rem rgba(0, 255, 0, 0.4),
+        0 0 5rem rgba(0, 255, 255, 0.3),
+        inset 0 0 3.75rem rgba(0, 255, 0, 0.1) !important;
+}
+
+.sensor-inactivo {
+    border-color: #ff0066 !important;
+    opacity: 0.8;
+}
+
+.sensor-inactivo::before {
+    background: linear-gradient(45deg,
+            #ff0066 0%,
+            #ff6666 25%,
+            #ff0066 50%,
+            #ff6666 75%,
+            #ff0066 100%);
+    background-size: 300% 300%;
+}
+
+.sensor-inactivo:hover {
+    box-shadow:
+        0 1.5625rem 3.75rem rgba(255, 0, 102, 0.4),
+        0 0 5rem rgba(255, 102, 102, 0.3),
+        inset 0 0 3.75rem rgba(255, 0, 102, 0.1) !important;
+}
+
+.tarjeta-sensor h4 {
+    margin: 0 0 0.625rem 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-family: 'Arial', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.125rem;
+    color: #ffffff;
+    text-shadow: 
+        0 0 0.625rem #00ffff,
+        0 0 1.25rem #00ffff,
+        0 0 1.875rem rgba(0, 255, 255, 0.8),
+        0 0.0625rem 0 #000000,
+        0 -0.0625rem 0 #000000,
+        0.0625rem 0 0 #000000,
+        -0.0625rem 0 0 #000000;
+    animation: nameGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes nameGlow {
+    from {
+        text-shadow: 
+            0 0 0.625rem #00ffff,
+            0 0 1.25rem #00ffff,
+            0 0 1.875rem rgba(0, 255, 255, 0.8),
+            0 0.0625rem 0 #000000,
+            0 -0.0625rem 0 #000000,
+            0.0625rem 0 0 #000000,
+            -0.0625rem 0 0 #000000;
+    }
+    to {
+        text-shadow: 
+            0 0 0.9375rem #ff0066,
+            0 0 1.5625rem #ff0066,
+            0 0 2.5rem rgba(255, 0, 102, 0.9),
+            0 0.0625rem 0 #000000,
+            0 -0.0625rem 0 #000000,
+            0.0625rem 0 0 #000000,
+            -0.0625rem 0 0 #000000;
+    }
+}
+
+.sensor-icon {
+    width: 4.5rem;
+    height: 4.5rem;
+    background:
+        linear-gradient(135deg, #00ffff, #ff0066),
+        radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.625rem auto;
+    font-size: 2rem;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 0.1875rem solid rgba(0, 255, 255, 0.5);
+    position: relative;
+    overflow: hidden;
+    border-radius: 50%;
+    box-shadow:
+        0 0 2.5rem rgba(0, 255, 255, 0.6),
+        inset 0 0 2.5rem rgba(0, 255, 255, 0.2);
+}
+
+.sensor-icon::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent);
+    transform: rotate(45deg);
+    animation: iconShine 4s ease-in-out infinite;
+}
+
+@keyframes iconShine {
+    0%,
+    100% {
+        transform: translateX(-200%) translateY(-200%) rotate(45deg);
+    }
+    50% {
+        transform: translateX(200%) translateY(200%) rotate(45deg);
+    }
+}
+
+.tarjeta-sensor:hover .sensor-icon {
+    transform: scale(1.15) rotate(10deg);
+    box-shadow:
+        0 0 3.75rem rgba(0, 255, 255, 0.9),
+        0 0 6.25rem rgba(255, 0, 102, 0.6),
+        inset 0 0 3.75rem rgba(0, 255, 255, 0.3);
+}
+
+.sensor-status {
+    font-size: 0.9rem;
+    font-weight: bold;
+    font-family: 'Arial', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.0625rem;
+    transition: color 0.3s ease;
+    margin-bottom: 0.625rem;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    border: 0.0625rem solid #ffffff;
+    text-shadow: 0 0 0.5rem rgba(255, 255, 255, 0.8);
+}
+
+/* Botón Ver Datos dentro de las tarjetas */
+.btn-datos-tarjeta {
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)),
+        rgba(0, 0, 0, 0.9);
+    border: 0.125rem solid #ffffff;
+    color: #ffffff;
+    padding: 0.75rem 1.875rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 700;
+    font-family: 'Arial', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.125rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    margin-top: auto;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.375rem;
+    box-shadow: 
+        0 0 1.25rem rgba(255, 255, 255, 0.3),
+        inset 0 0 0.625rem rgba(255, 255, 255, 0.1);
+    text-shadow: 0 0 0.625rem #ffffff;
+}
+
+.btn-datos-tarjeta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent);
+    transition: left 0.5s;
+}
+
+.btn-datos-tarjeta:hover {
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1)),
+        rgba(0, 0, 0, 0.95);
+    transform: scale(1.05);
+    box-shadow: 
+        0 0 2.5rem rgba(255, 255, 255, 0.6),
+        0 0 3.75rem rgba(255, 255, 255, 0.4),
+        inset 0 0 1.25rem rgba(255, 255, 255, 0.2);
+    border-color: #ffffff;
+    color: #ffffff;
+    text-shadow: 0 0 0.9375rem #ffffff;
+}
+
+.btn-datos-tarjeta:hover::before {
+    left: 100%;
+}
+
+/* Estados específicos para el status del sensor */
+.sensor-activo .sensor-status {
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.8);
+    border-color: #ffffff;
+    text-shadow: 0 0 0.5rem #ffffff;
+}
+
+.sensor-inactivo .sensor-status {
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.8);
+    border-color: #ffffff;
+    text-shadow: 0 0 0.5rem #ffffff;
+}
+
+/* Botones toggle y datos */
+.btn-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 3;
+}
+
+.btn-toggle,
+.btn-datos {
+    background: linear-gradient(145deg, #2d2d2d, #1a1a1a);
+    border: 0.125rem solid #00ffff;
+    border-radius: 0.5rem;
+    color: #00ffff;
+    padding: 0.625rem 0.9375rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 3;
+}
+
+.btn-toggle:hover,
+.btn-datos:hover {
+    background: linear-gradient(145deg, #3d3d3d, #2a2a2a);
+    transform: scale(1.05);
+    box-shadow: 0 0.25rem 0.9375rem rgba(0, 255, 255, 0.5);
+}
+
+/* Efecto de clic para botones toggle */
+.btn-toggle:active {
+    transform: scale(0.98);
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 255, 255, 0.8);
+}
+
+/* Estados específicos para botones toggle */
+.toggle-activo {
+    border-color: #ff0066 !important;
+    color: #ff0066 !important;
+    background: linear-gradient(145deg, rgba(255, 0, 102, 0.1), rgba(255, 0, 102, 0.05)) !important;
+}
+
+.toggle-inactivo {
+    border-color: #00ff00 !important;
+    color: #00ff00 !important;
+    background: linear-gradient(145deg, rgba(0, 255, 0, 0.1), rgba(0, 255, 0, 0.05)) !important;
+}
+
+.btn-datos {
+    border-color: #00ff00;
+    color: #00ff00;
+}

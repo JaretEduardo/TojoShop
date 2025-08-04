@@ -1,0 +1,500 @@
+.parent {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(15, 1fr);
+    gap: 1.5rem;
+    height: 78vh;
+    padding: 1.5rem;
+    background:
+        linear-gradient(135deg,
+            rgba(10, 10, 10, 0.9) 0%,
+            rgba(26, 10, 26, 0.7) 25%,
+            rgba(26, 15, 10, 0.7) 50%,
+            rgba(15, 10, 26, 0.7) 75%,
+            rgba(10, 10, 10, 0.9) 100%),
+        radial-gradient(ellipse at 20% 30%, rgba(255, 107, 53, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 70%, rgba(139, 92, 246, 0.12) 0%, transparent 60%);
+    color: #ffffff;
+    font-family: 'Arial', monospace;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Líneas de escaneo retro */
+.parent::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: repeating-linear-gradient(0deg,
+            transparent,
+            transparent 2px,
+            rgba(255, 107, 53, 0.03) 2px,
+            rgba(255, 107, 53, 0.03) 4px);
+    pointer-events: none;
+    animation: scanLines 3s linear infinite;
+    z-index: 1;
+}
+
+@keyframes scanLines {
+    0% {
+        transform: translateY(-100%);
+    }
+    100% {
+        transform: translateY(100%);
+    }
+}
+
+/* Grid Areas */
+.div1 { 
+    grid-area: 2 / 2 / 15 / 6; 
+    position: relative;
+    z-index: 2;
+}
+
+.div2 { 
+    grid-area: 2 / 7 / 15 / 12; 
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(7, 1fr);
+    gap: 1rem;
+}
+
+.div3 { 
+    grid-area: 1 / 1 / 2 / 2; 
+}
+
+.div4 { 
+    grid-area: 2 / 1 / 3 / 2; 
+}
+
+.div5 { 
+    grid-area: 3 / 1 / 4 / 2; 
+}
+
+.div6 { 
+    grid-area: 4 / 1 / 5 / 2; 
+}
+
+.div7 { 
+    grid-area: 5 / 1 / 6 / 2; 
+}
+
+.div8 { 
+    grid-area: 6 / 1 / 8 / 2; 
+}
+
+/* Sección de RFID */
+.div1 {
+    background:
+        linear-gradient(135deg,
+            rgba(10, 10, 10, 0.95) 0%,
+            rgba(26, 10, 26, 0.85) 30%,
+            rgba(26, 15, 10, 0.85) 70%,
+            rgba(10, 10, 10, 0.95) 100%),
+        radial-gradient(circle at center, rgba(0, 255, 255, 0.05) 0%, transparent 70%);
+    border: 0.1875rem solid transparent;
+    background-clip: padding-box;
+    border-radius: 0.625rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+        0 0.9375rem 2.5rem rgba(0, 0, 0, 0.6),
+        inset 0 0 2.5rem rgba(0, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.div1::before {
+    content: '';
+    position: absolute;
+    top: -0.1875rem;
+    left: -0.1875rem;
+    right: -0.1875rem;
+    bottom: -0.1875rem;
+    background: linear-gradient(45deg,
+            #00ffff 0%,
+            #ff0066 25%,
+            #00ff00 50%,
+            #ff0066 75%,
+            #00ffff 100%);
+    background-size: 300% 300%;
+    border-radius: 0.625rem;
+    z-index: -1;
+    animation: borderFlow 6s linear infinite;
+    opacity: 0.6;
+}
+
+@keyframes borderFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 300% 50%;
+    }
+}
+
+.rfid-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.rfid-header h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #00ffff;
+    text-shadow: 0 0 0.625rem #00ffff;
+}
+
+.rfid-header p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #cccccc;
+    opacity: 0.8;
+}
+
+.rfid-list {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.rfid-item {
+    background: rgba(0, 0, 0, 0.7);
+    border: 0.125rem solid #444444;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.rfid-item:hover {
+    border-color: #00ffff;
+    background: rgba(0, 255, 255, 0.1);
+    transform: translateX(0.25rem);
+}
+
+.rfid-item.selected {
+    border-color: #00ff00 !important;
+    background: rgba(0, 255, 0, 0.15) !important;
+    box-shadow: 0 0 1rem rgba(0, 255, 0, 0.4);
+}
+
+.rfid-icon {
+    font-size: 1.5rem;
+    opacity: 0.8;
+}
+
+.rfid-info {
+    flex: 1;
+}
+
+.rfid-id {
+    font-weight: bold;
+    font-size: 1rem;
+    color: #ffffff;
+    margin-bottom: 0.25rem;
+}
+
+.rfid-fecha {
+    font-size: 0.8rem;
+    color: #cccccc;
+    opacity: 0.7;
+}
+
+.rfid-status {
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.rfid-status.selected {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.2);
+    }
+}
+
+.rfid-footer {
+    text-align: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 0.0625rem solid #444444;
+}
+
+.rfid-count {
+    font-size: 0.9rem;
+    color: #00ffff;
+    font-weight: bold;
+}
+
+/* Sección de Formulario */
+.div2 {
+    background:
+        linear-gradient(135deg,
+            rgba(10, 10, 10, 0.95) 0%,
+            rgba(26, 10, 26, 0.85) 30%,
+            rgba(26, 15, 10, 0.85) 70%,
+            rgba(10, 10, 10, 0.95) 100%),
+        radial-gradient(circle at center, rgba(255, 107, 53, 0.05) 0%, transparent 70%);
+    border: 0.1875rem solid transparent;
+    background-clip: padding-box;
+    border-radius: 0.625rem;
+    padding: 1.5rem;
+    box-shadow:
+        0 0.9375rem 2.5rem rgba(0, 0, 0, 0.6),
+        inset 0 0 2.5rem rgba(255, 107, 53, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.div2::before {
+    content: '';
+    position: absolute;
+    top: -0.1875rem;
+    left: -0.1875rem;
+    right: -0.1875rem;
+    bottom: -0.1875rem;
+    background: linear-gradient(45deg,
+            #ff6b35 0%,
+            #8b5cf6 25%,
+            #ff6b35 50%,
+            #8b5cf6 75%,
+            #ff6b35 100%);
+    background-size: 300% 300%;
+    border-radius: 0.625rem;
+    z-index: -1;
+    animation: borderFlow 6s linear infinite;
+    opacity: 0.6;
+}
+
+/* Campos del formulario */
+.div3, .div4, .div5, .div6, .div7 {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.0625rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-input, .form-select {
+    background: rgba(0, 0, 0, 0.8);
+    border: 0.125rem solid #444444;
+    border-radius: 0.375rem;
+    color: #ffffff;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus, .form-select:focus {
+    outline: none;
+    border-color: #00ffff;
+    box-shadow: 0 0 0.625rem rgba(0, 255, 255, 0.4);
+    background: rgba(0, 255, 255, 0.05);
+}
+
+.form-input::placeholder {
+    color: #888888;
+}
+
+.form-select option {
+    background: #1a1a1a;
+    color: #ffffff;
+    padding: 0.5rem;
+}
+
+/* Botón de alta */
+.div8 {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-alta {
+    background: linear-gradient(145deg, #00ff00, #00cc00);
+    border: 0.125rem solid #00ff00;
+    border-radius: 0.5rem;
+    color: #000000;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: bold;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.0625rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 255, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+    min-width: 12rem;
+}
+
+.btn-alta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent);
+    transition: left 0.5s;
+}
+
+.btn-alta:hover {
+    transform: translateY(-0.125rem);
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 255, 0, 0.6);
+    background: linear-gradient(145deg, #00ff44, #00ee00);
+}
+
+.btn-alta:hover::before {
+    left: 100%;
+}
+
+.btn-alta:active {
+    transform: translateY(0);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 255, 0, 0.8);
+}
+
+.btn-alta.disabled {
+    background: linear-gradient(145deg, #666666, #444444);
+    border-color: #666666;
+    color: #888888;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.btn-alta.disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-icon {
+    font-size: 1.2rem;
+}
+
+.btn-text {
+    font-weight: 900;
+}
+
+.form-status {
+    background: rgba(0, 255, 0, 0.1);
+    border: 0.125rem solid #00ff00;
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    color: #00ff00;
+    text-align: center;
+    font-weight: bold;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 0 0 0.5rem rgba(0, 255, 0, 0.4);
+    }
+    to {
+        box-shadow: 0 0 1rem rgba(0, 255, 0, 0.8);
+    }
+}
+
+/* Scrollbar personalizado */
+.rfid-list::-webkit-scrollbar {
+    width: 0.375rem;
+}
+
+.rfid-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 0.1875rem;
+}
+
+.rfid-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 255, 0.6);
+    border-radius: 0.1875rem;
+}
+
+.rfid-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 255, 255, 0.8);
+}
+
+/* Responsividad */
+@media (max-width: 1200px) {
+    .parent {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        gap: 1rem;
+        height: auto;
+        padding: 1rem;
+    }
+    
+    .div1 {
+        grid-area: 1 / 1 / 2 / 2;
+        max-height: 20rem;
+    }
+    
+    .div2 {
+        grid-area: 2 / 1 / 3 / 2;
+        display: block;
+    }
+    
+    .div3, .div4, .div5, .div6, .div7, .div8 {
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .parent {
+        padding: 0.5rem;
+        gap: 0.5rem;
+    }
+    
+    .div1, .div2 {
+        padding: 1rem;
+    }
+    
+    .rfid-item {
+        padding: 0.75rem;
+        gap: 0.75rem;
+    }
+    
+    .btn-alta {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.9rem;
+        min-width: 10rem;
+    }
+}

@@ -1,1 +1,87 @@
-<p>identity works!</p>
+<div class="parent">
+    <!-- div1: Lista de escaneos RFID no asignados -->
+    <div class="div1">
+        <div class="rfid-header">
+            <h2>📡 Escaneos RFID</h2>
+            <p>Tarjetas no asignadas</p>
+        </div>
+
+        <div class="rfid-list">
+            <div *ngFor="let escaneo of getEscaneosNoAsignados()" class="rfid-item"
+                [class.selected]="rfidSeleccionado === escaneo.id" (click)="seleccionarRFID(escaneo.id)">
+
+                <div class="rfid-icon">🏷️</div>
+                <div class="rfid-info">
+                    <div class="rfid-id">{{ escaneo.id }}</div>
+                    <div class="rfid-fecha">{{ formatearFecha(escaneo.fecha) }}</div>
+                </div>
+                <div class="rfid-status" [class.selected]="rfidSeleccionado === escaneo.id">
+                    {{ rfidSeleccionado === escaneo.id ? '✅' : '⚪' }}
+                </div>
+            </div>
+        </div>
+
+        <div class="rfid-footer">
+            <span class="rfid-count">{{ getEscaneosNoAsignados().length }} disponibles</span>
+        </div>
+    </div>
+
+    <!-- div2: Contenedor del formulario -->
+    <div class="div2">
+        <!-- div3: Campo Nombre -->
+        <div class="div3">
+            <label for="nombre">👤 Nombre Completo</label>
+            <input type="text" id="nombre" [(ngModel)]="empleadoForm.nombre" placeholder="Ingrese el nombre completo"
+                class="form-input">
+        </div>
+
+        <!-- div4: Campo Correo -->
+        <div class="div4">
+            <label for="correo">📧 Correo Electrónico</label>
+            <input type="email" id="correo" [(ngModel)]="empleadoForm.correo" placeholder="empleado@empresa.com"
+                class="form-input">
+        </div>
+
+        <!-- div5: Campo Contraseña -->
+        <div class="div5">
+            <label for="password">🔒 Contraseña</label>
+            <input type="password" id="password" [(ngModel)]="empleadoForm.password" placeholder="Contraseña segura"
+                class="form-input">
+        </div>
+
+        <!-- div6: Campo Tipo de Empleado -->
+        <div class="div6">
+            <label for="tipo">👔 Tipo de Empleado</label>
+            <select id="tipo" [(ngModel)]="empleadoForm.tipoEmpleado" class="form-select">
+                <option value="" disabled>Seleccione un tipo</option>
+                <option *ngFor="let tipo of tiposEmpleado" [value]="tipo.value">
+                    {{ tipo.label }}
+                </option>
+            </select>
+        </div>
+
+        <!-- div7: Campo Sucursal -->
+        <div class="div7">
+            <label for="sucursal">🏢 Sucursal</label>
+            <select id="sucursal" [(ngModel)]="empleadoForm.sucursal" class="form-select">
+                <option value="" disabled>Seleccione una sucursal</option>
+                <option *ngFor="let sucursal of sucursales" [value]="sucursal.value">
+                    {{ sucursal.label }}
+                </option>
+            </select>
+        </div>
+
+        <!-- div8: Botón Alta de Empleado -->
+        <div class="div8">
+            <button class="btn-alta" [class.disabled]="!validarFormulario()" [disabled]="!validarFormulario()"
+                (click)="darDeAltaEmpleado()">
+                <span class="btn-icon">➕</span>
+                <span class="btn-text">Dar de Alta</span>
+            </button>
+
+            <div class="form-status" *ngIf="rfidSeleccionado">
+                <span>🏷️ RFID: {{ rfidSeleccionado }}</span>
+            </div>
+        </div>
+    </div>
+</div>

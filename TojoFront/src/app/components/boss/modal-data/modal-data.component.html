@@ -1,1 +1,143 @@
-<p>modal-data works!</p>
+<!-- Modal Overlay -->
+<div class="modal-overlay" *ngIf="isVisible" (click)="onCloseModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+
+        <!-- Header del Modal -->
+        <div class="modal-header">
+            <div class="sensor-info">
+                <h2>{{ getSensorIcon() }} Datos del Sensor</h2>
+                <h1 class="sensor-name">{{ sensorName }}</h1>
+            </div>
+        </div>
+
+        <!-- Controles de Vista -->
+        <div class="view-controls">
+            <button class="toggle-btn" [class.active]="viewMode === 'list'" (click)="viewMode = 'list'">
+                📋 Lista
+            </button>
+            <button class="toggle-btn" [class.active]="viewMode === 'chart'" (click)="viewMode = 'chart'">
+                📈 Gráfica
+            </button>
+        </div>
+
+        <!-- Contenido del Modal -->
+        <div class="modal-content">
+
+            <!-- Vista de Lista -->
+            <div class="list-view" *ngIf="viewMode === 'list'">
+                <div class="data-header">
+                    <span>Estado</span>
+                    <span>Valor</span>
+                    <span>Fecha/Hora</span>
+                    <span>Acciones</span>
+                </div>
+
+                <div class="data-list">
+                    <div class="data-item" *ngFor="let item of sensorData; trackBy: trackByItemId"
+                        [class]="'status-' + item.status">
+
+                        <!-- Vista Normal -->
+                        <div class="item-display" *ngIf="editingItem?.id !== item.id">
+                            <span class="status-cell">
+                                {{ getStatusIcon(item.status) }}
+                                {{ getStatusText(item.status) }}
+                            </span>
+                            <span class="value-cell">{{ item.value }}%</span>
+                            <span class="timestamp-cell">{{ item.timestamp | date:'dd/MM/yyyy HH:mm' }}</span>
+                            <div class="actions-cell">
+                                <button class="edit-btn" (click)="startEdit(item)">✏️</button>
+                                <button class="delete-btn" (click)="deleteItem(item)">🗑️</button>
+                            </div>
+                        </div>
+
+                        <!-- Vista de Edición -->
+                        <div class="item-edit" *ngIf="editingItem?.id === item.id">
+                            <span class="status-cell">
+                                {{ getStatusIcon(item.status) }}
+                                {{ getStatusText(item.status) }}
+                            </span>
+                            <div class="edit-value">
+                                <input type="number" [(ngModel)]="editValue" min="0" max="100" step="0.1"
+                                    class="value-input">
+                                <span>%</span>
+                            </div>
+                            <div class="edit-timestamp">
+                                <input type="datetime-local" [(ngModel)]="editDate" class="date-input">
+                            </div>
+                            <div class="edit-actions">
+                                <button class="save-btn" (click)="saveEdit()">💾</button>
+                                <button class="cancel-btn" (click)="cancelEdit()">❌</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vista de Gráfica -->
+            <div class="chart-view" *ngIf="viewMode === 'chart'">
+                <div class="chart-container">
+                    <svg class="chart-svg" viewBox="0 0 600 300">
+
+                        <!-- Grid de fondo -->
+                        <defs>
+                            <pattern id="grid" width="50" height="25" patternUnits="userSpaceOnUse">
+                                <path d="M 50 0 L 0 0 0 25" fill="none" stroke="#0ff" stroke-width="0.5"
+                                    opacity="0.3" />
+                            </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#grid)" />
+
+                        <!-- Líneas de referencia -->
+                        <line x1="50" y1="0" x2="50" y2="300" stroke="#0ff" stroke-width="1" opacity="0.5" />
+                        <line x1="0" y1="250" x2="600" y2="250" stroke="#0ff" stroke-width="1" opacity="0.5" />
+
+                        <!-- Labels -->
+                        <text x="10" y="20" fill="#0ff" font-size="12">100%</text>
+                        <text x="10" y="130" fill="#0ff" font-size="12">50%</text>
+                        <text x="10" y="240" fill="#0ff" font-size="12">0%</text>
+
+                        <!-- Línea de datos -->
+                        <path [attr.d]="getChartPath()" fill="none" stroke="#ff0080" stroke-width="2"
+                            *ngIf="getChartData().length > 0">
+                        </path>
+
+                        <!-- Puntos de datos -->
+                        <circle *ngFor="let point of getChartData()" [attr.cx]="point.x" [attr.cy]="point.y" r="4"
+                            fill="#ff0080" stroke="#fff" stroke-width="1">
+                            <title>{{ point.value }}% - {{ point.timestamp | date:'dd/MM HH:mm' }}</title>
+                        </circle>
+                    </svg>
+                </div>
+
+                <!-- Estadísticas de la gráfica -->
+                <div class="chart-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Promedio:</span>
+                        <span class="stat-value">{{ getAverageValue() }}%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Máximo:</span>
+                        <span class="stat-value">{{ getMaxValue() }}%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Mínimo:</span>
+                        <span class="stat-value">{{ getMinValue() }}%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total registros:</span>
+                        <span class="stat-value">{{ sensorData.length }}</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer del Modal -->
+        <div class="modal-footer">
+            <button class="refresh-btn" (click)="generateMockData()">🔄 Actualizar Datos</button>
+            <button class="export-btn">📥 Exportar</button>
+            <button class="close-footer-btn" (click)="onCloseModal()">Cerrar</button>
+        </div>
+
+    </div>
+</div>

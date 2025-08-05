@@ -32,8 +32,17 @@
         <div class="sensor-icon">📡</div>
         <span class="sensor-status">Estado: {{ isSensorActivo(i) ? 'Activo' : 'Inactivo' }}</span>
 
-        <button class="btn-datos-tarjeta">
+        <button class="btn-datos-tarjeta" (click)="verDatosSensor(i)">
             Ver Datos
         </button>
     </div>
 </div>
+
+<!-- Modal de datos del sensor -->
+<app-modal-data
+    [isVisible]="modalVisible"
+    [sensorId]="sensorSeleccionado.id"
+    [sensorName]="sensorSeleccionado.nombre"
+    (closeModal)="cerrarModal()"
+    (dataUpdated)="onDatosActualizados($event)">
+</app-modal-data>

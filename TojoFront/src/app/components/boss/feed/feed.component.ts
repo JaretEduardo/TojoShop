@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ModalDataComponent } from '../modal-data/modal-data.component';
 
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ModalDataComponent],
   templateUrl: './feed.component.html',
   styleUrl: './feed.component.css'
 })
@@ -18,6 +19,13 @@ export class FeedComponent {
   
   // Filtro actual: 'todos', 'activos', 'inactivos'
   filtroActual = 'activos';
+
+  // Variables para el modal
+  modalVisible = false;
+  sensorSeleccionado = {
+    id: '',
+    nombre: ''
+  };
 
   getSensoresActivos(): number {
     return this.sensoresActivos;
@@ -94,5 +102,33 @@ export class FeedComponent {
   getTarjetaClass(index: number): string {
     const clases = ['div4', 'div5', 'div6', 'div7', 'div8', 'div9'];
     return clases[index] || '';
+  }
+
+  // Abrir modal con datos del sensor
+  verDatosSensor(index: number): void {
+    const sensoresFiltrados = this.getSensoresFiltrados();
+    const sensorNombre = sensoresFiltrados[index];
+    
+    this.sensorSeleccionado = {
+      id: sensorNombre.toLowerCase(),
+      nombre: sensorNombre
+    };
+    
+    this.modalVisible = true;
+  }
+
+  // Cerrar modal
+  cerrarModal(): void {
+    this.modalVisible = false;
+    this.sensorSeleccionado = {
+      id: '',
+      nombre: ''
+    };
+  }
+
+  // Manejar actualización de datos del sensor
+  onDatosActualizados(data: any): void {
+    console.log('Datos del sensor actualizados:', data);
+    // Aquí puedes implementar la lógica para actualizar los datos en el backend
   }
 }

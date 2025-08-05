@@ -18,6 +18,7 @@ import { BossDashboardComponent } from './layouts/boss-dashboard/boss-dashboard.
 import { FeedComponent } from './components/boss/feed/feed.component';
 import { IdentityComponent } from './components/boss/identity/identity.component';
 import { ProductsBossComponent } from './components/boss/products/products.component';
+import { PurchasingtoolComponent } from './components/boss/purchasingtool/purchasingtool.component';
 
 export const routes: Routes = [
     {
@@ -63,7 +64,8 @@ export const routes: Routes = [
         children: [
             { path: 'feed', component: FeedComponent },
             { path: 'identity', component: IdentityComponent },
-            { path: 'products', component: ProductsBossComponent }
+            { path: 'products', component: ProductsBossComponent },
+            { path: 'purchasing', component: PurchasingtoolComponent }
         ]
     }
 ];

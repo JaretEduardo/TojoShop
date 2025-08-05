@@ -111,6 +111,22 @@ export class AlertsComponent {
         { id: 4, value: 1, timestamp: new Date(Date.now() - 90000), status: 'warning', statusText: 'Tag Desconocido' },
         { id: 5, value: 0, timestamp: new Date(Date.now() - 120000), status: 'normal', statusText: 'Sin Detección' }
       ]
+    },
+    gas: {
+      name: 'Sensor de Gas',
+      icon: '💨',
+      minValue: 0,
+      maxValue: 1000,
+      unit: 'ppm',
+      status: 'online',
+      statusText: 'Monitoreando',
+      readings: [
+        { id: 1, value: 45.2, timestamp: new Date(), status: 'normal', statusText: 'Nivel Seguro' },
+        { id: 2, value: 125.8, timestamp: new Date(Date.now() - 30000), status: 'warning', statusText: 'Nivel Elevado' },
+        { id: 3, value: 32.1, timestamp: new Date(Date.now() - 60000), status: 'normal', statusText: 'Normal' },
+        { id: 4, value: 850.5, timestamp: new Date(Date.now() - 90000), status: 'critical', statusText: 'Peligroso' },
+        { id: 5, value: 78.3, timestamp: new Date(Date.now() - 120000), status: 'normal', statusText: 'Aceptable' }
+      ]
     }
   };
 

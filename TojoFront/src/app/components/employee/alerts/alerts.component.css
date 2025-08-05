@@ -35,7 +35,7 @@
 .parent {
     display: grid;
     grid-template-columns: repeat(11, 1fr);
-    grid-template-rows: repeat(11, 1fr);
+    grid-template-rows: repeat(14, 1fr);
     grid-column-gap: 15px;
     grid-row-gap: 15px;
     width: 100%;
@@ -46,18 +46,19 @@
 }
 
 /* ===== POSICIONES DEL GRID ===== */
-.div1 { grid-area: 1 / 1 / 13 / 6; }
+.div1 { grid-area: 1 / 1 / 15 / 6; }
 .div2 { grid-area: 2 / 2 / 3 / 5; }
 .div3 { grid-area: 4 / 2 / 5 / 5; }
 .div4 { grid-area: 6 / 2 / 7 / 5; }
 .div5 { grid-area: 8 / 2 / 9 / 5; }
 .div6 { grid-area: 10 / 2 / 11 / 5; }
+.div6a { grid-area: 12 / 2 / 13 / 5; }
 .div7 { grid-area: 1 / 6 / 3 / 12; }
 .div8 { grid-area: 1 / 7 / 2 / 11; }
 .div9 { grid-area: 2 / 6 / 3 / 8; }
 .div10 { grid-area: 2 / 8 / 3 / 10; }
 .div11 { grid-area: 2 / 10 / 3 / 12; }
-.div12 { grid-area: 3 / 6 / 12 / 12; }
+.div12 { grid-area: 3 / 6 / 14 / 12; }
 
 /* ===== PANEL DE SENSORES (DIV 1) ===== */
 .sensors-panel {
@@ -70,13 +71,37 @@
     flex-direction: column;
     gap: 15px;
     position: relative;
-    overflow: hidden;
+    overflow-y: auto;
+    max-height: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: #ff6b35 rgba(0, 0, 0, 0.3);
+}
+
+/* Estilos personalizados del scrollbar para el panel de sensores */
+.sensors-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+.sensors-panel::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.sensors-panel::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff6b35, #8b5cf6);
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sensors-panel::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #ff8c55, #a78bfa);
 }
 
 .sensors-header {
     border-bottom: 2px solid rgba(255, 107, 53, 0.3);
     padding-bottom: 15px;
     margin-bottom: 10px;
+    flex-shrink: 0; /* Evitar que se comprima */
 }
 
 .panel-title {
@@ -185,6 +210,12 @@
 .sensor-button.active .sensor-btn.rfid {
     border-color: rgba(168, 85, 247, 0.8);
     box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+}
+
+.sensor-btn.gas:hover,
+.sensor-button.active .sensor-btn.gas {
+    border-color: rgba(34, 197, 94, 0.8);
+    box-shadow: 0 0 25px rgba(34, 197, 94, 0.4);
 }
 
 /* ===== PANEL DE INFORMACIÓN (DIV 7) ===== */

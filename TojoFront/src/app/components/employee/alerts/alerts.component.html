@@ -56,6 +56,15 @@
                     <span class="sensor-type">RC522/MFRC522</span>
                 </button>
             </div>
+
+            <!-- DIV 6A: Sensor de Gas -->
+            <div class="div6a sensor-button" [class.active]="selectedSensor === 'gas'" (click)="selectSensor('gas')">
+                <button class="sensor-btn gas">
+                    <i class="sensor-icon">💨</i>
+                    <span class="sensor-name">Gas</span>
+                    <span class="sensor-type">MQ-2/MQ-135</span>
+                </button>
+            </div>
         </div>
 
         <!-- DIV 7: Contenedor de Información del Sensor -->

@@ -1,0 +1,545 @@
+/* Contenedor principal */
+.purchasing-container {
+    padding: 2rem;
+    min-height: calc(100vh - 4rem);
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #ffffff;
+}
+
+/* Encabezado principal */
+.purchasing-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.purchasing-header h2 {
+    color: #00ffff;
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.header-subtitle {
+    color: #cccccc;
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+/* Contenido principal */
+.main-content {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ===================
+   SECCIÓN DE PRODUCTOS
+   =================== */
+.products-section {
+    background: linear-gradient(145deg, #1a1a2e, #16213e);
+    border: 1px solid #00ffff;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+    min-height: 25rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.section-header h3 {
+    color: #00ffff;
+    font-size: 1.4rem;
+    margin: 0;
+    font-weight: 500;
+}
+
+.purchase-summary {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.summary-item {
+    background: rgba(0, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    font-size: 0.9rem;
+}
+
+.summary-item.total {
+    background: linear-gradient(45deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.1));
+    border-color: #00ffff;
+    color: #00ffff;
+    font-size: 1rem;
+}
+
+/* Tabla de productos */
+.products-table {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid #333;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Estilos del scrollbar para mantener el tema cyberpunk */
+.products-table::-webkit-scrollbar {
+    width: 8px;
+}
+
+.products-table::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.products-table::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff00ff, #00ffff);
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.products-table::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #ff44ff, #44ffff);
+}
+
+.table-header {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr 0.8fr;
+    background: linear-gradient(90deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.1));
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.header-cell {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #00ffff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr 0.8fr;
+    padding: 1rem;
+    gap: 1rem;
+    border-bottom: 1px solid #333;
+    transition: background 0.3s ease;
+}
+
+.table-row:hover {
+    background: rgba(0, 255, 255, 0.05);
+}
+
+.table-row:last-child {
+    border-bottom: none;
+}
+
+.table-cell {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #ffffff;
+}
+
+.table-cell.codigo {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: #ff00ff;
+}
+
+.table-cell.nombre {
+    font-weight: 500;
+}
+
+.table-cell.inventario {
+    color: #cccccc;
+}
+
+.quantity-badge {
+    background: linear-gradient(45deg, #00ffff, #ff00ff);
+    color: #000;
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.table-cell.precio,
+.table-cell.subtotal {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: #00ff00;
+}
+
+.remove-btn {
+    background: #ff4444;
+    border: none;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.remove-btn:hover {
+    background: #ff6666;
+    transform: scale(1.1);
+}
+
+.remove-icon {
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+/* Estado vacío */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #888;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.empty-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #cccccc;
+}
+
+.empty-subtitle {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+/* ===================
+   SECCIÓN DEL FORMULARIO
+   =================== */
+.purchase-form-section {
+    background: linear-gradient(145deg, #1a1a2e, #16213e);
+    border: 1px solid #ff00ff;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.1);
+}
+
+.purchase-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 1rem;
+  align-items: end;
+}
+
+.product-id-group {
+  grid-column: 1;
+}
+
+.form-group:nth-child(2) {
+  grid-column: 2;
+}
+
+.total-group {
+  grid-column: 3;
+}.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    color: #ff00ff;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.form-input {
+    background: rgba(26, 26, 46, 0.8);
+    border: 1px solid #444;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    color: #ffffff;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #ff00ff;
+    box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+    background: rgba(26, 26, 46, 1);
+}
+
+.form-input::placeholder {
+    color: #888;
+}
+
+/* Campo de ID del producto con sugerencias */
+.product-id-group {
+    position: relative;
+}
+
+.input-with-suggestions {
+    position: relative;
+    width: 100%;
+}
+
+.suggestions-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(26, 26, 46, 0.95);
+    border: 1px solid #ff00ff;
+    border-top: none;
+    border-radius: 0 0 0.5rem 0.5rem;
+    max-height: 12rem;
+    overflow-y: auto;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+
+.suggestion-item {
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.8rem;
+    align-items: center;
+}
+
+.suggestion-item:hover {
+    background: rgba(255, 0, 255, 0.1);
+}
+
+.suggestion-code {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: #ff00ff;
+    font-size: 0.8rem;
+}
+
+.suggestion-name {
+    color: #ffffff;
+    font-size: 0.9rem;
+}
+
+.suggestion-price {
+    font-family: 'Courier New', monospace;
+    color: #00ff00;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+/* Campo de total */
+.total-group .total-display {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #00ffff;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.currency {
+  color: #00ffff;
+  font-weight: 600;
+}
+
+.currency-code {
+  color: #00ffff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
+}
+
+.amount {
+  color: #00ffff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}/* Acciones del formulario */
+.form-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.add-btn,
+.close-purchase-btn {
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.add-btn {
+    background: linear-gradient(45deg, #00ffff, #0099cc);
+    color: #000;
+}
+
+.add-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3);
+}
+
+.close-purchase-btn {
+    background: linear-gradient(45deg, #00ff00, #009900);
+    color: #000;
+}
+
+.close-purchase-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 255, 0, 0.3);
+}
+
+.add-btn:disabled,
+.close-purchase-btn:disabled {
+    background: #333;
+    color: #666;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-icon {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+/* ===================
+   RESPONSIVE DESIGN
+   =================== */
+@media (max-width: 1200px) {
+  .purchase-form {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .product-id-group {
+    grid-column: 1;
+  }
+  
+  .form-group:nth-child(2) {
+    grid-column: 1;
+  }
+
+  .total-group {
+    grid-column: 1;
+  }
+  
+  .table-header,
+  .table-row {
+    grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr;
+  }
+  
+  .header-cell.acciones,
+  .table-cell.acciones {
+    display: none;
+  }
+}@media (max-width: 768px) {
+    .purchasing-container {
+        padding: 1rem;
+    }
+
+    .main-content {
+        gap: 1.5rem;
+    }
+
+    .products-section,
+    .purchase-form-section {
+        padding: 1.5rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .purchase-summary {
+        justify-content: center;
+    }
+
+    .table-header,
+    .table-row {
+        grid-template-columns: 1fr 2fr 1fr 1fr;
+        gap: 0.5rem;
+        padding: 0.8rem;
+    }
+
+    .header-cell.inventario,
+    .table-cell.inventario,
+    .header-cell.precio,
+    .table-cell.precio,
+    .header-cell.acciones,
+    .table-cell.acciones {
+        display: none;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .purchasing-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .table-header,
+    .table-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.3rem;
+        padding: 0.6rem;
+    }
+
+    .header-cell.subtotal,
+    .table-cell.subtotal {
+        display: none;
+    }
+
+    .header-cell,
+    .table-cell {
+        font-size: 0.8rem;
+    }
+
+    .add-btn,
+    .close-purchase-btn {
+        padding: 0.7rem 1.5rem;
+        font-size: 0.8rem;
+    }
+}

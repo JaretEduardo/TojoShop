@@ -65,7 +65,8 @@ export const routes: Routes = [
             { path: 'feed', component: FeedComponent },
             { path: 'identity', component: IdentityComponent },
             { path: 'products', component: ProductsBossComponent },
-            { path: 'purchasing', component: PurchasingtoolComponent }
+            { path: 'purchasing', component: PurchasingtoolComponent },
+            { path: 'alertfeed', component: AlertsComponent}
         ]
     }
 ];

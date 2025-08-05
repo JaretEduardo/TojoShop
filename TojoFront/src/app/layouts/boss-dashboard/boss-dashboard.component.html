@@ -45,6 +45,24 @@
         </button>
     </div>
 
+    <!-- Purchasing Tool (div6) -->
+    <div class="div6">
+        <button class="nav-tab purchasing-tab" [class.active]="activeTab === 'purchasing'" (click)="setActiveTab('purchasing')">
+            <div class="tab-icon">🛒</div>
+            <span class="tab-text">COMPRAS</span>
+            <div class="tab-glow"></div>
+        </button>
+    </div>
+
+    <!-- Alerts (div6a) -->
+    <div class="div6a">
+        <button class="nav-tab alerts-tab" [class.active]="activeTab === 'alertfeed'" (click)="setActiveTab('alertfeed')">
+            <div class="tab-icon">🚨</div>
+            <span class="tab-text">ALERTAS</span>
+            <div class="tab-glow"></div>
+        </button>
+    </div>
+
     <!-- Logo (div7) -->
     <div class="div7">
         <div class="logo-container">

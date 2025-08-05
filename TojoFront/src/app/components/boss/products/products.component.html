@@ -1,0 +1,225 @@
+<div class="products-container">
+  <!-- Div 1: Formulario de Producto -->
+  <div class="div1">
+    <div class="product-form-header">
+      <h2>Agregar Nuevo Producto</h2>
+      <div class="form-subtitle">Complete los datos del producto y seleccione su ubicación</div>
+    </div>
+    
+    <form class="product-form" (ngSubmit)="anadirProducto()">
+      <div class="form-group">
+        <label for="codigo">Código del Producto</label>
+        <input 
+          type="text" 
+          id="codigo" 
+          [(ngModel)]="productoForm.codigo" 
+          name="codigo"
+          placeholder="Ej: LAC001" 
+          required>
+      </div>
+
+      <div class="form-group">
+        <label for="nombre">Nombre del Producto</label>
+        <input 
+          type="text" 
+          id="nombre" 
+          [(ngModel)]="productoForm.nombre" 
+          name="nombre"
+          placeholder="Ej: Leche Entera 1L" 
+          required>
+      </div>
+
+      <div class="form-group">
+        <label for="descripcion">Descripción</label>
+        <textarea 
+          id="descripcion" 
+          [(ngModel)]="productoForm.descripcion" 
+          name="descripcion"
+          placeholder="Describa las características del producto" 
+          rows="3" 
+          required></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="precio">Precio (€)</label>
+          <input 
+            type="number" 
+            id="precio" 
+            [(ngModel)]="productoForm.precio" 
+            name="precio"
+            placeholder="0.00" 
+            step="0.01" 
+            min="0" 
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="peso">Peso (kg)</label>
+          <input 
+            type="number" 
+            id="peso" 
+            [(ngModel)]="productoForm.peso" 
+            name="peso"
+            placeholder="0.000" 
+            step="0.001" 
+            min="0" 
+            required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="categoria">Categoría</label>
+        <select 
+          id="categoria" 
+          [(ngModel)]="productoForm.categoria" 
+          name="categoria" 
+          required>
+          <option value="">Seleccionar categoría</option>
+          <option *ngFor="let cat of categorias" [value]="cat.value">
+            {{ cat.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="position-info" *ngIf="gondolaSeleccionada && posicionSeleccionada">
+        <div class="info-badge">
+          <span class="badge-title">Ubicación Seleccionada:</span>
+          <span class="badge-content">
+            {{ getGondolaActual()?.nombre }} - 
+            Posición ({{ posicionSeleccionada.x + 1 }}, {{ posicionSeleccionada.y + 1 }})
+          </span>
+        </div>
+      </div>
+
+      <button 
+        type="submit" 
+        class="submit-btn" 
+        [disabled]="!validarFormulario()">
+        <span class="btn-text">Agregar Producto</span>
+        <span class="btn-icon">+</span>
+      </button>
+    </form>
+  </div>
+
+  <!-- Div 2: Selector de Ubicación en Góndola -->
+  <div class="div2">
+    <div class="location-header">
+      <h2>Seleccionar Ubicación</h2>
+      <div class="location-subtitle">Elija la góndola y posición exacta del producto</div>
+    </div>
+
+    <!-- Selector de Góndola -->
+    <div class="gondola-selector">
+      <div class="gondola-header">
+        <h3>Góndolas Disponibles</h3>
+        <div class="pagination-info" *ngIf="getTotalPaginas() > 1">
+          Página {{ paginaActual }} de {{ getTotalPaginas() }}
+        </div>
+      </div>
+      
+      <div class="gondola-buttons">
+        <button 
+          *ngFor="let gondola of getGondolasPaginadas()" 
+          class="gondola-btn"
+          [class.active]="gondolaSeleccionada === gondola.id"
+          (click)="seleccionarGondola(gondola.id)">
+          <div class="gondola-name">{{ gondola.nombre }}</div>
+          <div class="gondola-size">{{ gondola.filas }}x{{ gondola.columnas }}</div>
+        </button>
+      </div>
+
+      <!-- Controles de paginación -->
+      <div class="pagination-controls" *ngIf="getTotalPaginas() > 1">
+        <button 
+          class="pagination-btn prev" 
+          [disabled]="!puedeIrAnterior()"
+          (click)="paginaAnterior()">
+          <span class="pagination-icon">‹</span>
+          <span class="pagination-text">Anterior</span>
+        </button>
+
+        <div class="pagination-numbers">
+          <button 
+            *ngFor="let pagina of getNumerosPaginas()" 
+            class="pagination-number"
+            [class.active]="paginaActual === pagina"
+            (click)="irAPagina(pagina)">
+            {{ pagina }}
+          </button>
+        </div>
+
+        <button 
+          class="pagination-btn next" 
+          [disabled]="!puedeIrSiguiente()"
+          (click)="paginaSiguiente()">
+          <span class="pagination-text">Siguiente</span>
+          <span class="pagination-icon">›</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mapa de Posiciones -->
+    <div class="position-map" *ngIf="gondolaSeleccionada">
+      <div class="map-header">
+        <h4>{{ getGondolaActual()?.nombre }}</h4>
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-color libre"></div>
+            <span>Libre</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color ocupado"></div>
+            <span>Ocupado</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color seleccionado"></div>
+            <span>Seleccionado</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="gondola-grid" 
+           [style.grid-template-columns]="'repeat(' + getGondolaActual()?.columnas + ', 1fr)'">
+        <div 
+          *ngFor="let fila of getFilas(); let y = index"
+          class="fila-container">
+          <div 
+            *ngFor="let col of getColumnas(); let x = index"
+            class="posicion"
+            [ngClass]="getPosicionClass(x, y)"
+            [title]="getTooltipInfo(x, y)"
+            (click)="seleccionarPosicion(x, y)">
+            <div class="posicion-coords">
+              {{ x + 1 }},{{ y + 1 }}
+            </div>
+            <div class="posicion-status" 
+                 *ngIf="isPosicionOcupada(x, y)">
+              ✓
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="position-stats">
+        <div class="stat">
+          <span class="stat-label">Total:</span>
+          <span class="stat-value">{{ getTotalPosiciones() }}</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Ocupadas:</span>
+          <span class="stat-value">{{ getPosicionesOcupadas() }}</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Libres:</span>
+          <span class="stat-value">{{ getPosicionesLibres() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-gondola" *ngIf="!gondolaSeleccionada">
+      <div class="no-gondola-icon">🏪</div>
+      <div class="no-gondola-text">Seleccione una góndola para ver las posiciones disponibles</div>
+    </div>
+  </div>
+</div>

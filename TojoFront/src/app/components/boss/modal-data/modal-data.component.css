@@ -1,0 +1,485 @@
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(0.3rem);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-container {
+    background: linear-gradient(135deg, #001122 0%, #003344 50%, #001122 100%);
+    border: 0.2rem solid #0ff;
+    border-radius: 1rem;
+    box-shadow:
+        0 0 2rem #0ff,
+        inset 0 0 1rem rgba(0, 255, 255, 0.1);
+    width: 90vw;
+    max-width: 80rem;
+    height: 85vh;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    overflow: hidden;
+    animation: slideIn 0.4s ease-out;
+}
+
+/* Header */
+.modal-header {
+    background: linear-gradient(90deg, #0ff 0%, #ff0080 100%);
+    padding: 2rem;
+    color: #000;
+    font-weight: bold;
+    text-align: center;
+    position: relative;
+}
+
+.sensor-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    opacity: 0.8;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.sensor-name {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.2rem;
+    text-shadow:
+        0 0 1rem rgba(0, 0, 0, 0.5),
+        0 0 2rem rgba(255, 255, 255, 0.3);
+    background: linear-gradient(45deg, #000, #333, #000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    animation: sensorPulse 2s ease-in-out infinite alternate;
+}
+
+.sensor-name::before {
+    content: '';
+    position: absolute;
+    top: -0.5rem;
+    left: -1rem;
+    right: -1rem;
+    bottom: -0.5rem;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    border-radius: 0.5rem;
+    opacity: 0;
+    animation: sensorGlow 3s ease-in-out infinite;
+}
+
+/* Controles de Vista */
+.view-controls {
+    background: rgba(0, 255, 255, 0.1);
+    padding: 1rem 2rem;
+    display: flex;
+    gap: 1rem;
+    border-bottom: 0.1rem solid #0ff;
+}
+
+.toggle-btn {
+    background: linear-gradient(135deg, #001122 0%, #003344 100%);
+    border: 0.1rem solid #0ff;
+    border-radius: 0.5rem;
+    color: #0ff;
+    padding: 0.7rem 1.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.toggle-btn:hover {
+    background: linear-gradient(135deg, #003344 0%, #004455 100%);
+    box-shadow: 0 0 1rem #0ff;
+    transform: translateY(-0.1rem);
+}
+
+.toggle-btn.active {
+    background: linear-gradient(135deg, #0ff 0%, #ff0080 100%);
+    color: #000;
+    box-shadow: 0 0 1.5rem #0ff;
+}
+
+/* Contenido del Modal */
+.modal-content {
+    padding: 2rem;
+    overflow-y: auto;
+    background: rgba(0, 17, 34, 0.3);
+}
+
+/* Vista de Lista */
+.list-view {
+    color: #0ff;
+}
+
+.data-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr 1.5fr;
+    gap: 1rem;
+    padding: 1rem;
+    background: linear-gradient(90deg, #0ff 0%, #ff0080 100%);
+    color: #000;
+    font-weight: bold;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.data-list {
+    max-height: 40rem;
+    overflow-y: auto;
+    border: 0.1rem solid #0ff;
+    border-radius: 0.5rem;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.data-item {
+    border-bottom: 0.1rem solid rgba(0, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.data-item:hover {
+    background: rgba(0, 255, 255, 0.1);
+}
+
+.data-item:last-child {
+    border-bottom: none;
+}
+
+.item-display,
+.item-edit {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr 1.5fr;
+    gap: 1rem;
+    padding: 1rem;
+    align-items: center;
+}
+
+/* Estados de sensor */
+.status-normal {
+    border-left: 0.3rem solid #00ff00;
+}
+
+.status-warning {
+    border-left: 0.3rem solid #ffff00;
+}
+
+.status-critical {
+    border-left: 0.3rem solid #ff0000;
+}
+
+.status-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: bold;
+}
+
+.value-cell {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ff0080;
+}
+
+.timestamp-cell {
+    color: #0ff;
+    font-family: 'Courier New', monospace;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.edit-btn,
+.delete-btn,
+.save-btn,
+.cancel-btn {
+    background: linear-gradient(135deg, #001122 0%, #003344 100%);
+    border: 0.1rem solid #0ff;
+    border-radius: 0.3rem;
+    color: #0ff;
+    padding: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.edit-btn:hover {
+    background: linear-gradient(135deg, #003344 0%, #004455 100%);
+    box-shadow: 0 0 0.5rem #0ff;
+}
+
+.delete-btn:hover {
+    background: linear-gradient(135deg, #440000 0%, #660000 100%);
+    border-color: #ff0000;
+    color: #ff0000;
+    box-shadow: 0 0 0.5rem #ff0000;
+}
+
+.save-btn:hover {
+    background: linear-gradient(135deg, #004400 0%, #006600 100%);
+    border-color: #00ff00;
+    color: #00ff00;
+    box-shadow: 0 0 0.5rem #00ff00;
+}
+
+.cancel-btn:hover {
+    background: linear-gradient(135deg, #444400 0%, #666600 100%);
+    border-color: #ffff00;
+    color: #ffff00;
+    box-shadow: 0 0 0.5rem #ffff00;
+}
+
+/* Campos de edición */
+.edit-value,
+.edit-timestamp {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.value-input,
+.date-input {
+    background: rgba(0, 0, 0, 0.5);
+    border: 0.1rem solid #0ff;
+    border-radius: 0.3rem;
+    color: #0ff;
+    padding: 0.5rem;
+    font-size: 1rem;
+    width: 100%;
+}
+
+.value-input:focus,
+.date-input:focus {
+    outline: none;
+    box-shadow: 0 0 0.5rem #0ff;
+    border-color: #ff0080;
+}
+
+.edit-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Vista de Gráfica */
+.chart-view {
+    color: #0ff;
+}
+
+.chart-container {
+    background: rgba(0, 0, 0, 0.5);
+    border: 0.1rem solid #0ff;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 2rem;
+}
+
+.chart-svg {
+    width: 100%;
+    height: 25rem;
+    background: rgba(0, 17, 34, 0.8);
+    border-radius: 0.3rem;
+}
+
+.chart-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.stat-item {
+    background: linear-gradient(135deg, #001122 0%, #003344 100%);
+    border: 0.1rem solid #0ff;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-label {
+    color: #0ff;
+    font-weight: bold;
+}
+
+.stat-value {
+    color: #ff0080;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Footer */
+.modal-footer {
+    background: rgba(0, 255, 255, 0.1);
+    padding: 1rem 2rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    border-top: 0.1rem solid #0ff;
+}
+
+.refresh-btn,
+.export-btn,
+.close-footer-btn {
+    background: linear-gradient(135deg, #001122 0%, #003344 100%);
+    border: 0.1rem solid #0ff;
+    border-radius: 0.5rem;
+    color: #0ff;
+    padding: 0.7rem 1.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.refresh-btn:hover,
+.export-btn:hover {
+    background: linear-gradient(135deg, #003344 0%, #004455 100%);
+    box-shadow: 0 0 1rem #0ff;
+    transform: translateY(-0.1rem);
+}
+
+.close-footer-btn {
+    margin-left: auto;
+    background: linear-gradient(135deg, #440011 0%, #660022 100%);
+    border-color: #ff0080;
+    color: #ff0080;
+}
+
+.close-footer-btn:hover {
+    background: linear-gradient(135deg, #660022 0%, #880033 100%);
+    box-shadow: 0 0 1rem #ff0080;
+    transform: translateY(-0.1rem);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: scale(0.8) translateY(-2rem);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes sensorPulse {
+    from {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+
+    to {
+        transform: scale(1.02);
+        filter: brightness(1.1);
+    }
+}
+
+@keyframes sensorGlow {
+
+    0%,
+    100% {
+        opacity: 0;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.3;
+        transform: scale(1.05);
+    }
+}
+
+/* Scrollbar personalizado */
+.data-list::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar {
+    width: 0.5rem;
+}
+
+.data-list::-webkit-scrollbar-track,
+.modal-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 0.25rem;
+}
+
+.data-list::-webkit-scrollbar-thumb,
+.modal-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #0ff, #ff0080);
+    border-radius: 0.25rem;
+}
+
+.data-list::-webkit-scrollbar-thumb:hover,
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #ff0080, #0ff);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-container {
+        width: 95vw;
+        height: 90vh;
+    }
+
+    .data-header,
+    .item-display,
+    .item-edit {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .chart-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-footer {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .close-footer-btn {
+        margin-left: 0;
+    }
+}

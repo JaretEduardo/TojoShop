@@ -1,0 +1,97 @@
+<div class="retro-background"></div>
+<div class="perspective-grid"></div>
+
+<div class="neon-particles">
+    <div class="neon-orb"></div>
+    <div class="neon-orb"></div>
+    <div class="neon-orb"></div>
+    <div class="neon-orb"></div>
+    <div class="neon-orb"></div>
+    <div class="neon-orb"></div>
+</div>
+
+<!-- Main Grid Layout -->
+<div class="parent">
+    <!-- Navbar (div1) -->
+    <div class="div1"></div>
+
+    <!-- Navegación de pestañas (div2) -->
+    <div class="div2"></div>
+
+    <!-- Feed (div3) -->
+    <div class="div3">
+        <button class="nav-tab feed-tab" [class.active]="activeTab === 'feed'" (click)="setActiveTab('feed')">
+            <div class="tab-icon">📊</div>
+            <span class="tab-text">FEED</span>
+            <div class="tab-glow"></div>
+        </button>
+    </div>
+
+    <!-- Identidad (div4) -->
+    <div class="div4">
+        <button class="nav-tab identity-tab" [class.active]="activeTab === 'identity'" (click)="setActiveTab('identity')">
+            <div class="tab-icon">👥</div>
+            <span class="tab-text">IDENTIDAD</span>
+            <div class="tab-glow"></div>
+        </button>
+    </div>
+
+    <!-- Productos (div5) -->
+    <div class="div5">
+        <button class="nav-tab products-tab" [class.active]="activeTab === 'products'" (click)="setActiveTab('products')">
+            <div class="tab-icon">📦</div>
+            <span class="tab-text">PRODUCTOS</span>
+            <div class="tab-glow"></div>
+        </button>
+    </div>
+
+    <!-- Purchasing Tool (div6) -->
+    <div class="div6">
+        <button class="nav-tab purchasing-tab" [class.active]="activeTab === 'purchasing'" (click)="setActiveTab('purchasing')">
+            <div class="tab-icon">🛒</div>
+            <span class="tab-text">COMPRAS</span>
+            <div class="tab-glow"></div>
+        </button>
+    </div>
+
+    <!-- Alerts (div6a) -->
+    <div class="div6a">
+        <button class="nav-tab alerts-tab" [class.active]="activeTab === 'alertfeed'" (click)="setActiveTab('alertfeed')">
+            <div class="tab-icon">🚨</div>
+            <span class="tab-text">ALERTAS</span>
+            <div class="tab-glow"></div>
+        </button>
+    </div>
+
+    <!-- Logo (div7) -->
+    <div class="div7">
+        <div class="logo-container">
+            <div class="logo-icon">⚡</div>
+            <span class="logo-text">TOJO</span>
+        </div>
+    </div>
+
+    <!-- Perfil del usuario (div8) -->
+    <div class="div8">
+        <div class="user-profile">
+            <div class="user-avatar">�</div>
+            <div class="user-info">
+                <span class="user-name">{{ userName }}</span>
+                <span class="user-role">{{ userRole }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificaciones (div9) -->
+    <div class="div9">
+        <button class="notification-btn" (click)="openNotifications()">
+            <div class="notification-icon">🔔</div>
+            <span class="notification-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
+        </button>
+    </div>
+
+    <!-- Área de contenido principal -->
+    <div class="content-area">
+        <router-outlet></router-outlet>
+    </div>
+</div>

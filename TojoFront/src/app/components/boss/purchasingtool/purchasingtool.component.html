@@ -1,0 +1,135 @@
+<div class="purchasing-container">
+    <!-- Encabezado -->
+    <div class="purchasing-header">
+        <h2>Herramienta de Compras</h2>
+        <div class="header-subtitle">Gestión de recepción de productos e inventario</div>
+    </div>
+
+    <!-- Contenedor principal -->
+    <div class="main-content">
+
+        <!-- Sección superior: Tabla/Lista de productos -->
+        <div class="products-section">
+            <div class="section-header">
+                <h3>Productos en Compra Actual</h3>
+                <div class="purchase-summary" *ngIf="productosEnCompra.length > 0">
+                    <span class="summary-item">
+                        <strong>{{ productosEnCompra.length }}</strong> productos
+                    </span>
+                    <span class="summary-item">
+                        <strong>{{ getTotalUnidades() }}</strong> unidades
+                    </span>
+                    <span class="summary-item total">
+                        <strong>${{ montoTotal.toFixed(2) }} MXN</strong>
+                    </span>
+                </div>
+            </div>
+
+            <!-- div5: Contenedor de la tabla -->
+            <div class="products-table" *ngIf="productosEnCompra.length > 0; else emptyTable">
+                <!-- Encabezados de tabla -->
+                <div class="table-header">
+                    <!-- div6 equivalent -->
+                    <div class="header-cell codigo">Código</div>
+                    <!-- div7 equivalent -->
+                    <div class="header-cell nombre">Nombre del Producto</div>
+                    <!-- div8 equivalent -->
+                    <div class="header-cell inventario">Inventario Actual</div>
+                    <!-- div9 equivalent -->
+                    <div class="header-cell recibir">Piezas a Recibir</div>
+                    <!-- div10 equivalent -->
+                    <div class="header-cell precio">Precio Unitario</div>
+                    <div class="header-cell subtotal">Subtotal</div>
+                    <div class="header-cell acciones">Acciones</div>
+                </div>
+
+                <!-- Filas de productos -->
+                <div class="table-row" *ngFor="let productoCompra of productosEnCompra; let i = index">
+                    <div class="table-cell codigo">{{ productoCompra.producto.codigo }}</div>
+                    <div class="table-cell nombre">{{ productoCompra.producto.nombre }}</div>
+                    <div class="table-cell inventario">{{ productoCompra.producto.inventarioTeorico }}</div>
+                    <div class="table-cell recibir">
+                        <span class="quantity-badge">{{ productoCompra.cantidadARecibir }}</span>
+                    </div>
+                    <div class="table-cell precio">${{ productoCompra.producto.precioUnitario.toFixed(2) }}</div>
+                    <div class="table-cell subtotal">${{ productoCompra.subtotal.toFixed(2) }}</div>
+                    <div class="table-cell acciones">
+                        <button class="remove-btn" (click)="eliminarProducto(i)" title="Eliminar producto">
+                            <span class="remove-icon">✕</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estado vacío -->
+            <ng-template #emptyTable>
+                <div class="empty-state">
+                    <div class="empty-icon">📦</div>
+                    <div class="empty-title">No hay productos en la compra actual</div>
+                    <div class="empty-subtitle">Agregue productos usando el formulario inferior</div>
+                </div>
+            </ng-template>
+        </div>
+
+        <!-- Sección inferior: Formulario de control de compra -->
+        <div class="purchase-form-section">
+            <div class="section-header">
+                <h3>Agregar Producto a la Compra</h3>
+            </div>
+
+            <div class="purchase-form">
+                <!-- div1: ID del producto -->
+                <div class="form-group product-id-group">
+                    <label for="productoId">ID/Código del Producto</label>
+                    <div class="input-with-suggestions">
+                        <input type="text" id="productoId" [(ngModel)]="productoId" name="productoId"
+                            placeholder="Ej: LAC001 o Leche..." class="form-input" autocomplete="off">
+
+                        <!-- Sugerencias de autocompletado -->
+                        <div class="suggestions-dropdown" *ngIf="getSugerenciasProductos().length > 0">
+                            <div class="suggestion-item" *ngFor="let producto of getSugerenciasProductos()"
+                                (click)="seleccionarProducto(producto)">
+                                <span class="suggestion-code">{{ producto.codigo }}</span>
+                                <span class="suggestion-name">{{ producto.nombre }}</span>
+                                <span class="suggestion-price">${{ producto.precioUnitario.toFixed(2) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- div2: Unidades a ingresar -->
+                <div class="form-group">
+                    <label for="unidades">Unidades a Recibir</label>
+                    <input type="number" id="unidades" [(ngModel)]="unidadesAIngresar" name="unidades" placeholder="0"
+                        min="1" class="form-input" step="1">
+                </div>
+
+                <!-- div3: Monto total (solo lectura/informativo) -->
+                <div class="form-group total-group">
+                    <label>Total de la Compra</label>
+                    <div class="total-display">
+                        <span class="currency">$</span>
+                        <span class="amount">{{ montoTotal.toFixed(2) }}</span>
+                        <span class="currency-code">MXN</span>
+                    </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="form-actions">
+                    <button type="button" class="add-btn" (click)="agregarProducto()"
+                        [disabled]="!isProductoIdValid() || unidadesAIngresar <= 0">
+                        <span class="btn-icon">+</span>
+                        <span class="btn-text">Agregar Producto</span>
+                    </button>
+
+                    <!-- div4: Botón para cerrar la compra -->
+                    <button type="button" class="close-purchase-btn" (click)="cerrarCompra()"
+                        [disabled]="!puedeSerrarCompra()">
+                        <span class="btn-icon">✓</span>
+                        <span class="btn-text">Cerrar Compra</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

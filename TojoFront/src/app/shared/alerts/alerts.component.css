@@ -1,0 +1,325 @@
+/* ===== MODAL DE ALERTAS - ESTILO CYBERPUNK ===== */
+.alert-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(0.8rem);
+    z-index: 1100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.alert-modal {
+    background: linear-gradient(135deg,
+        rgba(10, 10, 10, 0.95) 0%,
+        rgba(26, 10, 26, 0.9) 30%,
+        rgba(26, 15, 10, 0.9) 70%,
+        rgba(10, 10, 10, 0.95) 100%);
+    border: 3px solid transparent;
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    box-shadow: 
+        0 2rem 6rem rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(255, 107, 53, 0.3),
+        0 0 4rem rgba(255, 107, 53, 0.2);
+    animation: slideIn 0.4s ease-out;
+    overflow: hidden;
+}
+
+/* Estilos específicos por tipo de alerta */
+.alert-modal.alert-success {
+    border-image: linear-gradient(135deg,
+        rgba(34, 197, 94, 0.8) 0%,
+        rgba(139, 92, 246, 0.8) 50%,
+        rgba(34, 197, 94, 0.8) 100%) 1;
+    box-shadow: 
+        0 2rem 6rem rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(34, 197, 94, 0.3),
+        0 0 4rem rgba(34, 197, 94, 0.2);
+}
+
+.alert-modal.alert-error {
+    border-image: linear-gradient(135deg,
+        rgba(239, 68, 68, 0.8) 0%,
+        rgba(139, 92, 246, 0.8) 50%,
+        rgba(239, 68, 68, 0.8) 100%) 1;
+    box-shadow: 
+        0 2rem 6rem rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(239, 68, 68, 0.3),
+        0 0 4rem rgba(239, 68, 68, 0.2);
+}
+
+.alert-modal.alert-warning {
+    border-image: linear-gradient(135deg,
+        rgba(251, 191, 36, 0.8) 0%,
+        rgba(139, 92, 246, 0.8) 50%,
+        rgba(251, 191, 36, 0.8) 100%) 1;
+    box-shadow: 
+        0 2rem 6rem rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(251, 191, 36, 0.3),
+        0 0 4rem rgba(251, 191, 36, 0.2);
+}
+
+.alert-modal.alert-info {
+    border-image: linear-gradient(135deg,
+        rgba(59, 130, 246, 0.8) 0%,
+        rgba(139, 92, 246, 0.8) 50%,
+        rgba(59, 130, 246, 0.8) 100%) 1;
+    box-shadow: 
+        0 2rem 6rem rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(59, 130, 246, 0.3),
+        0 0 4rem rgba(59, 130, 246, 0.2);
+}
+
+.alert-modal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 0.2rem;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 107, 53, 0.8),
+        rgba(139, 92, 246, 0.8),
+        rgba(255, 107, 53, 0.8),
+        transparent);
+    animation: topGlow 2s ease-in-out infinite alternate;
+}
+
+.alert-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.alert-icon {
+    font-size: 2.5rem;
+    animation: pulse 2s infinite;
+}
+
+.alert-modal-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    flex: 1;
+    letter-spacing: 0.1rem;
+    text-transform: uppercase;
+}
+
+.alert-success .alert-modal-title {
+    color: #22c55e;
+    text-shadow: 0 0 1rem rgba(34, 197, 94, 0.5);
+}
+
+.alert-error .alert-modal-title {
+    color: #ef4444;
+    text-shadow: 0 0 1rem rgba(239, 68, 68, 0.5);
+}
+
+.alert-warning .alert-modal-title {
+    color: #fbbf24;
+    text-shadow: 0 0 1rem rgba(251, 191, 36, 0.5);
+}
+
+.alert-info .alert-modal-title {
+    color: #3b82f6;
+    text-shadow: 0 0 1rem rgba(59, 130, 246, 0.5);
+}
+
+.alert-close-btn {
+    background: linear-gradient(135deg, #8b5cf6, #ff6b35);
+    border: none;
+    color: white;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 1.5rem rgba(255, 107, 53, 0.5);
+}
+
+.alert-close-btn:hover {
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 0 2.5rem rgba(255, 107, 53, 0.8);
+}
+
+.alert-modal-content {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.alert-message {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    font-family: 'Orbitron', monospace;
+}
+
+.alert-status-code {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-label {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Orbitron', monospace;
+}
+
+.status-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: 'Orbitron', monospace;
+}
+
+.alert-success .status-value {
+    color: #22c55e;
+    text-shadow: 0 0 0.5rem rgba(34, 197, 94, 0.5);
+}
+
+.alert-error .status-value {
+    color: #ef4444;
+    text-shadow: 0 0 0.5rem rgba(239, 68, 68, 0.5);
+}
+
+.alert-warning .status-value {
+    color: #fbbf24;
+    text-shadow: 0 0 0.5rem rgba(251, 191, 36, 0.5);
+}
+
+.alert-info .status-value {
+    color: #3b82f6;
+    text-shadow: 0 0 0.5rem rgba(59, 130, 246, 0.5);
+}
+
+.alert-modal-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.alert-action-btn {
+    border: none;
+    color: white;
+    padding: 1rem 2.5rem;
+    border-radius: 0.8rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Orbitron', monospace;
+    letter-spacing: 0.1rem;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+}
+
+.alert-action-btn.alert-success {
+    background: linear-gradient(135deg, #22c55e, #8b5cf6);
+    box-shadow: 0 0.5rem 2rem rgba(34, 197, 94, 0.3);
+}
+
+.alert-action-btn.alert-success:hover {
+    background: linear-gradient(135deg, #16a34a, #a855f7);
+    box-shadow: 0 1rem 3rem rgba(34, 197, 94, 0.5);
+}
+
+.alert-action-btn.alert-error {
+    background: linear-gradient(135deg, #ef4444, #8b5cf6);
+    box-shadow: 0 0.5rem 2rem rgba(239, 68, 68, 0.3);
+}
+
+.alert-action-btn.alert-error:hover {
+    background: linear-gradient(135deg, #dc2626, #a855f7);
+    box-shadow: 0 1rem 3rem rgba(239, 68, 68, 0.5);
+}
+
+.alert-action-btn.alert-warning {
+    background: linear-gradient(135deg, #fbbf24, #8b5cf6);
+    box-shadow: 0 0.5rem 2rem rgba(251, 191, 36, 0.3);
+}
+
+.alert-action-btn.alert-warning:hover {
+    background: linear-gradient(135deg, #f59e0b, #a855f7);
+    box-shadow: 0 1rem 3rem rgba(251, 191, 36, 0.5);
+}
+
+.alert-action-btn.alert-info {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    box-shadow: 0 0.5rem 2rem rgba(59, 130, 246, 0.3);
+}
+
+.alert-action-btn.alert-info:hover {
+    background: linear-gradient(135deg, #2563eb, #a855f7);
+    box-shadow: 0 1rem 3rem rgba(59, 130, 246, 0.5);
+}
+
+.alert-action-btn:hover {
+    transform: translateY(-0.3rem);
+}
+
+.alert-action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent);
+    transition: left 0.5s ease;
+}
+
+.alert-action-btn:hover::before {
+    left: 100%;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-2rem) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes topGlow {
+    from { opacity: 0.5; }
+    to { opacity: 1; }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}

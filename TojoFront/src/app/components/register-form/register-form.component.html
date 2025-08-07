@@ -75,3 +75,30 @@
         </div>
     </form>
 </div>
+
+<!-- Modal de Términos y Condiciones -->
+<div class="terms-modal-overlay" *ngIf="showTermsModal" (click)="closeTermsModal()">
+    <div class="terms-modal" (click)="$event.stopPropagation()">
+        <div class="terms-modal-header">
+            <h3 class="terms-modal-title">⚠️ TÉRMINOS REQUERIDOS</h3>
+            <button class="terms-close-btn" (click)="closeTermsModal()">×</button>
+        </div>
+        
+        <div class="terms-modal-content">
+            <div class="terms-warning-icon">🚨</div>
+            <p class="terms-message">
+                Debes aceptar los <span class="highlight">términos y condiciones</span> 
+                para continuar con el registro.
+            </p>
+            <p class="terms-submessage">
+                Por favor, marca la casilla de aceptación antes de proceder.
+            </p>
+        </div>
+        
+        <div class="terms-modal-actions">
+            <button class="terms-action-btn primary" (click)="closeTermsModal()">
+                ENTENDIDO
+            </button>
+        </div>
+    </div>
+</div>

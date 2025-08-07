@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { SpinnerComponent } from './shared/spinner/spinner.component';
 import { SpinnerService } from './services/spinner.service';
 import { SpinnerGuard } from './shared/spinner/spinner.guard';
+import { AlertsComponent } from './shared/alerts/alerts.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, SpinnerComponent],
+  imports: [RouterOutlet, CommonModule, SpinnerComponent, AlertsComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

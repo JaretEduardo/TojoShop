@@ -1,0 +1,24 @@
+<!-- Modal de Alertas -->
+<div class="alert-modal-overlay" *ngIf="currentAlert" (click)="closeAlert()">
+    <div class="alert-modal" [class]="getAlertClass()" (click)="$event.stopPropagation()">
+        <div class="alert-modal-header">
+            <div class="alert-icon">{{ getAlertIcon() }}</div>
+            <h3 class="alert-modal-title">{{ currentAlert.title }}</h3>
+            <button class="alert-close-btn" (click)="closeAlert()">×</button>
+        </div>
+        
+        <div class="alert-modal-content">
+            <p class="alert-message">{{ currentAlert.message }}</p>
+            <div class="alert-status-code" *ngIf="currentAlert.statusCode">
+                <span class="status-label">Código de estado:</span>
+                <span class="status-value">{{ currentAlert.statusCode }}</span>
+            </div>
+        </div>
+        
+        <div class="alert-modal-actions">
+            <button class="alert-action-btn" [class]="getAlertClass()" (click)="closeAlert()">
+                ACEPTAR
+            </button>
+        </div>
+    </div>
+</div>

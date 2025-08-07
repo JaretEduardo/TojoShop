@@ -6,6 +6,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import { SpinnerInterceptor } from './interceptors/spinner.interceptor';
+import { ApiResponseInterceptor } from './interceptors/api-response.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,6 +16,11 @@ export const appConfig: ApplicationConfig = {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: SpinnerInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ApiResponseInterceptor,
       multi: true
     }
   ]

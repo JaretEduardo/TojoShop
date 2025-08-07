@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
   selector: 'app-register-form',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './register-form.component.html',
   styleUrl: './register-form.component.css'
 })
@@ -20,6 +22,9 @@ export class RegisterFormComponent {
   acceptTerms = false;
   showPassword = false;
   showConfirmPassword = false;
+  showTermsModal = false;
+
+  constructor(private alertService: AlertService) {}
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
@@ -29,18 +34,71 @@ export class RegisterFormComponent {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
 
+  showTermsWarning() {
+    this.showTermsModal = true;
+  }
+
+  closeTermsModal() {
+    this.showTermsModal = false;
+  }
+
   onSubmit() {
+    // Validar que el nombre no esté vacío
+    if (!this.registerData.name.trim()) {
+      this.alertService.showWarning(
+        'Por favor ingresa tu nombre completo',
+        'Campo requerido'
+      );
+      return;
+    }
+
+    // Validar email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.registerData.email)) {
+      this.alertService.showError(
+        'Por favor ingresa un email válido',
+        'Email inválido'
+      );
+      return;
+    }
+
+    // Validar contraseña
+    if (this.registerData.password.length < 6) {
+      this.alertService.showWarning(
+        'La contraseña debe tener al menos 6 caracteres',
+        'Contraseña muy corta'
+      );
+      return;
+    }
+
     if (this.registerData.password !== this.registerData.confirmPassword) {
-      alert('Las contraseñas no coinciden');
+      this.alertService.showError(
+        'Las contraseñas no coinciden. Verifique los datos ingresados.',
+        'Error de validación'
+      );
       return;
     }
     
     if (!this.acceptTerms) {
-      alert('Debes aceptar los términos y condiciones');
+      this.showTermsWarning();
       return;
     }
     
+    // Simular registro exitoso (sin backend por ahora)
+    this.alertService.showSuccess(
+      'Tu cuenta ha sido creada exitosamente. Recibirás un email de confirmación.',
+      'Registro exitoso'
+    );
+    
     console.log('Register data:', this.registerData);
-    // Aquí irá la lógica de registro
+    // Aquí irá la lógica de registro cuando esté listo el backend
+  }
+
+  // Método para demostrar diferentes tipos de alertas
+  testAlerts() {
+    this.alertService.showInfo(
+      'Esta es una alerta informativa para mostrar información general.',
+      'Información'
+    );
   }
 }

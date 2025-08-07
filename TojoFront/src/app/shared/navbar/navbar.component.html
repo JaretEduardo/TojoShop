@@ -11,7 +11,45 @@
 
         <div class="search-neon">
             <span class="search-icon-neon">🔍</span>
-            <input type="text" class="search-input-neon" placeholder="Buscar producto">
+            <input 
+                type="text" 
+                class="search-input-neon" 
+                placeholder="Buscar producto"
+                [(ngModel)]="searchTerm"
+                (input)="onSearch()"
+                (blur)="hideResults()"
+                (focus)="onSearch()">
+            
+            <!-- Botón de limpiar búsqueda -->
+            <button 
+                *ngIf="searchTerm.length > 0"
+                class="clear-search-btn"
+                (click)="clearSearch()">
+                ✖
+            </button>
+            
+            <!-- Dropdown de resultados -->
+            <div class="search-results" *ngIf="showResults">
+                <div 
+                    class="search-result-item"
+                    *ngFor="let product of searchResults"
+                    (mousedown)="selectProduct(product)">
+                    <div class="result-info">
+                        <h4 class="result-name">{{ product.name }}</h4>
+                        <p class="result-price">${{ product.price.toLocaleString('es-MX') }} MXN</p>
+                        <p class="result-stock" [class]="product.stockTotal === 0 ? 'out-of-stock' : 'in-stock'">
+                            {{ product.stockTotal > 0 ? 'Disponible' : 'Sin stock' }}
+                        </p>
+                    </div>
+                    <div class="result-category">
+                        {{ product.category }}
+                    </div>
+                </div>
+                
+                <div class="search-footer" *ngIf="searchResults.length === 0">
+                    <p>No se encontraron productos</p>
+                </div>
+            </div>
         </div>
 
         <div class="cart-container">
@@ -21,3 +59,12 @@
         </div>
     </nav>
 </header>
+
+<!-- Modal de información del producto -->
+<app-products-info
+    [isVisible]="showModal"
+    [product]="selectedProduct"
+    (closeModal)="closeModal()"
+    (buyProduct)="handleBuyProduct($event)"
+    (addToCart)="handleAddToCart($event)">
+</app-products-info>

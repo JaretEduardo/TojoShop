@@ -1,0 +1,67 @@
+<!-- Modal de información del producto -->
+<div class="parent" *ngIf="isVisible" (click)="onOverlayClick($event)">
+    <div class="div1" (click)="$event.stopPropagation()">
+
+        <!-- Header Section -->
+        <div class="product-header">
+            <h2 class="product-title">{{ product?.name || 'Producto' }}</h2>
+            <button class="close-btn" (click)="onCloseModal()">×</button>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="product-content">
+            <!-- Product Description (ahora ocupa el espacio principal) -->
+            <div class="product-description-container">
+                <div class="product-description" *ngIf="product?.description">
+                    <h3>Descripción del Producto</h3>
+                    <p>{{ product?.description }}</p>
+                </div>
+                <div class="product-description" *ngIf="!product?.description">
+                    <h3>Descripción del Producto</h3>
+                    <p>Este producto no tiene descripción disponible en este momento.</p>
+                </div>
+            </div>
+
+            <!-- Product Details -->
+            <div class="product-details">
+
+                <div class="product-category">{{ product?.category || 'Sin categoría' }}</div>
+                <div class="product-price">{{ formatPrice(product?.price || 0) }}</div>
+
+                <!-- Stock Information -->
+                <div class="stock-info">
+                    <div class="stock-item">
+                        <span class="stock-label">📦 Stock Total:</span>
+                        <span class="stock-value" [class]="getStockStatusClass()">
+                            {{ product?.stockTotal || 0 }} unidades
+                        </span>
+                    </div>
+
+                    <div class="stock-item">
+                        <span class="stock-label">🏪 Stock Exhibido:</span>
+                        <span class="stock-value">
+                            {{ product?.stockExhibido || 0 }} unidades
+                        </span>
+                    </div>
+
+                    <div class="stock-status">
+                        <span class="status-badge" [class]="getStockStatusClass()">
+                            {{ getStockStatus() }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="product-actions">
+            <button class="action-btn primary" (click)="onBuyProduct()" [disabled]="!hasStock()">
+                🛒 Comprar Ahora
+            </button>
+            <button class="action-btn" (click)="onAddToCart()" [disabled]="!hasStock()">
+                🛍️ Agregar al Carrito
+            </button>
+        </div>
+
+    </div>
+</div>

@@ -133,3 +133,47 @@
         </div>
     </div>
 </div>
+
+<!-- Modal de confirmación para cerrar compra -->
+<div class="modal-overlay" *ngIf="mostrarModalConfirmacion" (click)="cancelarCierreCompra()">
+    <div class="confirmation-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3>Confirmar Cierre de Compra</h3>
+            <button class="modal-close-btn" (click)="cancelarCierreCompra()">×</button>
+        </div>
+        
+        <div class="modal-content">
+            <p class="confirmation-message">
+                ¿Estás seguro de que deseas cerrar esta compra? Los productos serán agregados al inventario.
+            </p>
+        </div>
+        
+        <div class="modal-actions">
+            <button class="cancel-btn" (click)="cancelarCierreCompra()">Cancelar</button>
+            <button class="confirm-btn" (click)="confirmarCierreCompra()">Confirmar Compra</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación para limpiar compra -->
+<div class="modal-overlay" *ngIf="mostrarModalLimpiar" (click)="cancelarLimpieza()">
+    <div class="confirmation-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3>Confirmar Limpieza</h3>
+            <button class="modal-close-btn" (click)="cancelarLimpieza()">×</button>
+        </div>
+        
+        <div class="modal-content">
+            <p class="confirmation-message">
+                ¿Estás seguro de que deseas limpiar la compra actual? Se perderán 
+                <strong>{{ productosEnCompra.length }}</strong> productos por un valor de 
+                <strong>${{ montoTotal.toFixed(2) }} MXN</strong>.
+            </p>
+        </div>
+        
+        <div class="modal-actions">
+            <button class="cancel-btn" (click)="cancelarLimpieza()">Cancelar</button>
+            <button class="confirm-btn danger" (click)="confirmarLimpieza()">Limpiar Compra</button>
+        </div>
+    </div>
+</div>

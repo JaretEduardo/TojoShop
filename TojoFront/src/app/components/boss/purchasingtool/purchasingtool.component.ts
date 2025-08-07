@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AlertService } from '../../../services/alert.service';
 
 interface Producto {
   id: string;
@@ -31,6 +32,10 @@ export class PurchasingtoolComponent {
 
   // Lista de productos en la compra actual
   productosEnCompra: ProductoCompra[] = [];
+
+  // Control del modal de confirmación
+  mostrarModalConfirmacion: boolean = false;
+  mostrarModalLimpiar: boolean = false;
 
   // Base de datos simulada de productos
   productosDisponibles: Producto[] = [
@@ -92,10 +97,33 @@ export class PurchasingtoolComponent {
     }
   ];
 
+  constructor(private alertService: AlertService) {}
+
   // Agregar producto a la compra
   agregarProducto(): void {
-    if (!this.productoId.trim() || this.unidadesAIngresar <= 0) {
-      alert('Por favor, complete el ID del producto y la cantidad de unidades');
+    // Validar ID del producto
+    if (!this.productoId.trim()) {
+      this.alertService.showWarning(
+        'Por favor ingresa el ID o código del producto',
+        'Campo requerido'
+      );
+      return;
+    }
+
+    // Validar cantidad de unidades
+    if (this.unidadesAIngresar <= 0) {
+      this.alertService.showError(
+        'La cantidad de unidades debe ser mayor a cero',
+        'Cantidad inválida'
+      );
+      return;
+    }
+
+    if (this.unidadesAIngresar > 10000) {
+      this.alertService.showWarning(
+        'La cantidad no puede exceder 10,000 unidades por producto',
+        'Cantidad muy alta'
+      );
       return;
     }
 
@@ -105,7 +133,10 @@ export class PurchasingtoolComponent {
     );
 
     if (!producto) {
-      alert('Producto no encontrado. Verifique el ID o código del producto.');
+      this.alertService.showError(
+        `No se encontró el producto "${this.productoId}". Verifica el ID o código del producto.`,
+        'Producto no encontrado'
+      );
       return;
     }
 
@@ -113,11 +144,11 @@ export class PurchasingtoolComponent {
     const productoExistente = this.productosEnCompra.find(pc => pc.producto.id === producto.id);
     
     if (productoExistente) {
-      // Actualizar cantidad si ya existe
+      // Actualizar cantidad si ya existe (sin alerta)
       productoExistente.cantidadARecibir += this.unidadesAIngresar;
       productoExistente.subtotal = productoExistente.cantidadARecibir * producto.precioUnitario;
     } else {
-      // Agregar nuevo producto
+      // Agregar nuevo producto (sin alerta)
       const productoCompra: ProductoCompra = {
         producto: producto,
         cantidadARecibir: this.unidadesAIngresar,
@@ -141,6 +172,16 @@ export class PurchasingtoolComponent {
 
   // Eliminar producto de la compra
   eliminarProducto(index: number): void {
+    const producto = this.productosEnCompra[index];
+    if (!producto) {
+      this.alertService.showError(
+        'No se pudo encontrar el producto a eliminar',
+        'Error'
+      );
+      return;
+    }
+
+    // Eliminar sin alerta
     this.productosEnCompra.splice(index, 1);
     this.calcularMontoTotal();
   }
@@ -148,31 +189,79 @@ export class PurchasingtoolComponent {
   // Cerrar compra y confirmar ingreso al inventario
   cerrarCompra(): void {
     if (this.productosEnCompra.length === 0) {
-      alert('No hay productos en la compra actual');
+      this.alertService.showWarning(
+        'No hay productos en la compra actual. Agrega productos antes de cerrar la compra.',
+        'Compra vacía'
+      );
       return;
     }
 
-    // Confirmar la compra
-    const confirmacion = confirm(
-      `¿Confirmar compra de ${this.productosEnCompra.length} productos por un total de $${this.montoTotal.toFixed(2)} MXN?`
-    );
-
-    if (confirmacion) {
-      // Simular actualización del inventario
-      this.productosEnCompra.forEach(pc => {
-        const producto = this.productosDisponibles.find(p => p.id === pc.producto.id);
-        if (producto) {
-          producto.inventarioTeorico += pc.cantidadARecibir;
-        }
-      });
-
-      // Mostrar resumen
-      alert(`Compra confirmada exitosamente!\n\nProductos ingresados: ${this.productosEnCompra.length}\nTotal: $${this.montoTotal.toFixed(2)} MXN\n\nEl inventario ha sido actualizado.`);
-
-      // Limpiar compra actual
-      this.productosEnCompra = [];
-      this.montoTotal = 0;
+    // Validar montos y cantidades
+    if (this.montoTotal <= 0) {
+      this.alertService.showError(
+        'El monto total de la compra debe ser mayor a cero',
+        'Monto inválido'
+      );
+      return;
     }
+
+    if (this.montoTotal > 1000000) {
+      this.alertService.showWarning(
+        'El monto total excede $1,000,000. Por favor verifica las cantidades y precios.',
+        'Monto muy alto'
+      );
+      return;
+    }
+
+    const totalUnidades = this.getTotalUnidades();
+    if (totalUnidades > 50000) {
+      this.alertService.showWarning(
+        'El total de unidades excede 50,000. Por favor verifica las cantidades.',
+        'Cantidad muy alta'
+      );
+      return;
+    }
+
+    // Mostrar modal de confirmación
+    this.mostrarModalConfirmacion = true;
+  }
+
+  // Confirmar el cierre de compra desde el modal
+  confirmarCierreCompra(): void {
+    this.mostrarModalConfirmacion = false;
+    this.procesarCompra();
+  }
+
+  // Cancelar el cierre de compra desde el modal
+  cancelarCierreCompra(): void {
+    this.mostrarModalConfirmacion = false;
+  }
+
+  // Procesar la compra confirmada
+  private procesarCompra(): void {
+    const resumenCompra = {
+      productos: this.productosEnCompra.length,
+      unidades: this.getTotalUnidades(),
+      total: this.montoTotal
+    };
+
+    // Simular actualización del inventario
+    this.productosEnCompra.forEach(pc => {
+      const producto = this.productosDisponibles.find(p => p.id === pc.producto.id);
+      if (producto) {
+        producto.inventarioTeorico += pc.cantidadARecibir;
+      }
+    });
+
+    // Limpiar compra actual antes del mensaje
+    this.productosEnCompra = [];
+    this.montoTotal = 0;
+
+    // Mostrar confirmación de éxito
+    this.alertService.showSuccess(
+      `¡Compra procesada exitosamente! ${resumenCompra.productos} productos ingresados, ${resumenCompra.unidades} unidades totales por $${resumenCompra.total.toFixed(2)} MXN. El inventario ha sido actualizado.`,
+      'Compra completada'
+    );
   }
 
   // Obtener sugerencias de productos (para autocompletado)
@@ -203,5 +292,118 @@ export class PurchasingtoolComponent {
   // Helper para verificar si el productoId es válido
   isProductoIdValid(): boolean {
     return this.productoId.trim().length > 0;
+  }
+
+  // Métodos auxiliares para diferentes tipos de alertas
+  mostrarEstadisticasCompra(): void {
+    if (this.productosEnCompra.length === 0) {
+      this.alertService.showInfo(
+        'No hay productos en la compra actual',
+        'Compra vacía'
+      );
+      return;
+    }
+
+    const totalProductos = this.productosEnCompra.length;
+    const totalUnidades = this.getTotalUnidades();
+    const promedioUnidadesPorProducto = (totalUnidades / totalProductos).toFixed(1);
+    const promedioPrecioPorUnidad = (this.montoTotal / totalUnidades).toFixed(2);
+
+    this.alertService.showInfo(
+      `Estadísticas de compra: ${totalProductos} productos, ${totalUnidades} unidades totales, Promedio: ${promedioUnidadesPorProducto} unidades/producto, $${promedioPrecioPorUnidad}/unidad`,
+      'Estadísticas de compra'
+    );
+  }
+
+  confirmarLimpiarCompra(): void {
+    if (this.productosEnCompra.length === 0) {
+      this.alertService.showInfo(
+        'No hay productos en la compra para limpiar',
+        'Compra vacía'
+      );
+      return;
+    }
+
+    // Mostrar modal de confirmación para limpiar
+    this.mostrarModalLimpiar = true;
+  }
+
+  // Confirmar limpieza desde el modal
+  confirmarLimpieza(): void {
+    this.mostrarModalLimpiar = false;
+    this.limpiarCompra();
+  }
+
+  // Cancelar limpieza desde el modal
+  cancelarLimpieza(): void {
+    this.mostrarModalLimpiar = false;
+  }
+
+  limpiarCompra(): void {
+    // Limpiar sin alerta
+    this.productosEnCompra = [];
+    this.montoTotal = 0;
+  }
+
+  mostrarDetalleProducto(producto: Producto): void {
+    const productoEnCompra = this.productosEnCompra.find(pc => pc.producto.id === producto.id);
+    
+    if (productoEnCompra) {
+      this.alertService.showInfo(
+        `${producto.nombre} - Código: ${producto.codigo} - Precio: $${producto.precioUnitario} - Inventario actual: ${producto.inventarioTeorico} - En compra: ${productoEnCompra.cantidadARecibir} unidades`,
+        'Detalle del producto'
+      );
+    } else {
+      this.alertService.showInfo(
+        `${producto.nombre} - Código: ${producto.codigo} - Precio: $${producto.precioUnitario} - Inventario actual: ${producto.inventarioTeorico} unidades`,
+        'Detalle del producto'
+      );
+    }
+  }
+
+  validarInventarioAlto(): void {
+    const productosAltoInventario = this.productosEnCompra.filter(pc => {
+      const inventarioFinal = pc.producto.inventarioTeorico + pc.cantidadARecibir;
+      return inventarioFinal > 1000;
+    });
+
+    if (productosAltoInventario.length > 0) {
+      const nombres = productosAltoInventario.map(pc => pc.producto.nombre).join(', ');
+      this.alertService.showWarning(
+        `Los siguientes productos tendrán inventario alto después de la compra: ${nombres}`,
+        'Inventario alto detectado'
+      );
+    } else {
+      this.alertService.showSuccess(
+        'Todos los productos tendrán niveles de inventario normales',
+        'Inventario validado'
+      );
+    }
+  }
+
+  mostrarAyudaCompra(): void {
+    this.alertService.showInfo(
+      'Para agregar productos: 1) Ingresa el código o ID del producto, 2) Especifica la cantidad de unidades, 3) Haz clic en "Agregar". Para finalizar, revisa la lista y haz clic en "Cerrar Compra".',
+      'Ayuda - Cómo realizar compras'
+    );
+  }
+
+  buscarProductoPorCodigo(codigo: string): void {
+    const producto = this.productosDisponibles.find(p => 
+      p.codigo.toLowerCase() === codigo.toLowerCase()
+    );
+
+    if (producto) {
+      this.productoId = producto.codigo;
+      this.alertService.showSuccess(
+        `Producto encontrado: ${producto.nombre}`,
+        'Producto seleccionado'
+      );
+    } else {
+      this.alertService.showError(
+        `No se encontró ningún producto con el código "${codigo}"`,
+        'Producto no encontrado'
+      );
+    }
   }
 }

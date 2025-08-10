@@ -5,11 +5,12 @@ import { tap, catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { AlertService } from '../services/alert.service';
 import { ApiResponse, ApiError, ApiSuccess } from '../interfaces/api-response.interface';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class ApiResponseInterceptor implements HttpInterceptor {
 
-    constructor(private alertService: AlertService) { }
+    constructor(private alertService: AlertService, private router: Router) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         // Solo interceptar peticiones POST
@@ -35,25 +36,28 @@ export class ApiResponseInterceptor implements HttpInterceptor {
     private handleSuccessResponse(response: HttpResponse<any>) {
         const body = response.body;
 
-        // Si el backend devuelve nuestro ApiResponse estándar
-        if (this.isApiResponse(body)) {
-            const apiResponse = body as ApiResponse;
-            if (apiResponse.statusCode >= 200 && apiResponse.statusCode < 300) {
-                this.alertService.showSuccess(
-                    apiResponse.message || 'Operación realizada exitosamente',
-                    'Éxito',
-                    3000
-                );
-            }
-            return;
-        }
-
-        // Fallback: mostrar éxito para cualquier 2xx aunque el body no tenga statusCode
+        // Mostrar alertas SOLO si el body tiene un 'message' string
         if (response.status >= 200 && response.status < 300) {
-            const msg = (body && typeof body === 'object' && typeof body.message === 'string')
-                ? body.message
-                : 'Operación realizada exitosamente';
-            this.alertService.showSuccess(msg, 'Éxito', 3000);
+            const hasBodyObject = body && typeof body === 'object';
+            const hasMessage = hasBodyObject && typeof body.message === 'string';
+            if (hasMessage) {
+                this.alertService.showSuccess(body.message, 'Éxito', 0, response.status);
+            }
+            // Redirección: distinguir register (201) vs login (200)
+            const hasAuth = hasBodyObject && typeof body.access_token === 'string' && typeof body.role === 'string';
+            if (hasAuth) {
+                try { localStorage.setItem('access_token', body.access_token); } catch { }
+                const role = (body.role || '').toLowerCase();
+                if (response.status === 201) {
+                    // Después de registrar, ir al login
+                    this.router.navigate(['/auth/login']);
+                } else {
+                    // Después de login, redirigir por rol
+                    if (role === 'usuario') this.router.navigate(['/home']);
+                    else if (role === 'empleado') this.router.navigate(['/pos']);
+                    else if (role === 'encargado') this.router.navigate(['/feed']);
+                }
+            }
         }
     }
 
@@ -75,13 +79,14 @@ export class ApiResponseInterceptor implements HttpInterceptor {
             errorMessage = error.message;
         }
 
-        // Mostrar alerta de error
-        this.alertService.showError(
-            errorMessage,
-            errorTitle,
-            statusCode,
-            5000 // 5 segundos para errores
-        );
+        // Sólo mostrar alerta si tenemos un mensaje específico del backend o algo significativo
+        if (errorMessage) {
+            this.alertService.showError(
+                errorMessage,
+                this.getErrorTitle(statusCode),
+                statusCode
+            );
+        }
     }
 
     private isApiResponse(obj: any): obj is ApiResponse {

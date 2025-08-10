@@ -11,20 +11,14 @@ export class AlertService {
 
   showAlert(alertData: AlertData) {
     this.alertSubject.next(alertData);
-    
-    // Auto-close si se especifica duración
-    if (alertData.duration && alertData.duration > 0) {
-      setTimeout(() => {
-        this.hideAlert();
-      }, alertData.duration);
-    }
   }
 
-  showSuccess(message: string, title: string = 'Éxito', duration: number = 0) {
+  showSuccess(message: string, title: string = 'Éxito', duration: number = 0, statusCode?: number) {
     this.showAlert({
       type: 'success',
       title,
       message,
+      statusCode,
       duration
     });
   }

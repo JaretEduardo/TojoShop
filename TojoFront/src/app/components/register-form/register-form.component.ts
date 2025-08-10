@@ -19,13 +19,13 @@ export class RegisterFormComponent {
     password: '',
     confirmPassword: ''
   };
-  
+
   acceptTerms = false;
   showPassword = false;
   showConfirmPassword = false;
   showTermsModal = false;
   isSubmitting = false;
-  constructor(private alertService: AlertService, private authService: AuthService) {}
+  constructor(private alertService: AlertService, private authService: AuthService) { }
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
@@ -63,10 +63,10 @@ export class RegisterFormComponent {
       return;
     }
 
-  // Validar contraseña (debe ser >= 8 como en el backend)
-  if (this.registerData.password.length < 8) {
+    // Validar contraseña (debe ser >= 8 como en el backend)
+    if (this.registerData.password.length < 8) {
       this.alertService.showWarning(
-    'La contraseña debe tener al menos 8 caracteres',
+        'La contraseña debe tener al menos 8 caracteres',
         'Contraseña muy corta'
       );
       return;
@@ -79,7 +79,7 @@ export class RegisterFormComponent {
       );
       return;
     }
-    
+
     if (!this.acceptTerms) {
       this.showTermsWarning();
       return;
@@ -91,6 +91,7 @@ export class RegisterFormComponent {
       email: this.registerData.email.trim(),
       password: this.registerData.password,
       password_confirmation: this.registerData.confirmPassword,
+      role: 'usuario' as const,
     };
 
     this.authService.Register(payload).subscribe({

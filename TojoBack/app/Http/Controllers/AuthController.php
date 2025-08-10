@@ -22,18 +22,23 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255', // la unicidad ya se validó arriba
             'password' => 'required|string|min:8|confirmed',
+            'role' => 'sometimes|in:usuario,empleado,encargado',
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
+            'role' => $validated['role'] ?? 'usuario',
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => 'Usuario registrado exitosamente',
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'role' => $user->role,
         ], 201);
     }
 
@@ -57,6 +62,8 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
+            'role' => $user->role,
+            'message' => 'Inicio de sesión exitoso'
         ]);
     }
 

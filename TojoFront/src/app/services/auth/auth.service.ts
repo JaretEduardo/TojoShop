@@ -12,13 +12,16 @@ export class AuthService {
   constructor(private http: HttpClient) {}
   
   // Register
-  Register(payload: { name: string; email: string; password: string; password_confirmation: string; }): Observable<ApiResponse> {
+  Register(payload: { name: string; email: string; password: string; password_confirmation: string; role?: 'usuario' | 'empleado' | 'encargado'; }): Observable<ApiResponse> {
     const url = `${environment.apiUrl}${environment.endpoints.register}`;
     return this.http.post<ApiResponse>(url, payload);
   }
 
   // Login
-  Login(): void {}
+  Login(payload: { email: string; password: string }): Observable<ApiResponse> {
+    const url = `${environment.apiUrl}${environment.endpoints.login}`;
+    return this.http.post<ApiResponse>(url, payload);
+  }
 
   // Logout
   Logout(): void {}

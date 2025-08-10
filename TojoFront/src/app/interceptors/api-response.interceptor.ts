@@ -35,11 +35,9 @@ export class ApiResponseInterceptor implements HttpInterceptor {
     private handleSuccessResponse(response: HttpResponse<any>) {
         const body = response.body;
 
-        // Verificar si la respuesta tiene la estructura esperada
+        // Si el backend devuelve nuestro ApiResponse estándar
         if (this.isApiResponse(body)) {
             const apiResponse = body as ApiResponse;
-
-            // Mostrar alerta de éxito si el statusCode está en rango 200-299
             if (apiResponse.statusCode >= 200 && apiResponse.statusCode < 300) {
                 this.alertService.showSuccess(
                     apiResponse.message || 'Operación realizada exitosamente',
@@ -47,6 +45,15 @@ export class ApiResponseInterceptor implements HttpInterceptor {
                     3000
                 );
             }
+            return;
+        }
+
+        // Fallback: mostrar éxito para cualquier 2xx aunque el body no tenga statusCode
+        if (response.status >= 200 && response.status < 300) {
+            const msg = (body && typeof body === 'object' && typeof body.message === 'string')
+                ? body.message
+                : 'Operación realizada exitosamente';
+            this.alertService.showSuccess(msg, 'Éxito', 3000);
         }
     }
 
@@ -61,6 +68,9 @@ export class ApiResponseInterceptor implements HttpInterceptor {
             errorMessage = apiError.message || errorMessage;
             errorTitle = this.getErrorTitle(apiError.statusCode);
             statusCode = apiError.statusCode;
+        } else if (error.error && typeof error.error.message === 'string') {
+            // Si el backend devuelve { message: '...' } sin campos extra
+            errorMessage = error.error.message;
         } else if (error.message) {
             errorMessage = error.message;
         }

@@ -3,7 +3,9 @@
     <div class="alert-modal" [class]="getAlertClass()" (click)="$event.stopPropagation()">
         <div class="alert-modal-header">
             <div class="alert-icon">{{ getAlertIcon() }}</div>
-            <h3 class="alert-modal-title">{{ currentAlert.title }}</h3>
+            <h3 class="alert-modal-title">
+                {{ currentAlert.statusCode ? (currentAlert.statusCode + ' - ' + getStatusLabel(currentAlert.statusCode)) : currentAlert.title }}
+            </h3>
             <button class="alert-close-btn" (click)="closeAlert()">×</button>
         </div>
         

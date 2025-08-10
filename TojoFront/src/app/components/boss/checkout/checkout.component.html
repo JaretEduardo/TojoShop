@@ -1,0 +1,57 @@
+<div class="parent">
+    <!-- Grid padre contenedor -->
+    <div class="div1">
+        <!-- Tabla de registros de tiempo -->
+        <div class="div3">
+            <div class="time-records-container">
+                <div class="table-header">
+                    <div class="header-cell employee-col">EMPLEADO</div>
+                    <div class="header-cell entry-col">ENTRADA</div>
+                    <div class="header-cell exit-col">SALIDA</div>
+                    <div class="header-cell total-col">TIEMPO TOTAL</div>
+                </div>
+
+                <div class="table-body">
+                    <div class="table-row" *ngFor="let record of timeRecords; trackBy: trackByEmployee">
+                        <div class="table-cell employee-col">
+                            <div class="employee-info">
+                                <div class="employee-name">{{ record.employeeName }}</div>
+                                <div class="employee-id">ID: {{ record.employeeId }}</div>
+                            </div>
+                        </div>
+                        <div class="table-cell entry-col">
+                            <div class="time-info entry-time">
+                                <div class="time-display">{{ record.entryTime | date:'HH:mm' }}</div>
+                                <div class="date-display">{{ record.entryTime | date:'MMM dd' }}</div>
+                            </div>
+                        </div>
+                        <div class="table-cell exit-col">
+                            <div class="time-info exit-time">
+                                <div class="time-display" *ngIf="record.exitTime">{{ record.exitTime | date:'HH:mm' }}</div>
+                                <div class="time-display working" *ngIf="!record.exitTime">TRABAJANDO</div>
+                                <div class="date-display" *ngIf="record.exitTime">{{ record.exitTime | date:'MMM dd' }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-cell total-col">
+                            <div class="total-time">
+                                <div class="hours-display">{{ formatTotalTime(record.totalHours) }}</div>
+                                <div class="hours-label">HORAS</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selector de fecha -->
+        <div class="div2">
+            <div class="date-selector">
+                <label for="selectedDate" class="date-label">FECHA CONSULTA</label>
+                <input type="date" id="selectedDate" class="date-input" [(ngModel)]="selectedDate" (change)="onDateChange()"
+                    [max]="maxDate">
+                <div class="date-glow"></div>
+            </div>
+        </div>
+    </div>
+</div>

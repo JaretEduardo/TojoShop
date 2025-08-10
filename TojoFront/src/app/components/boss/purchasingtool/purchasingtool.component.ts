@@ -260,7 +260,8 @@ export class PurchasingtoolComponent {
     // Mostrar confirmación de éxito
     this.alertService.showSuccess(
       `¡Compra procesada exitosamente! ${resumenCompra.productos} productos ingresados, ${resumenCompra.unidades} unidades totales por $${resumenCompra.total.toFixed(2)} MXN. El inventario ha sido actualizado.`,
-      'Compra completada'
+      'Compra completada',
+      0 // No se cierra automáticamente
     );
   }
 

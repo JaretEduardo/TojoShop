@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AlertService } from '../../../services/alert.service';
+import { PurchasingtoolComponent } from '../purchasingtool/purchasingtool.component';
 
 interface ProductoForm {
   codigo: string;
@@ -30,7 +31,7 @@ interface Gondola {
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PurchasingtoolComponent],
   templateUrl: './products.component.html',
   styleUrl: './products.component.css'
 })
@@ -187,9 +188,7 @@ export class ProductsBossComponent {
            this.productoForm.descripcion.trim() !== '' &&
            this.productoForm.precio > 0 &&
            this.productoForm.peso > 0 &&
-           this.productoForm.categoria !== '' &&
-           this.gondolaSeleccionada !== '' &&
-           this.posicionSeleccionada !== null;
+           this.productoForm.categoria !== '';
   }
 
   // Obtener clase CSS para cada posición
@@ -285,6 +284,9 @@ export class ProductsBossComponent {
       return;
     }
 
+    // Validación de góndola y posición comentada temporalmente
+    // hasta implementar el selector de góndolas en el UI
+    /*
     // Validar góndola seleccionada
     if (!this.gondolaSeleccionada) {
       this.alertService.showError(
@@ -323,12 +325,16 @@ export class ProductsBossComponent {
     // Marcar posición como ocupada
     posicion.ocupado = true;
     posicion.producto = this.productoForm.nombre;
+    */
+
+    // Simular guardado del producto sin ubicación específica
+    const nombreProducto = this.productoForm.nombre;
 
     // Simular guardado del producto
     const productoData = {
       ...this.productoForm,
-      gondola: gondola.nombre,
-      posicion: this.posicionSeleccionada
+      // Ubicación será asignada automáticamente por el sistema
+      ubicacion: 'Por asignar'
     };
     
     console.log('Producto agregado:', productoData);
@@ -346,7 +352,7 @@ export class ProductsBossComponent {
 
     // Mostrar confirmación de éxito
     this.alertService.showSuccess(
-      `El producto "${nombreProducto}" ha sido agregado exitosamente en ${nombreGondola} - Posición ${posicionInfo}`,
+      `El producto "${nombreProducto}" ha sido agregado exitosamente al catálogo. La ubicación será asignada automáticamente.`,
       'Producto agregado'
     );
   }

@@ -316,8 +316,8 @@ body {
     animation: bounce 2s infinite;
 }
 
-/* ===== NAVIGATION TAB STYLES (div3, div4, div5, div6) ===== */
-.div3, .div4, .div5, .div6 {
+/* ===== NAVIGATION TAB STYLES (div3, div4, div5, div6, div6a) ===== */
+.div3, .div4, .div5, .div6, .div6a {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -500,6 +500,7 @@ body {
     .div4 { grid-area: 1 / 1 / 2 / 2; }
     .div5 { grid-area: 1 / 2 / 2 / 4; }
     .div6 { grid-area: 2 / 1 / 12 / 3; }
+    .div6a { grid-area: 2 / 3 / 12 / 5; }
     .div7 { grid-area: 3 / 1 / 4 / 3; }
     .div8 { grid-area: 5 / 1 / 6 / 3; }
     .div9 { grid-area: 7 / 1 / 8 / 3; }

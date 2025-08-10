@@ -20,7 +20,7 @@ export class AlertService {
     }
   }
 
-  showSuccess(message: string, title: string = 'Éxito', duration: number = 3000) {
+  showSuccess(message: string, title: string = 'Éxito', duration: number = 0) {
     this.showAlert({
       type: 'success',
       title,

@@ -59,8 +59,8 @@ export class BossDashboardComponent implements OnInit, OnDestroy {
       this.activeTab = 'identity';
     } else if (currentUrl.includes('/products')) {
       this.activeTab = 'products';
-    } else if (currentUrl.includes('/purchasing')) {
-      this.activeTab = 'purchasing';
+    } else if (currentUrl.includes('/checkout')) {
+      this.activeTab = 'checkout';
     } else if (currentUrl.includes('/alertfeed')) {
       this.activeTab = 'alertfeed';
     } else {

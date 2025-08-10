@@ -1,5 +1,52 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
 
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem 1rem 1.5rem;
+}
+/* Keep within main content width and avoid stretching */
+.pagination-container .pagination {
+    max-width: 600px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.pagination .page-number,
+.pagination .page-arrow {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 0.5rem;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0,0,0,0.25);
+    color: #fff;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination .page-number:hover,
+.pagination .page-arrow:hover {
+    border-color: rgba(255, 107, 53, 0.7);
+    box-shadow: 0 4px 10px rgba(255, 107, 53, 0.25);
+}
+
+.pagination .page-number.active {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.9), rgba(139, 92, 246, 0.9));
+    border-color: transparent;
+}
+
+.pagination .ellipsis {
+    padding: 0 0.25rem;
+    color: rgba(255,255,255,0.6);
+}
+
 /* ===== GRID LAYOUT ===== */
 .parent {
     display: grid;
@@ -192,7 +239,11 @@
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     padding: 1rem;
+    justify-items: center; /* center cards horizontally */
 }
+
+/* Keep card width stable even when only one product exists */
+.product-card { width: 100%; max-width: 340px; }
 
 .product-card {
     background: linear-gradient(135deg, 
@@ -378,3 +429,33 @@
         letter-spacing: 2px;
     }
 }
+
+/* Pagination styles */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 1.5rem 0 2.5rem;
+}
+.page-arrow,
+.page-number {
+    height: 36px;
+    min-width: 36px;
+    padding: 0 10px;
+    border-radius: 18px;
+    border: 2px solid rgba(255, 107, 53, 0.35);
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.12), rgba(139, 92, 246, 0.12));
+    color: #fff;
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+.page-number.active {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.8), rgba(139, 92, 246, 0.8));
+    border-color: #ff6b35;
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.25);
+}
+.page-arrow:disabled { opacity: 0.4; cursor: default; }
+.page-arrow:hover:not(:disabled),
+.page-number:hover { background: rgba(255,255,255,0.12); border-color: #ff6b35; }
+.ellipsis { padding: 0 0.35rem; opacity: 0.7; }

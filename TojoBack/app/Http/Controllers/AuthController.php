@@ -63,8 +63,9 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'Bearer',
             'role' => $user->role,
+            'name' => $user->name,
             'message' => 'Inicio de sesión exitoso'
-        ]);
+        ], 200);
     }
 
     public function logout(Request $request)

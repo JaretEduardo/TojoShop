@@ -12,7 +12,7 @@ import { ApiResponseInterceptor } from './interceptors/api-response.interceptor'
 function sanitizeStorageFactory() {
   return () => {
     try {
-      const allowed = new Set(['access_token']);
+  const allowed = new Set(['access_token', 'user_name', 'user_role']);
       for (let i = localStorage.length - 1; i >= 0; i--) {
         const key = localStorage.key(i);
         if (!key) continue;

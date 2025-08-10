@@ -3,6 +3,7 @@ import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/c
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { SpinnerService } from '../services/spinner.service';
+import { SKIP_SPINNER } from './http-context-tokens';
 
 @Injectable()
 export class SpinnerInterceptor implements HttpInterceptor {
@@ -10,11 +11,17 @@ export class SpinnerInterceptor implements HttpInterceptor {
   constructor(private spinnerService: SpinnerService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    this.spinnerService.show();
+    // Allow requests to opt-out of the global spinner via HttpContext
+    const skip = req.context.get(SKIP_SPINNER);
+    if (!skip) {
+      this.spinnerService.show();
+    }
     
     return next.handle(req).pipe(
       finalize(() => {
-        this.spinnerService.hide();
+        if (!skip) {
+          this.spinnerService.hide();
+        }
       })
     );
   }

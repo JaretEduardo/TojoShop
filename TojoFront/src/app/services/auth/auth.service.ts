@@ -26,6 +26,12 @@ export class AuthService {
         if (res && typeof res.access_token === 'string') {
           try { localStorage.setItem('access_token', res.access_token); } catch {}
         }
+        if (res && typeof res.name === 'string') {
+          try { localStorage.setItem('user_name', res.name); } catch {}
+        }
+        if (res && typeof res.role === 'string') {
+          try { localStorage.setItem('user_role', res.role); } catch {}
+        }
       })
     );
   }
@@ -38,6 +44,8 @@ export class AuthService {
     return this.http.post<ApiResponse>(url, {}, { headers }).pipe(
       tap(() => {
         try { localStorage.removeItem('access_token'); } catch {}
+  try { localStorage.removeItem('user_role'); } catch {}
+  try { localStorage.removeItem('user_name'); } catch {}
       })
     );
   }

@@ -22,6 +22,20 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Pagination (Google-like) moved inside main content to center properly -->
+            <div class="pagination-container" *ngIf="lastPage > 1">
+                <div class="pagination">
+                    <button class="page-arrow" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">‹</button>
+
+                    <ng-container *ngFor="let p of getPages()">
+                        <button *ngIf="p !== '...'" class="page-number" [class.active]="p === currentPage" (click)="goToPage(+p)">{{ p }}</button>
+                        <span *ngIf="p === '...'" class="ellipsis">…</span>
+                    </ng-container>
+
+                    <button class="page-arrow" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === lastPage">›</button>
+                </div>
+            </div>
         </div>
 
         <!-- Título PRODUCTOS (div2) -->
@@ -46,9 +60,7 @@
                 <div class="category-filter">
                     <select class="filter-select" [(ngModel)]="selectedCategory" (change)="filterProducts()">
                         <option value="">Todas las categorías</option>
-                        <option value="electronics">Electrónicos</option>
-                        <option value="clothing">Ropa</option>
-                        <option value="accessories">Accesorios</option>
+                        <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
                     </select>
                 </div>
 
@@ -68,6 +80,8 @@
                 </button>
             </div>
         </div>
+
+        
     </div>
 
     <!-- Modal de información del producto -->

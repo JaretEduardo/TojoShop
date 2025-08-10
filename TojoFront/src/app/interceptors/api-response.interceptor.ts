@@ -46,7 +46,6 @@ export class ApiResponseInterceptor implements HttpInterceptor {
             // Redirección: distinguir register (201) vs login (200)
             const hasAuth = hasBodyObject && typeof body.access_token === 'string' && typeof body.role === 'string';
             if (hasAuth) {
-                try { localStorage.setItem('access_token', body.access_token); } catch { }
                 const role = (body.role || '').toLowerCase();
                 if (response.status === 201) {
                     // Después de registrar, ir al login

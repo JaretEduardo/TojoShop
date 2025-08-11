@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { StartComponent } from '../start/start.component';
+import { ProductsService } from '../../../services/products.service';
 
 interface CartItem {
   id: number;
@@ -19,40 +20,47 @@ interface CartItem {
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.css'
 })
-export class CartComponent {
-  cartItems: CartItem[] = [
-    {
-      id: 1,
-      name: 'Cyberpunk Jacket',
-      description: 'Chaqueta futurista con luces LED integradas',
-      price: 299.99,
-      image: 'https://via.placeholder.com/80x80/ff6b35/ffffff?text=Jacket',
-      quantity: 1
-    },
-    {
-      id: 2,
-      name: 'Neural Headset',
-      description: 'Auriculares con tecnología de realidad aumentada',
-      price: 599.99,
-      image: 'https://via.placeholder.com/80x80/8b5cf6/ffffff?text=Headset',
-      quantity: 2
-    }
-  ];
+export class CartComponent implements OnInit {
+  cartItems: CartItem[] = [];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private productsService: ProductsService) { }
+
+  ngOnInit(): void {
+    this.loadCart();
+  }
+
+  private loadCart() {
+    this.productsService.cartList().subscribe(items => {
+      this.cartItems = items.map((i: any) => ({
+        id: i.product_id ?? i.id,
+        name: i.name,
+        description: i.description ?? '',
+        price: Number(i.price),
+        image: 'https://via.placeholder.com/80x80/8b5cf6/ffffff?text=' + encodeURIComponent(i.name),
+        quantity: i.quantity ?? 1,
+      }));
+    });
+  }
 
   increaseQuantity(item: CartItem) {
-    item.quantity++;
+    const next = item.quantity + 1;
+    this.productsService.updateCart(item.id, next).subscribe({
+      next: () => item.quantity = next
+    });
   }
 
   decreaseQuantity(item: CartItem) {
-    if (item.quantity > 1) {
-      item.quantity--;
-    }
+    if (item.quantity <= 1) return;
+    const next = item.quantity - 1;
+    this.productsService.updateCart(item.id, next).subscribe({
+      next: () => item.quantity = next
+    });
   }
 
   removeFromCart(item: CartItem) {
-    this.cartItems = this.cartItems.filter(cartItem => cartItem.id !== item.id);
+    this.productsService.removeFromCart(item.id).subscribe(() => {
+      this.cartItems = this.cartItems.filter(cartItem => cartItem.id !== item.id);
+    });
   }
 
   getSubtotal(): number {
@@ -68,7 +76,13 @@ export class CartComponent {
   }
 
   checkout() {
-    console.log('Procediendo al pago...');
+    this.productsService.checkout().subscribe({
+      next: () => {
+        // Vaciar UI del carrito y navegar a órdenes
+        this.cartItems = [];
+        this.router.navigate(['/orders']);
+      },
+    });
   }
 
   goToProducts() {

@@ -88,6 +88,8 @@
     <app-products-info 
         [product]="selectedProduct" 
         [isVisible]="isModalVisible" 
-        (closeModal)="closeProductModal()">
+        (closeModal)="closeProductModal()"
+        (addToCart)="addToCart($event)"
+        (buyProduct)="buyNow($event)">
     </app-products-info>
 </app-start>

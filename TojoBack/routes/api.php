@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\FavoritesController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrdersController;
 
 // Auth routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -21,4 +23,14 @@ Route::middleware('auth:sanctum')->group(function () {
 	Route::get('/favorites', [FavoritesController::class, 'index']);
 	Route::post('/favorites', [FavoritesController::class, 'store']);
 	Route::delete('/favorites/{productId}', [FavoritesController::class, 'destroy']);
+	// Cart routes
+	Route::get('/cart', [CartController::class, 'index']);
+	Route::post('/cart', [CartController::class, 'store']);
+	Route::patch('/cart/{productId}', [CartController::class, 'update']);
+	Route::delete('/cart/{productId}', [CartController::class, 'destroy']);
+	// Checkout
+	Route::post('/cart/checkout', [CartController::class, 'checkout']);
+
+	// Orders
+	Route::get('/orders', [OrdersController::class, 'index']);
 });

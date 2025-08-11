@@ -22,7 +22,7 @@ interface FavoriteItem {
 export class FavoritesComponent implements OnInit {
   favoriteItems: FavoriteItem[] = [];
 
-  constructor(private router: Router, private productsService: ProductsService) {}
+  constructor(private router: Router, private productsService: ProductsService) { }
 
   ngOnInit(): void {
     this.loadFavorites();
@@ -47,7 +47,7 @@ export class FavoritesComponent implements OnInit {
   }
 
   addToCart(item: FavoriteItem) {
-    console.log(`${item.name} agregado al carrito`);
+    this.productsService.addToCart(item.id, 1).subscribe();
   }
 
   goToProducts() {

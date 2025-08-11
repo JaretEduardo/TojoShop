@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { StartComponent } from '../start/start.component';
 import { ProductsInfoComponent, Product } from '../../../shared/products-info/products-info.component';
 import { ProductsService, ProductDto, CategoryDto, Paginated } from '../../../services/products.service';
+import { Router } from '@angular/router';
 // no debounce; we will fetch on every keystroke with spinner suppressed
 
 @Component({
@@ -32,19 +33,19 @@ export class ProductsComponent implements OnInit {
   products: Product[] = [];
   // removed Subject to trigger requests immediately
 
-  constructor(private productsService: ProductsService) {}
+  constructor(private productsService: ProductsService, private router: Router) { }
 
   ngOnInit() {
     this.loadCategories();
     // debounce search changes
-  // initial load with spinner
+    // initial load with spinner
     this.fetchProducts(this.currentPage, { skipSpinner: false });
   }
 
   filterProducts() {
     this.currentPage = 1;
-  // fetch on every keystroke; suppress spinner for typing
-  this.fetchProducts(this.currentPage, { skipSpinner: true });
+    // fetch on every keystroke; suppress spinner for typing
+    this.fetchProducts(this.currentPage, { skipSpinner: true });
   }
 
   clearFilters() {
@@ -72,7 +73,7 @@ export class ProductsComponent implements OnInit {
   }
 
   addToCart(product: Product) {
-    console.log(`${product.name} agregado al carrito`);
+    this.productsService.addToCart(product.id, 1).subscribe();
   }
 
   // Métodos del modal
@@ -84,6 +85,23 @@ export class ProductsComponent implements OnInit {
   closeProductModal() {
     this.isModalVisible = false;
     this.selectedProduct = null;
+  }
+
+  // Comprar ahora: agrega al carrito y procede al checkout (como en CartComponent)
+  buyNow(product: Product) {
+    this.productsService.addToCart(product.id, 1).subscribe({
+      next: () => this.proceedCheckout(),
+      error: () => this.proceedCheckout(), // si ya estaba en carrito o falla, intentamos checkout igual
+    });
+  }
+
+  private proceedCheckout() {
+    this.productsService.checkout().subscribe({
+      next: () => {
+        this.closeProductModal();
+        this.router.navigate(['/orders']);
+      },
+    });
   }
 
   // Backend integration
@@ -122,7 +140,7 @@ export class ProductsComponent implements OnInit {
   goToPage(page: number) {
     if (page < 1 || page > this.lastPage) return;
     this.currentPage = page;
-  this.fetchProducts(this.currentPage, { skipSpinner: false });
+    this.fetchProducts(this.currentPage, { skipSpinner: false });
   }
 
   getPages(): (number | '...')[] {

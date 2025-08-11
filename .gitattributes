@@ -1,0 +1,22 @@
+# Normalize line endings and avoid CRLF/LF warnings
+* text=auto
+
+# Force LF for source files
+*.php  text eol=lf
+*.js   text eol=lf
+*.ts   text eol=lf
+*.css  text eol=lf
+*.scss text eol=lf
+*.html text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+
+# Windows scripts keep CRLF
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+*.ps1  text eol=crlf
+
+# Unix scripts keep LF
+*.sh   text eol=lf

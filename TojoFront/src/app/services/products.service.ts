@@ -48,7 +48,7 @@ export class ProductsService {
         let httpParams = new HttpParams()
             .set('page', String(params.page ?? 1))
             .set('per_page', String(params.per_page ?? 12));
-    if (params.q !== undefined) httpParams = httpParams.set('q', (params.q ?? '').toString().trim());
+        if (params.q !== undefined) httpParams = httpParams.set('q', (params.q ?? '').toString().trim());
         if (params.category_id) httpParams = httpParams.set('category_id', String(params.category_id));
         const ctx = options?.skipSpinner ? new HttpContext().set(SKIP_SPINNER, true) : undefined;
         return this.http.get<Paginated<ProductDto>>(url, { params: httpParams, context: ctx });
@@ -84,5 +84,40 @@ export class ProductsService {
     removeFavorite(productId: number): Observable<{ message: string }> {
         const url = `${this.base}${environment.endpoints.favoritesRemove}/${productId}`;
         return this.http.delete<{ message: string }>(url, { headers: this.authHeaders() });
+    }
+
+    // Cart API
+    cartList(): Observable<Array<ProductDto & { quantity: number }>> {
+        const url = `${this.base}${environment.endpoints.cartIndex}`;
+        return this.http
+            .get<{ message: string; data: Array<ProductDto & { quantity: number }> }>(url, { headers: this.authHeaders() })
+            .pipe(map(res => res.data));
+    }
+
+    addToCart(productId: number, quantity: number = 1): Observable<{ message: string }> {
+        const url = `${this.base}${environment.endpoints.cartAdd}`;
+        return this.http.post<{ message: string }>(url, { product_id: productId, quantity }, { headers: this.authHeaders() });
+    }
+
+    removeFromCart(productId: number): Observable<{ message: string }> {
+        const url = `${this.base}${environment.endpoints.cartRemove}/${productId}`;
+        return this.http.delete<{ message: string }>(url, { headers: this.authHeaders() });
+    }
+
+    updateCart(productId: number, quantity: number): Observable<{ message: string }> {
+        const url = `${this.base}${environment.endpoints.cartUpdate}/${productId}`;
+        return this.http.patch<{ message: string }>(url, { quantity }, { headers: this.authHeaders() });
+    }
+
+    checkout(): Observable<{ message: string; data: any }> {
+        const url = `${this.base}${environment.endpoints.cartCheckout}`;
+        return this.http.post<{ message: string; data: any }>(url, {}, { headers: this.authHeaders() });
+    }
+
+    orders(): Observable<any[]> {
+        const url = `${this.base}${environment.endpoints.ordersIndex}`;
+        return this.http
+            .get<{ message: string; data: any[] }>(url, { headers: this.authHeaders() })
+            .pipe(map(res => res.data));
     }
 }

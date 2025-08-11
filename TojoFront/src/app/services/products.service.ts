@@ -40,14 +40,18 @@ export class ProductsService {
             .pipe(map(res => res.data));
     }
 
-    list(params: { page?: number; per_page?: number; q?: string; category_id?: number | '' }): Observable<Paginated<ProductDto>> {
+    list(
+        params: { page?: number; per_page?: number; q?: string; category_id?: number | '' },
+        options?: { skipSpinner?: boolean }
+    ): Observable<Paginated<ProductDto>> {
         const url = `${this.base}${environment.endpoints.productsIndex}`;
         let httpParams = new HttpParams()
             .set('page', String(params.page ?? 1))
             .set('per_page', String(params.per_page ?? 12));
-        if (params.q && params.q.trim().length >= 2) httpParams = httpParams.set('q', params.q.trim());
+    if (params.q !== undefined) httpParams = httpParams.set('q', (params.q ?? '').toString().trim());
         if (params.category_id) httpParams = httpParams.set('category_id', String(params.category_id));
-        return this.http.get<Paginated<ProductDto>>(url, { params: httpParams });
+        const ctx = options?.skipSpinner ? new HttpContext().set(SKIP_SPINNER, true) : undefined;
+        return this.http.get<Paginated<ProductDto>>(url, { params: httpParams, context: ctx });
     }
 
     categories(): Observable<CategoryDto[]> {

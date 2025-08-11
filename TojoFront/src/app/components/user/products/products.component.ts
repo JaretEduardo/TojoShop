@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { StartComponent } from '../start/start.component';
 import { ProductsInfoComponent, Product } from '../../../shared/products-info/products-info.component';
 import { ProductsService, ProductDto, CategoryDto, Paginated } from '../../../services/products.service';
+// no debounce; we will fetch on every keystroke with spinner suppressed
 
 @Component({
   selector: 'app-products',
@@ -29,17 +30,21 @@ export class ProductsComponent implements OnInit {
   isModalVisible: boolean = false;
 
   products: Product[] = [];
+  // removed Subject to trigger requests immediately
 
   constructor(private productsService: ProductsService) {}
 
   ngOnInit() {
     this.loadCategories();
-    this.fetchProducts();
+    // debounce search changes
+  // initial load with spinner
+    this.fetchProducts(this.currentPage, { skipSpinner: false });
   }
 
   filterProducts() {
     this.currentPage = 1;
-    this.fetchProducts();
+  // fetch on every keystroke; suppress spinner for typing
+  this.fetchProducts(this.currentPage, { skipSpinner: true });
   }
 
   clearFilters() {
@@ -82,13 +87,13 @@ export class ProductsComponent implements OnInit {
   }
 
   // Backend integration
-  private fetchProducts(page: number = this.currentPage) {
+  private fetchProducts(page: number = this.currentPage, options?: { skipSpinner?: boolean }) {
     this.productsService.list({
       page,
       per_page: 12,
       q: this.searchTerm,
       category_id: this.selectedCategory ? Number(this.selectedCategory) : ''
-    }).subscribe((res: Paginated<ProductDto>) => {
+    }, { skipSpinner: options?.skipSpinner }).subscribe((res: Paginated<ProductDto>) => {
       // map DTOs to UI Product
       this.products = res.data.map(d => ({
         id: d.id,
@@ -117,7 +122,7 @@ export class ProductsComponent implements OnInit {
   goToPage(page: number) {
     if (page < 1 || page > this.lastPage) return;
     this.currentPage = page;
-    this.fetchProducts();
+  this.fetchProducts(this.currentPage, { skipSpinner: false });
   }
 
   getPages(): (number | '...')[] {

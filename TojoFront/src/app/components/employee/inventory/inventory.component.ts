@@ -1,199 +1,107 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ProductsService, ProductDto, CategoryDto } from '../../../services/products.service';
 
-interface Product {
-  id: string;
+interface InventoryProduct {
+  id: number;
   name: string;
-  category: string;
+  category: string | null; // category name
   stockTotal: number;
-  stockGondola: number;
-  stockAlmacen: number;
+  price: number;
   lastUpdated?: string;
+  updating?: boolean;
 }
 
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.css'
 })
 export class InventoryComponent {
-  activeCategory: string = 'all';
+  categories: Array<CategoryDto & { active?: boolean }> = [];
+  activeCategory: number | 'all' = 'all';
+  loading = false;
+  products: InventoryProduct[] = [];
 
-  products: Product[] = [
-    {
-      id: 'BEB001',
-      name: 'Coca Cola 350ml',
-      category: 'bebidas',
-      stockTotal: 48,
-      stockGondola: 24,
-      stockAlmacen: 24
-    },
-    {
-      id: 'BEB002',
-      name: 'Agua Mineral 500ml',
-      category: 'bebidas',
-      stockTotal: 36,
-      stockGondola: 18,
-      stockAlmacen: 18
-    },
-    {
-      id: 'SNK001',
-      name: 'Papas Fritas Original',
-      category: 'snacks',
-      stockTotal: 25,
-      stockGondola: 15,
-      stockAlmacen: 10
-    },
-    {
-      id: 'SNK002',
-      name: 'Palomitas de Maíz',
-      category: 'snacks',
-      stockTotal: 20,
-      stockGondola: 12,
-      stockAlmacen: 8
-    },
-    {
-      id: 'DUL001',
-      name: 'Chocolate con Leche',
-      category: 'dulces',
-      stockTotal: 32,
-      stockGondola: 20,
-      stockAlmacen: 12
-    },
-    {
-      id: 'DUL002',
-      name: 'Caramelos Surtidos',
-      category: 'dulces',
-      stockTotal: 45,
-      stockGondola: 25,
-      stockAlmacen: 20
-    },
-    {
-      id: 'LAC001',
-      name: 'Leche Entera 1L',
-      category: 'lacteos',
-      stockTotal: 28,
-      stockGondola: 16,
-      stockAlmacen: 12
-    },
-    {
-      id: 'LAC002',
-      name: 'Yogurt Natural 200g',
-      category: 'lacteos',
-      stockTotal: 40,
-      stockGondola: 24,
-      stockAlmacen: 16
-    },
-    {
-      id: 'BEB003',
-      name: 'Jugo de Naranja 1L',
-      category: 'bebidas',
-      stockTotal: 22,
-      stockGondola: 14,
-      stockAlmacen: 8
-    },
-    {
-      id: 'SNK003',
-      name: 'Galletas Saladas',
-      category: 'snacks',
-      stockTotal: 30,
-      stockGondola: 18,
-      stockAlmacen: 12
-    },
-    {
-      id: 'DUL003',
-      name: 'Gomitas de Frutas',
-      category: 'dulces',
-      stockTotal: 35,
-      stockGondola: 22,
-      stockAlmacen: 13
-    },
-    {
-      id: 'LAC003',
-      name: 'Queso Crema 200g',
-      category: 'lacteos',
-      stockTotal: 18,
-      stockGondola: 10,
-      stockAlmacen: 8
-    },
-    {
-      id: 'BEB004',
-      name: 'Energizante 250ml',
-      category: 'bebidas',
-      stockTotal: 24,
-      stockGondola: 16,
-      stockAlmacen: 8
-    },
-    {
-      id: 'SNK004',
-      name: 'Nueces Mixtas',
-      category: 'snacks',
-      stockTotal: 15,
-      stockGondola: 9,
-      stockAlmacen: 6
-    },
-    {
-      id: 'DUL004',
-      name: 'Barra de Cereal',
-      category: 'dulces',
-      stockTotal: 40,
-      stockGondola: 25,
-      stockAlmacen: 15
-    },
-    {
-      id: 'LAC004',
-      name: 'Mantequilla 250g',
-      category: 'lacteos',
-      stockTotal: 20,
-      stockGondola: 12,
-      stockAlmacen: 8
-    },
-    {
-      id: 'BEB005',
-      name: 'Té Helado 500ml',
-      category: 'bebidas',
-      stockTotal: 26,
-      stockGondola: 16,
-      stockAlmacen: 10
-    },
-    {
-      id: 'SNK005',
-      name: 'Pretzels Salados',
-      category: 'snacks',
-      stockTotal: 22,
-      stockGondola: 14,
-      stockAlmacen: 8
-    }
-  ];
+  constructor(private productsService: ProductsService) {}
 
-  setActiveCategory(category: string): void {
+  ngOnInit() {
+    this.fetchCategories();
+    this.loadProducts();
+  }
+
+  fetchCategories() {
+    this.productsService.categories().subscribe({
+      next: (cats) => {
+        this.categories = cats.map(c => ({ ...c }));
+      },
+      error: () => {
+        this.categories = [];
+      }
+    });
+  }
+
+  setActiveCategory(category: number | 'all'): void {
     this.activeCategory = category;
+    this.loadProducts();
   }
 
-  getFilteredProducts(): Product[] {
-    if (this.activeCategory === 'all') {
-      return this.products;
-    }
-    return this.products.filter(product => product.category === this.activeCategory);
+  loadProducts(page = 1, per_page = 60) {
+    this.loading = true;
+    this.productsService.list({ page, per_page, category_id: this.activeCategory === 'all' ? undefined : this.activeCategory }).subscribe({
+      next: (res) => {
+        const items = res.data as ProductDto[];
+        this.products = items.map(p => ({
+          id: p.id,
+          name: p.name,
+          category: p.category?.name ?? null,
+          stockTotal: p.stock,
+          price: p.price,
+        }));
+        this.loading = false;
+      },
+      error: () => {
+        this.products = [];
+        this.loading = false;
+      }
+    });
   }
 
-  updateStock(productId: string): void {
-    const product = this.products.find(p => p.id === productId);
-    if (product) {
-      // Aquí iría la lógica para actualizar el stock
-      console.log(`Actualizando stock para producto: ${product.name} (${productId})`);
-      
-      // Simular actualización
-      product.lastUpdated = new Date().toLocaleTimeString('es-ES', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      });
-      
-      // Aquí podrías hacer una llamada a la API para actualizar el stock
-      // this.inventoryService.updateStock(productId).subscribe(...)
-    }
+  getFilteredProducts(): InventoryProduct[] {
+    // Products already filtered server-side, but keep for safety when 'all'
+    if (this.activeCategory === 'all') return this.products;
+    return this.products.filter(p => !!p.category);
+  }
+
+  updateStock(productId: number): void {
+    const idx = this.products.findIndex(p => p.id === productId);
+    if (idx === -1) return;
+    const product = this.products[idx];
+    product.updating = true;
+    // Usamos search con el ID para obtener el producto más reciente
+    this.productsService.search(String(productId)).subscribe({
+      next: (results) => {
+        const found = results.find(r => r.id === productId) ?? results[0];
+        if (found) {
+          this.products[idx] = {
+            id: found.id,
+            name: found.name,
+            category: found.category?.name ?? null,
+            stockTotal: found.stock,
+            price: found.price,
+            lastUpdated: new Date().toLocaleTimeString('es-ES', {
+              hour: '2-digit', minute: '2-digit', second: '2-digit'
+            })
+          };
+        }
+        product.updating = false;
+      },
+      error: () => {
+        product.updating = false;
+      }
+    });
   }
 }

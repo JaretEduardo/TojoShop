@@ -151,6 +151,63 @@
     z-index: 10;
 }
 
+/* Nuevo: grupo y etiqueta del filtro */
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.8);
+    text-transform: uppercase;
+}
+
+.select-wrap {
+    position: relative;
+}
+
+.select-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 107, 53, 0.8);
+    pointer-events: none;
+    text-shadow: 0 0 8px rgba(255, 107, 53, 0.6);
+}
+
+/* Reusa look del sitio para selects */
+.filter-select {
+    padding: 10px 36px 10px 14px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 2px solid rgba(255, 107, 53, 0.35);
+    border-radius: 12px;
+    color: #fff;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    min-width: 190px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.filter-select:focus {
+    border-color: #ff6b35;
+    box-shadow: 0 0 15px rgba(255, 107, 53, 0.35);
+}
+
+.filter-select option {
+    background: #111;
+    color: #fff;
+}
+
 .category-btn {
     background: linear-gradient(135deg, 
         rgba(255, 107, 53, 0.2) 0%,
@@ -271,6 +328,58 @@
     font-family: 'Orbitron', monospace;
 }
 
+/* Nuevo: contenedor de meta e insignia de categoría */
+.product-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.category-badge {
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.05));
+    color: #d9c8ff;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+}
+
+.category-badge.unknown {
+    border-color: rgba(255, 255, 255, 0.25);
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.8);
+    text-shadow: none;
+}
+
+/* Nuevo: estado vacío */
+.empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 28px;
+    border-radius: 12px;
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    background: rgba(0,0,0,0.35);
+    color: rgba(255,255,255,0.8);
+}
+
+.empty-icon {
+    font-size: 2rem;
+    filter: drop-shadow(0 0 10px rgba(255, 107, 53, 0.6));
+}
+
+.empty-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+}
+
 /* ===== INFORMACIÓN DE STOCK ===== */
 .stock-info {
     display: flex;
@@ -295,6 +404,18 @@
         rgba(34, 197, 94, 0.2) 0%,
         rgba(34, 197, 94, 0.05) 100%);
     border-color: rgba(34, 197, 94, 0.3);
+}
+
+/* Disponible usa el mismo acento verde que gondola */
+.stock-info.available {
+    background: linear-gradient(135deg, 
+        rgba(34, 197, 94, 0.2) 0%,
+        rgba(34, 197, 94, 0.05) 100%);
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+.stock-info.available {
+    justify-content: center;
 }
 
 .stock-info.warehouse {
@@ -327,6 +448,11 @@
 }
 
 .stock-info.gondola .stock-value {
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
+}
+
+.stock-info.available .stock-value {
     color: #ffffff;
     text-shadow: 0 0 10px rgba(34, 197, 94, 0.8);
 }
@@ -381,6 +507,52 @@
 .btn-icon {
     font-size: 1rem;
     filter: drop-shadow(0 0 5px currentColor);
+}
+
+/* KPIs compactos */
+/* Filas extra: Price y Updated con look coherente */
+.stock-info.price {
+    background: linear-gradient(135deg,
+        rgba(59, 130, 246, 0.2) 0%,
+        rgba(59, 130, 246, 0.05) 100%);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.stock-info.price .stock-value {
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+}
+
+.stock-info.updated {
+    background: linear-gradient(135deg,
+        rgba(16, 185, 129, 0.2) 0%,
+        rgba(16, 185, 129, 0.05) 100%);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.stock-info.updated .stock-value {
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
+}
+
+/* Botón actualizar: estado loading */
+.update-btn.loading {
+    position: relative;
+    opacity: 0.85;
+    cursor: wait;
+}
+
+.spinner::after {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #ff6b35;
+    border-radius: 50%;
+    display: inline-block;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 /* ===== RESPONSIVE DESIGN ===== */

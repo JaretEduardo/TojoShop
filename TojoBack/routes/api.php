@@ -17,6 +17,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::get('/products', [ProductsController::class, 'index']);
 Route::get('/products/categories', [ProductsController::class, 'categories']);
 Route::get('/products/search', [ProductsController::class, 'search']);
+Route::middleware('auth:sanctum')->post('/products/decrement-stock', [ProductsController::class, 'decrementStock']);
 
 // Favorites routes (auth required)
 Route::middleware('auth:sanctum')->group(function () {

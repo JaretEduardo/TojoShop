@@ -1,0 +1,40 @@
+<div class="modal-overlay" *ngIf="visible" (click)="onClose()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title">
+        <span *ngIf="mode==='cash'">💵 Pago en efectivo</span>
+        <span *ngIf="mode==='card'">💳 Pago con tarjeta</span>
+      </h3>
+      <button class="close-btn" (click)="onClose()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="total-row">
+        <span class="label">Total a pagar</span>
+        <span class="value">${{ total }}</span>
+      </div>
+
+      <div *ngIf="mode==='cash'" class="cash-section">
+        <label class="label" for="recibido">Monto recibido</label>
+        <input id="recibido" type="number" min="0" step="0.01" class="input"
+               [(ngModel)]="receivedStr" placeholder="0.00" />
+        <div class="change-row" *ngIf="received >= total">
+          <span class="label">Cambio</span>
+          <span class="value">${{ change }}</span>
+        </div>
+      </div>
+
+      <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn ghost" (click)="onClose()">Cancelar</button>
+      <button class="btn primary" *ngIf="mode==='cash'" [disabled]="!canConfirmCash" (click)="onConfirm()">
+        Confirmar y cobrar
+      </button>
+      <button class="btn primary" *ngIf="mode==='card'" (click)="onConfirm()">
+        Confirmar pago
+      </button>
+    </div>
+  </div>
+</div>

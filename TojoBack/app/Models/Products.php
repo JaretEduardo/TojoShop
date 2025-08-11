@@ -40,9 +40,13 @@ class Products extends Model
     public function scopeSearch($query, string $term)
     {
         $t = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $term) . '%';
-        return $query->where(function ($q) use ($t) {
+        return $query->where(function ($q) use ($t, $term) {
             $q->where('name', 'like', $t)
-                ->orWhere('description', 'like', $t);
+              ->orWhere('description', 'like', $t);
+            // If the term is numeric, also match by exact ID
+            if (ctype_digit(trim($term))) {
+                $q->orWhere('id', (int) trim($term));
+            }
         });
     }
 

@@ -120,4 +120,10 @@ export class ProductsService {
             .get<{ message: string; data: any[] }>(url, { headers: this.authHeaders() })
             .pipe(map(res => res.data));
     }
+
+    // POS: decrement product stock after a direct sale
+    decrementStock(items: Array<{ product_id: number; quantity: number }>): Observable<{ message: string; data: any }>{
+        const url = `${this.base}${environment.endpoints.productsDecrementStock}`;
+        return this.http.post<{ message: string; data: any }>(url, { items }, { headers: this.authHeaders() });
+    }
 }

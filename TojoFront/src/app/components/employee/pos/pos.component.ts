@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ProductsService, ProductDto } from '../../../services/products.service';
+import { debounceTime, distinctUntilChanged, Subject, switchMap, of } from 'rxjs';
+import { PosPaymentModalComponent } from './pos-payment-modal.component';
+import { PosConfirmModalComponent } from './pos-confirm-modal.component';
 
 export interface CartItem {
   id: number;
@@ -21,7 +25,7 @@ export interface Product {
 @Component({
   selector: 'app-pos',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PosPaymentModalComponent, PosConfirmModalComponent],
   templateUrl: './pos.component.html',
   styleUrl: './pos.component.css'
 })
@@ -29,18 +33,33 @@ export class PosComponent {
   productCode: string = '';
   cartItems: CartItem[] = [];
   lastAddedItem: CartItem | null = null;
+  suggestions: ProductDto[] = [];
+  showSuggestions = false;
+  private input$ = new Subject<string>();
 
-  // Mock products database
-  products: Product[] = [
-    { id: 1, code: '001', name: 'Coca Cola 600ml', price: 25.50, stock: 50 },
-    { id: 2, code: '002', name: 'Doritos Nacho', price: 35.00, stock: 30 },
-    { id: 3, code: '003', name: 'Pan Bimbo', price: 28.75, stock: 20 },
-    { id: 4, code: '004', name: 'Leche Lala 1L', price: 22.00, stock: 15 },
-    { id: 5, code: '005', name: 'Cerveza Corona', price: 18.50, stock: 25 },
-    { id: 6, code: '006', name: 'Agua Bonafont 1.5L', price: 15.00, stock: 40 },
-    { id: 7, code: '007', name: 'Galletas Oreo', price: 32.00, stock: 35 },
-    { id: 8, code: '008', name: 'Jabón Zest', price: 12.75, stock: 60 }
-  ];
+  // Modal state
+  showPaymentModal = false;
+  paymentMode: 'cash' | 'card' = 'cash';
+  paymentError: string | null = null;
+  totalToPay = 0;
+
+  // Confirm cancel modal state
+  showCancelConfirm = false;
+
+  constructor(private productsService: ProductsService) {}
+
+  ngOnInit() {
+    this.input$
+      .pipe(
+        debounceTime(250),
+        distinctUntilChanged(),
+        switchMap(term => term.trim() ? this.productsService.search(term.trim()) : of([]))
+      )
+      .subscribe((res: ProductDto[]) => {
+        this.suggestions = res.slice(0, 5);
+        this.showSuggestions = this.suggestions.length > 0;
+      });
+  }
 
   addProduct(): void {
     if (this.productCode.trim()) {
@@ -49,41 +68,87 @@ export class PosComponent {
   }
 
   searchProduct(): void {
-    const product = this.products.find(p => 
-      p.code.toLowerCase() === this.productCode.toLowerCase()
-    );
+    const term = this.productCode.trim();
+    if (!term) return;
 
-    if (product) {
-      this.addToCart(product);
-      this.productCode = '';
-    } else {
-      alert('Producto no encontrado');
-    }
+    this.productsService.search(term).subscribe({
+      next: (results: ProductDto[]) => {
+        if (!results || results.length === 0) {
+          alert('Producto no encontrado');
+          return;
+        }
+
+        // Si escriben un número, intenta coincidir por id exacto
+        const asNumber = Number(term);
+        let picked: ProductDto | undefined;
+        if (!isNaN(asNumber)) {
+          picked = results.find(r => r.id === asNumber);
+        }
+        // Si no, intenta por nombre exacto (case-insensitive)
+        if (!picked) {
+          picked = results.find(r => r.name.toLowerCase() === term.toLowerCase());
+        }
+        // Como fallback, toma el primero
+        if (!picked) picked = results[0];
+
+        this.addDtoToCart(picked);
+        this.productCode = '';
+  this.clearSuggestions();
+      },
+      error: () => alert('Error al buscar el producto'),
+    });
   }
 
-  addToCart(product: Product): void {
+  private addDtoToCart(product: ProductDto): void {
     const existingItem = this.cartItems.find(item => item.id === product.id);
-    
+
     if (existingItem) {
       existingItem.quantity++;
+      this.lastAddedItem = existingItem;
     } else {
       const newItem: CartItem = {
         id: product.id,
-        code: product.code,
+        code: String(product.id),
         name: product.name,
-        price: product.price,
-        quantity: 1
+        price: Number(product.price),
+        quantity: 1,
       };
       this.cartItems.push(newItem);
       this.lastAddedItem = newItem;
     }
   }
 
+  onCodeInput(): void {
+    const term = this.productCode ?? '';
+    if (!term.trim()) {
+      this.clearSuggestions();
+      return;
+    }
+    this.input$.next(term);
+  }
+
+  selectSuggestion(p: ProductDto): void {
+    this.addDtoToCart(p);
+    this.productCode = '';
+    this.clearSuggestions();
+  }
+
+  onBlurSuggestions(): void {
+    // Give time for mousedown selection to fire before hiding
+    setTimeout(() => this.clearSuggestions(), 150);
+  }
+
+  private clearSuggestions() {
+    this.suggestions = [];
+    this.showSuggestions = false;
+  }
+
   repeatLast(): void {
     if (this.lastAddedItem) {
-      const product = this.products.find(p => p.id === this.lastAddedItem!.id);
-      if (product) {
-        this.addToCart(product);
+      const existingItem = this.cartItems.find(i => i.id === this.lastAddedItem!.id);
+      if (existingItem) {
+        existingItem.quantity++;
+        this.lastAddedItem = existingItem;
       }
     }
   }
@@ -101,13 +166,19 @@ export class PosComponent {
 
   cancelAll(): void {
     if (this.cartItems.length > 0) {
-      const confirm = window.confirm('¿Estás seguro de cancelar toda la venta?');
-      if (confirm) {
-        this.cartItems = [];
-        this.lastAddedItem = null;
-        this.productCode = '';
-      }
+      this.showCancelConfirm = true;
     }
+  }
+
+  onCancelConfirmClose() {
+    this.showCancelConfirm = false;
+  }
+
+  onCancelConfirmAccept() {
+    this.cartItems = [];
+    this.lastAddedItem = null;
+    this.productCode = '';
+    this.showCancelConfirm = false;
   }
 
   increaseQuantity(index: number): void {
@@ -146,38 +217,64 @@ export class PosComponent {
 
   processCashPayment(): void {
     if (this.cartItems.length === 0) {
-      alert('No hay productos en la venta');
+      this.paymentError = 'No hay productos en la venta';
+      this.paymentMode = 'cash';
+      this.totalToPay = 0;
+      this.showPaymentModal = true;
       return;
     }
     
-    const total = this.getFinalTotal();
-    const cash = prompt(`Total a pagar: $${total}\nIngrese el monto recibido:`);
-    
-    if (cash) {
-      const cashAmount = parseFloat(cash);
-      if (cashAmount >= total) {
-        const change = cashAmount - total;
-        alert(`Pago procesado!\nCambio: $${change.toFixed(2)}`);
-        this.completeSale();
-      } else {
-        alert('El monto ingresado es insuficiente');
-      }
-    }
+    this.paymentMode = 'cash';
+    this.totalToPay = this.getFinalTotal();
+    this.paymentError = null;
+    this.showPaymentModal = true;
   }
 
   processCardPayment(): void {
     if (this.cartItems.length === 0) {
-      alert('No hay productos en la venta');
+      this.paymentError = 'No hay productos en la venta';
+      this.paymentMode = 'card';
+      this.totalToPay = 0;
+      this.showPaymentModal = true;
       return;
     }
     
-    const total = this.getFinalTotal();
-    const confirm = window.confirm(`¿Procesar pago con tarjeta por $${total}?`);
-    
-    if (confirm) {
-      alert('Pago con tarjeta procesado exitosamente!');
-      this.completeSale();
-    }
+    this.paymentMode = 'card';
+    this.totalToPay = this.getFinalTotal();
+    this.paymentError = null;
+    this.showPaymentModal = true;
+  }
+
+  // Modal handlers
+  onClosePaymentModal() {
+    this.showPaymentModal = false;
+  }
+
+  onConfirmCash(received: number) {
+    // Ejecutar descuento de stock
+    const items = this.cartItems.map(i => ({ product_id: i.id, quantity: i.quantity }));
+    this.productsService.decrementStock(items).subscribe({
+      next: () => {
+        this.showPaymentModal = false;
+        this.completeSale();
+      },
+      error: (err) => {
+        this.paymentError = err?.error?.message || 'Error al actualizar stock';
+      }
+    });
+  }
+
+  onConfirmCard() {
+    const items = this.cartItems.map(i => ({ product_id: i.id, quantity: i.quantity }));
+    this.productsService.decrementStock(items).subscribe({
+      next: () => {
+        this.showPaymentModal = false;
+        this.completeSale();
+      },
+      error: (err) => {
+        this.paymentError = err?.error?.message || 'Error al actualizar stock';
+      }
+    });
   }
 
   completeSale(): void {

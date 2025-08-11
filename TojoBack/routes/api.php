@@ -17,10 +17,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::get('/products', [ProductsController::class, 'index']);
 Route::get('/products/categories', [ProductsController::class, 'categories']);
 Route::get('/products/search', [ProductsController::class, 'search']);
-Route::middleware('auth:sanctum')->post('/products/decrement-stock', [ProductsController::class, 'decrementStock']);
+// POS action: only employees can decrement stock via POS
+Route::middleware(['auth:sanctum', 'role:employee'])->post('/products/decrement-stock', [ProductsController::class, 'decrementStock']);
 
 // Favorites routes (auth required)
-Route::middleware('auth:sanctum')->group(function () {
+// Customer features: only 'user' role (not employee) can use favorites/cart/orders
+Route::middleware(['auth:sanctum', 'role:user'])->group(function () {
 	Route::get('/favorites', [FavoritesController::class, 'index']);
 	Route::post('/favorites', [FavoritesController::class, 'store']);
 	Route::delete('/favorites/{productId}', [FavoritesController::class, 'destroy']);

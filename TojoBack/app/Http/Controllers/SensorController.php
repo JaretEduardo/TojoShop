@@ -91,6 +91,21 @@ class SensorController extends Controller
 
     public function DeleteFeed(Request $request, $sensorKey)
     {
-        // Lógica para manejar la solicitud de eliminación de un feed específico
+        // Lógica para manejar la solicitud de eliminación de un sensor en específico
+        $sensor = Sensor::where('key', $sensorKey)->first();
+
+        if (!$sensor) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Sensor no encontrado',
+            ], 404);
+        }
+
+        $sensor->delete();
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Sensor eliminado correctamente',
+        ], 200);
     }
 }

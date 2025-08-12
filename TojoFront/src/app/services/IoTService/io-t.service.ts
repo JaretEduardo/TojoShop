@@ -37,6 +37,11 @@ export interface ApiListSensorsResponse {
   data: SensorDto[];
 }
 
+export interface ApiDeleteSensorResponse {
+  statusCode: number;
+  message: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class IoTService {
   private readonly baseUrl = environment.apiUrl;
@@ -86,6 +91,8 @@ export class IoTService {
   // Update Feed
   UpdateFeed(): void { }
 
-  // Delete Feed
-  DeleteFeed(): void { }
+  // Delete Feed by key
+  DeleteFeed(key: string): Observable<ApiDeleteSensorResponse> {
+    return this.http.delete<ApiDeleteSensorResponse>(`${this.baseUrl}${environment.endpoints.bossendpoints.deletefeed}/${encodeURIComponent(key)}`);
+  }
 }

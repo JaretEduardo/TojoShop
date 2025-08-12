@@ -181,8 +181,9 @@
         0 0.9375rem 2.5rem rgba(0, 0, 0, 0.6),
         inset 0 0 2.5rem rgba(0, 255, 255, 0.05);
     z-index: 1;
-    min-height: 320px;
-    max-height: 320px;
+    /* Altura ajustada: antes 320px fijos; ahora más espacio y sin recorte para contenido adicional */
+    min-height: 360px;
+    /* max-height eliminada para permitir crecimiento dinámico según contenido */
     width: 100%;
     max-width: 340px;
 }
@@ -832,6 +833,61 @@
     border: 0.0625rem solid #ffffff;
     text-shadow: 0 0 0.5rem rgba(255, 255, 255, 0.8);
 }
+
+/* Key del sensor (pill interactivo para copiar) */
+.sensor-key {
+    margin: 0.1rem 0 0.4rem;
+    background: linear-gradient(135deg, rgba(0,255,255,0.18), rgba(255,0,102,0.18));
+    border: 1px solid rgba(0,255,255,0.4);
+    color: #e2ffff;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 1.2px;
+    padding: 0.45rem 0.65rem 0.4rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    line-height: 1;
+    text-transform: uppercase;
+    transition: all .35s ease;
+    box-shadow: 0 0 12px rgba(0,255,255,0.25), inset 0 0 8px rgba(0,255,255,0.08);
+}
+.sensor-key .label {
+    background: rgba(0,0,0,0.5);
+    padding: 0.25rem 0.45rem 0.22rem;
+    border-radius: 6px;
+    font-weight: 700;
+    color: #00ffff;
+    border: 1px solid rgba(0,255,255,0.4);
+    text-shadow: 0 0 6px rgba(0,255,255,0.7);
+    font-size: 0.55rem;
+}
+.sensor-key .valor {
+    max-width: 120px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
+}
+.sensor-key .icono { font-size: 0.7rem; opacity: .85; }
+.sensor-key:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 0 18px rgba(0,255,255,0.45), 0 0 26px rgba(255,0,102,0.35), inset 0 0 12px rgba(0,255,255,0.12);
+    border-color: #ff0066;
+}
+.sensor-key:active { transform: scale(.94); }
+.sensor-key.copiado {
+    background: linear-gradient(135deg, rgba(0,255,128,0.25), rgba(0,255,64,0.15));
+    border-color: #00ff80;
+    box-shadow: 0 0 22px rgba(0,255,128,0.55), inset 0 0 14px rgba(0,255,128,0.25);
+}
+.sensor-key.copiado .valor { color: #d9ffe6; }
+.sensor-key.copiado .copiado-text { color: #00ff80; font-weight: 700; text-shadow: 0 0 8px rgba(0,255,128,0.8); }
 
 /* Botón Ver Datos dentro de las tarjetas */
 .btn-datos-tarjeta {

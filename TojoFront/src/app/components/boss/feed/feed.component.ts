@@ -13,6 +13,8 @@ import { IoTService, CreateFeedRequest } from '../../../services/IoTService/io-t
 })
 export class FeedComponent implements OnInit {
   sensores: string[] = [];
+  // Keys reales correspondientes (mismo índice que sensores)
+  sensorKeys: string[] = [];
   sensoresActivos = 0;
   sensoresInactivos = 0;
   
@@ -33,7 +35,8 @@ export class FeedComponent implements OnInit {
   // Modal eliminar
   showDeleteModal = false;
   deleting = false;
-  sensorAEliminar: { nombre: string, index: number } | null = null;
+  sensorAEliminar: { nombre: string, index: number, key: string } | null = null;
+  copiedKeyIndex: number | null = null;
 
   // ===== Modal agregar nuevo sensor =====
   showAddSensorModal = false;
@@ -92,6 +95,7 @@ export class FeedComponent implements OnInit {
       next: resp => {
         const lista = Array.isArray(resp.data) ? resp.data : [];
         this.sensores = lista.map(s => s.name || s.key);
+  this.sensorKeys = lista.map(s => s.key);
         // Mapear estados (fallback). Si API devuelve 'status' boolean preferirlo; si state string usarlo.
         this.estadoSensores = lista.map(s => {
           const raw: any = s;
@@ -130,6 +134,7 @@ export class FeedComponent implements OnInit {
       next: (resp) => {
         // Actualizar lista local (optimista)
         this.sensores.push(nombre);
+  this.sensorKeys.push(key);
         this.estadoSensores.push(activo);
         this.actualizarContadores();
         this.savingSensor = false;
@@ -247,9 +252,11 @@ export class FeedComponent implements OnInit {
 
   // ====== Eliminar (solo UI por ahora) ======
   openDeleteModal(index: number) {
-    const sensoresLista = this.getSensoresFiltrados();
-    const nombre = sensoresLista[index];
-    this.sensorAEliminar = { nombre, index: this.sensores.indexOf(nombre) };
+  const filtrados = this.getSensoresFiltrados();
+  const nombre = filtrados[index];
+  const originalIndex = this.sensores.indexOf(nombre);
+  const key = originalIndex > -1 ? this.sensorKeys[originalIndex] : nombre; // fallback si algo falla
+  this.sensorAEliminar = { nombre, index: originalIndex, key };
     this.showDeleteModal = true;
   }
 
@@ -261,19 +268,48 @@ export class FeedComponent implements OnInit {
 
   confirmDelete() {
     if (!this.sensorAEliminar) return;
+    const idx = this.sensorAEliminar.index;
+    if (idx < 0 || idx >= this.sensores.length) return;
+    const key = this.sensorAEliminar.key || this.sensorKeys[idx] || this.sensores[idx];
     this.deleting = true;
-    // Simulación de espera; futura integración backend aquí
-    setTimeout(() => {
-      // Eliminación local simulada
-      const idx = this.sensorAEliminar?.index ?? -1;
-      if (idx > -1) {
+    this.iot.DeleteFeed(key).subscribe({
+      next: resp => {
+        // Éxito: remover local
         this.sensores.splice(idx, 1);
+        this.sensorKeys.splice(idx, 1);
         this.estadoSensores.splice(idx, 1);
         this.actualizarContadores();
+        this.deleting = false;
+        this.showDeleteModal = false;
+        this.sensorAEliminar = null;
+      },
+      error: err => {
+        console.error('Error eliminando sensor', err);
+        this.deleting = false;
       }
-      this.deleting = false;
-      this.showDeleteModal = false;
-      this.sensorAEliminar = null;
-    }, 600);
+    });
+  }
+
+  // Obtener key real dado índice en lista filtrada
+  getSensorKey(indexFiltrado: number): string {
+    const filtrados = this.getSensoresFiltrados();
+    const nombre = filtrados[indexFiltrado];
+    const originalIndex = this.sensores.indexOf(nombre);
+    if (originalIndex > -1) return this.sensorKeys[originalIndex];
+    return nombre; // fallback
+  }
+
+  copyKey(indexFiltrado: number) {
+    const key = this.getSensorKey(indexFiltrado);
+    if (navigator && navigator.clipboard) {
+      navigator.clipboard.writeText(key).then(() => {
+        this.copiedKeyIndex = indexFiltrado;
+        setTimeout(() => {
+          if (this.copiedKeyIndex === indexFiltrado) this.copiedKeyIndex = null;
+        }, 1800);
+      }).catch(() => {
+        // fallback silencioso
+      });
+    }
   }
 }

@@ -24,6 +24,7 @@
     <!-- Disposición estilo original (3 columnas, múltiples filas) mostrando todos -->
     <div class="sensores-fixed-layout">
         <div *ngFor="let sensor of getSensoresFiltrados(); let i = index" class="tarjeta-sensor sensor-appear"
+            [attr.data-key]="getSensorKey(i)"
             [style.animationDelay]="(i * 90) + 'ms'" [class.sensor-activo]="isSensorActivo(i)"
             [class.sensor-inactivo]="!isSensorActivo(i)">
             <button class="btn-toggle-esquina" [class.toggle-activo]="!isSensorActivo(i)"
@@ -38,7 +39,13 @@
                     <div class="sensor-icon">📡</div>
                 </div>
                 <h4 class="sensor-name">{{ sensor }}</h4>
-                <span class="sensor-status">Estado: {{ isSensorActivo(i) ? 'Activo' : 'Inactivo' }}</span>
+                                <span class="sensor-status">Estado: {{ isSensorActivo(i) ? 'Activo' : 'Inactivo' }}</span>
+                                <button type="button" class="sensor-key" [class.copiado]="copiedKeyIndex === i" (click)="copyKey(i)" title="Click para copiar">
+                                    <span class="label">KEY</span>
+                                    <span class="valor" *ngIf="copiedKeyIndex !== i">{{ getSensorKey(i) }}</span>
+                                    <span class="valor copiado-text" *ngIf="copiedKeyIndex === i">Copiado!</span>
+                                    <span class="icono" aria-hidden="true">📋</span>
+                                </button>
                 <button class="btn-datos-tarjeta" (click)="verDatosSensor(i)">Ver Datos</button>
             </div>
         </div>

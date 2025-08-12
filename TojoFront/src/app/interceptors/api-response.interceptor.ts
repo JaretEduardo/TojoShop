@@ -13,8 +13,10 @@ export class ApiResponseInterceptor implements HttpInterceptor {
     constructor(private alertService: AlertService, private router: Router) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        // Solo interceptar peticiones POST
-        if (req.method !== 'POST') {
+        // Interceptar métodos que modifican estado (POST, PUT, PATCH, DELETE) para mostrar alertas
+        const methodsToHandle = ['POST', 'PUT', 'PATCH', 'DELETE'];
+        const shouldHandle = methodsToHandle.includes(req.method);
+        if (!shouldHandle) {
             return next.handle(req);
         }
 
@@ -22,7 +24,7 @@ export class ApiResponseInterceptor implements HttpInterceptor {
             tap(event => {
                 // Manejar respuestas exitosas
                 if (event instanceof HttpResponse) {
-                    this.handleSuccessResponse(event);
+                    this.handleSuccessResponse(event, req.method);
                 }
             }),
             catchError((error: HttpErrorResponse) => {
@@ -33,7 +35,7 @@ export class ApiResponseInterceptor implements HttpInterceptor {
         );
     }
 
-    private handleSuccessResponse(response: HttpResponse<any>) {
+    private handleSuccessResponse(response: HttpResponse<any>, method: string) {
         const body = response.body;
 
         // Mostrar alertas SOLO si el body tiene un 'message' string
@@ -41,7 +43,15 @@ export class ApiResponseInterceptor implements HttpInterceptor {
             const hasBodyObject = body && typeof body === 'object';
             const hasMessage = hasBodyObject && typeof body.message === 'string';
             if (hasMessage) {
-                this.alertService.showSuccess(body.message, 'Éxito', 0, response.status);
+                // Personalizar título según método
+                let title = 'Éxito';
+                switch (method) {
+                    case 'DELETE': title = 'Eliminado'; break;
+                    case 'PUT':
+                    case 'PATCH': title = 'Actualizado'; break;
+                    case 'POST': title = response.status === 201 ? 'Creado' : 'Procesado'; break;
+                }
+                this.alertService.showSuccess(body.message, title, 0, response.status);
             }
             // Redirección: distinguir register (201) vs login (200)
             const hasAuth = hasBodyObject && typeof body.access_token === 'string' && typeof body.role === 'string';

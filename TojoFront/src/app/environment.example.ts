@@ -20,7 +20,8 @@ export const environment = {
         ordersIndex: '/orders',
         bossendpoints: {
             allfeeds: '/allfeeds',
-            createfeed: '/sensors'
+            createfeed: '/createfeed',
+            deletefeed: '/deletefeed'
         }
     }
 };

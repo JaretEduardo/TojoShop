@@ -1054,6 +1054,39 @@
 }
 .btn-delete-esquina:active { transform: scale(0.95); }
 
+/* Botón editar en esquina superior derecha (al lado del delete) */
+.btn-edit-esquina {
+    position: absolute;
+    top: 0.75rem;
+    right: 4.5rem; /* Espacio para que no se superponga con el delete */
+    background: linear-gradient(145deg, #081a08, #133313);
+    border: 0.1875rem solid #00ff3c;
+    border-radius: 0.5rem;
+    color: #ffffff;
+    padding: 0.45rem 0.65rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.05rem;
+    transition: all 0.35s ease;
+    font-family: inherit;
+    z-index: 10;
+    box-shadow:
+        0 0 1.25rem rgba(0, 255, 60, 0.5),
+        0 0.25rem 0.75rem rgba(0, 0, 0, 0.85),
+        inset 0 0 0.5rem rgba(0, 255, 60, 0.2);
+    text-shadow: 0 0 0.4rem rgba(0, 255, 60, 0.7);
+}
+.btn-edit-esquina:hover {
+    transform: scale(1.12) translateY(-0.1rem);
+    box-shadow:
+        0 0 1.8rem rgba(0, 255, 60, 0.85),
+        0 0 3.2rem rgba(0, 255, 60, 0.55),
+        inset 0 0 0.8rem rgba(0, 255, 60, 0.4);
+    background: linear-gradient(145deg, #133313, #1d521d);
+}
+.btn-edit-esquina:active { transform: scale(0.95); }
+
 /* ===== Delete confirmation modal ===== */
 .delete-confirm-backdrop {
     position: fixed;
@@ -1151,3 +1184,89 @@
 .btn-confirm-del:hover { box-shadow: 0 0 24px rgba(255,0,102,0.55), 0 0 30px rgba(0,255,255,0.35); }
 .btn-confirm-del:disabled { opacity: .55; cursor: not-allowed; }
 .spinner.small { width: 18px; height: 18px; border-width: 3px; }
+
+/* ===== MODAL EDITAR SENSOR ===== */
+.edit-sensor-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.25s ease;
+}
+
+.edit-sensor-modal {
+    width: 700px;
+    max-width: 95%;
+    background: linear-gradient(135deg, rgba(15,15,25,0.95), rgba(35,15,45,0.92));
+    border: 2px solid rgba(0,255,128,0.35);
+    box-shadow: 0 0 35px rgba(0,255,128,0.35), 0 0 55px rgba(0,255,255,0.25);
+    padding: 2.2rem 2.4rem 2rem;
+    border-radius: 28px;
+    font-family: 'Orbitron', monospace;
+    position: relative;
+    animation: popIn 0.3s ease;
+}
+
+.edit-sensor-header {
+    font-size: 1.6rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg,#00ff80,#00ffff,#00ff80);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 18px rgba(0,255,128,0.45);
+    margin-bottom: 1.25rem;
+    animation: shimmerTitle 4s linear infinite;
+}
+
+.edit-sensor-disclaimer {
+    background: linear-gradient(90deg, rgba(0,255,128,0.18), rgba(0,255,255,0.14));
+    border: 1px solid rgba(0,255,128,0.55);
+    padding: 1rem 1.15rem;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    letter-spacing: 0.6px;
+    color: #f5f5f5;
+    margin-bottom: 1.4rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.edit-sensor-disclaimer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.12), transparent);
+    animation: sweep 6s linear infinite;
+}
+
+.edit-sensor-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.readonly-input {
+    background: rgba(100,100,100,0.25) !important;
+    color: #aaa !important;
+    cursor: not-allowed !important;
+    border-color: rgba(170,170,170,0.3) !important;
+}
+
+.readonly-input:focus {
+    border-color: rgba(170,170,170,0.4) !important;
+    box-shadow: 0 0 0 2px rgba(170,170,170,0.15) !important;
+}

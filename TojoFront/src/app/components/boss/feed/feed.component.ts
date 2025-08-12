@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalDataComponent } from '../modal-data/modal-data.component';
-import { IoTService, CreateFeedRequest } from '../../../services/IoTService/io-t.service';
+import { IoTService, CreateFeedRequest, UpdateFeedRequest } from '../../../services/IoTService/io-t.service';
 
 @Component({
   selector: 'app-feed',
@@ -15,6 +15,8 @@ export class FeedComponent implements OnInit {
   sensores: string[] = [];
   // Keys reales correspondientes (mismo índice que sensores)
   sensorKeys: string[] = [];
+  // Datos completos de sensores para usar en edición
+  sensoresCompletos: any[] = [];
   sensoresActivos = 0;
   sensoresInactivos = 0;
   
@@ -37,6 +39,19 @@ export class FeedComponent implements OnInit {
   deleting = false;
   sensorAEliminar: { nombre: string, index: number, key: string } | null = null;
   copiedKeyIndex: number | null = null;
+
+  // ===== Modal editar sensor =====
+  showEditSensorModal = false;
+  editingSensor = false;
+  sensorAEditar: { index: number, key: string } | null = null;
+  editarSensor = {
+    key: '',
+    nombre: '',
+    activo: true,
+    tipoDato: 'temperatura',
+    minValue: null as number | null,
+    maxValue: null as number | null
+  };
 
   // ===== Modal agregar nuevo sensor =====
   showAddSensorModal = false;
@@ -95,7 +110,8 @@ export class FeedComponent implements OnInit {
       next: resp => {
         const lista = Array.isArray(resp.data) ? resp.data : [];
         this.sensores = lista.map(s => s.name || s.key);
-  this.sensorKeys = lista.map(s => s.key);
+        this.sensorKeys = lista.map(s => s.key);
+        this.sensoresCompletos = lista; // Guardar datos completos
         // Mapear estados (fallback). Si API devuelve 'status' boolean preferirlo; si state string usarlo.
         this.estadoSensores = lista.map(s => {
           const raw: any = s;
@@ -134,7 +150,8 @@ export class FeedComponent implements OnInit {
       next: (resp) => {
         // Actualizar lista local (optimista)
         this.sensores.push(nombre);
-  this.sensorKeys.push(key);
+        this.sensorKeys.push(key);
+        this.sensoresCompletos.push(resp.data); // Añadir datos completos desde respuesta
         this.estadoSensores.push(activo);
         this.actualizarContadores();
         this.savingSensor = false;
@@ -172,29 +189,56 @@ export class FeedComponent implements OnInit {
 
   // Activa o desactiva un sensor
   toggleSensor(index: number): void {
-  const sensoresPagina = this.getSensoresFiltrados();
-  const sensorNombre = sensoresPagina[index];
-  const indiceOriginal = this.sensores.indexOf(sensorNombre);
+    const sensoresPagina = this.getSensoresFiltrados();
+    const sensorNombre = sensoresPagina[index];
+    const indiceOriginal = this.sensores.indexOf(sensorNombre);
     
-    // Obtener el estado actual antes del cambio
+    if (indiceOriginal < 0) return; // Sensor no encontrado
+    
+    // Obtener datos del sensor para enviar solo el campo status actualizado
+    const sensorCompleto = this.sensoresCompletos[indiceOriginal];
+    const key = this.sensorKeys[indiceOriginal];
+    const nuevoEstado = !this.estadoSensores[indiceOriginal];
+    
+    // Crear payload con todos los datos actuales, cambiando solo el estado
+    const payload: UpdateFeedRequest = {
+      key: key,
+      nombre: sensorCompleto?.name || sensorNombre,
+      tipoDato: sensorCompleto?.type_data || 'temperatura',
+      activo: nuevoEstado, // Solo este campo cambia
+      minValue: sensorCompleto?.min_value || null,
+      maxValue: sensorCompleto?.max_value || null
+    };
+    
+    // Actualizar inmediatamente en la UI (optimistic update)
     const estadoAnterior = this.estadoSensores[indiceOriginal];
-    
-    // Cambiar el estado del sensor
-    this.estadoSensores[indiceOriginal] = !this.estadoSensores[indiceOriginal];
-    
-    // Actualizar los contadores
+    this.estadoSensores[indiceOriginal] = nuevoEstado;
     this.actualizarContadores();
     
-    // Cambiar automáticamente al filtro correspondiente al nuevo estado
-    if (this.filtroActual !== 'todos') {
-      if (estadoAnterior === false && this.estadoSensores[indiceOriginal] === true) {
-        // Se activó un sensor inactivo -> cambiar a filtro "activos"
-        this.filtroActual = 'activos';
-      } else if (estadoAnterior === true && this.estadoSensores[indiceOriginal] === false) {
-        // Se desactivó un sensor activo -> cambiar a filtro "inactivos"
-        this.filtroActual = 'inactivos';
+    // Llamar al backend para persistir el cambio
+    this.iot.UpdateFeed(key, payload).subscribe({
+      next: (resp) => {
+        // Actualizar datos completos con respuesta del servidor
+        this.sensoresCompletos[indiceOriginal] = resp.data;
+        
+        // Cambiar automáticamente al filtro correspondiente al nuevo estado
+        if (this.filtroActual !== 'todos') {
+          if (estadoAnterior === false && nuevoEstado === true) {
+            // Se activó un sensor inactivo -> cambiar a filtro "activos"
+            this.filtroActual = 'activos';
+          } else if (estadoAnterior === true && nuevoEstado === false) {
+            // Se desactivó un sensor activo -> cambiar a filtro "inactivos"
+            this.filtroActual = 'inactivos';
+          }
+        }
+      },
+      error: (err) => {
+        console.error('Error actualizando estado del sensor', err);
+        // Revertir el cambio en caso de error
+        this.estadoSensores[indiceOriginal] = estadoAnterior;
+        this.actualizarContadores();
       }
-    }
+    });
   }
 
   // Actualiza los contadores basado en el estado actual
@@ -277,6 +321,7 @@ export class FeedComponent implements OnInit {
         // Éxito: remover local
         this.sensores.splice(idx, 1);
         this.sensorKeys.splice(idx, 1);
+        this.sensoresCompletos.splice(idx, 1); // También remover de datos completos
         this.estadoSensores.splice(idx, 1);
         this.actualizarContadores();
         this.deleting = false;
@@ -311,5 +356,91 @@ export class FeedComponent implements OnInit {
         // fallback silencioso
       });
     }
+  }
+
+  // ====== Editar sensor ======
+  openEditModal(index: number) {
+    const filtrados = this.getSensoresFiltrados();
+    const nombre = filtrados[index];
+    const originalIndex = this.sensores.indexOf(nombre);
+    const key = originalIndex > -1 ? this.sensorKeys[originalIndex] : nombre;
+    
+    this.sensorAEditar = { index: originalIndex, key };
+    
+    // Obtener datos completos del sensor actual
+    const sensorCompleto = originalIndex > -1 ? this.sensoresCompletos[originalIndex] : null;
+    
+    // Pre-llenar formulario con datos reales actuales
+    this.editarSensor = {
+      key: key,
+      nombre: nombre,
+      activo: originalIndex > -1 ? this.estadoSensores[originalIndex] : true,
+      tipoDato: sensorCompleto?.type_data || 'temperatura',
+      minValue: sensorCompleto?.min_value || null,
+      maxValue: sensorCompleto?.max_value || null
+    };
+    
+    this.showEditSensorModal = true;
+  }
+
+  closeEditSensorModal() {
+    if (this.editingSensor) return;
+    this.showEditSensorModal = false;
+    this.sensorAEditar = null;
+  }
+
+  private resetEditarSensor() {
+    this.editarSensor = {
+      key: '',
+      nombre: '',
+      activo: true,
+      tipoDato: 'temperatura',
+      minValue: null,
+      maxValue: null
+    };
+  }
+
+  guardarEdicionSensor() {
+    if (this.editingSensor) return;
+    const { key, nombre, tipoDato, activo, minValue, maxValue } = this.editarSensor;
+    if (!key.trim() || !nombre.trim()) return;
+    
+    // Validación rango (si ambos definidos y el tipo NO es booleano)
+    if (!this.isTipoBooleano(tipoDato) && minValue != null && maxValue != null && minValue > maxValue) return;
+    
+    this.editingSensor = true;
+    
+    // Preparar payload para el servicio
+    const payload: UpdateFeedRequest = {
+      key,
+      nombre,
+      tipoDato,
+      activo,
+      minValue: this.isTipoBooleano(tipoDato) ? null : minValue,
+      maxValue: this.isTipoBooleano(tipoDato) ? null : maxValue
+    };
+    
+    this.iot.UpdateFeed(key, payload).subscribe({
+      next: (resp) => {
+        // Actualizar datos locales con la respuesta del servidor
+        if (this.sensorAEditar) {
+          const idx = this.sensorAEditar.index;
+          if (idx >= 0 && idx < this.sensores.length) {
+            this.sensores[idx] = nombre;
+            this.estadoSensores[idx] = activo;
+            this.sensoresCompletos[idx] = resp.data; // Actualizar datos completos con respuesta
+            this.actualizarContadores();
+          }
+        }
+        
+        this.editingSensor = false;
+        this.showEditSensorModal = false;
+        this.sensorAEditar = null;
+      },
+      error: (err) => {
+        console.error('Error actualizando sensor', err);
+        this.editingSensor = false;
+      }
+    });
   }
 }

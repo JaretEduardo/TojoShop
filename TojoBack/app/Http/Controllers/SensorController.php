@@ -86,7 +86,41 @@ class SensorController extends Controller
 
     public function UpdateFeed(Request $request, $sensorKey)
     {
-        // Lógica para manejar la solicitud de actualización de un feed específico
+        // Lógica para manejar la solicitud de actualización de un sensor en específico
+        $sensor = Sensor::where('key', $sensorKey)->first();
+
+        if (!$sensor) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Sensor no encontrado',
+            ], 404);
+        }
+
+        // Obtener datos y normalizar si viene 'state'
+        $data = $request->all();
+        
+        if (isset($data['state']) && !isset($data['status'])) {
+            $state = strtolower($data['state']);
+            $data['status'] = $state === 'activo' || $state === '1' || $state === 'true';
+        }
+
+        // Validar campos (key no se puede cambiar)
+        $validated = validator($data, [
+            'name' => 'sometimes|required|string|max:255',
+            'status' => 'sometimes|required|boolean',
+            'type_data' => 'sometimes|required|string|max:255',
+            'min_value' => 'nullable|numeric',
+            'max_value' => 'nullable|numeric',
+        ])->validate();
+
+        // Actualizar solo los campos validados
+        $sensor->update($validated);
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Sensor actualizado correctamente',
+            'data' => $sensor,
+        ], 200);
     }
 
     public function DeleteFeed(Request $request, $sensorKey)

@@ -43,5 +43,6 @@ Route::middleware(['auth:sanctum', 'role:user'])->group(function () {
 Route::middleware(['auth:sanctum', 'role:encargado'])->group(function () {
 	Route::get('/allfeeds', [SensorController::class, 'AllFeeds']);
 	Route::post('/createfeed', [SensorController::class, 'CreateFeed']);
+	Route::put('/updatefeed/{key}', [SensorController::class, 'UpdateFeed']);
 	Route::delete('/deletefeed/{key}', [SensorController::class, 'DeleteFeed']);
 });

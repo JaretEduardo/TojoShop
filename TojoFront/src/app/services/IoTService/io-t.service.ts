@@ -42,6 +42,21 @@ export interface ApiDeleteSensorResponse {
   message: string;
 }
 
+export interface UpdateFeedRequest {
+  key?: string;           // Key no se cambia, pero puede venir
+  nombre: string;         // Nombre visible (se transformará a 'name')
+  activo: boolean;        // Estado (se transformará a 'status')
+  tipoDato: string;       // Tipo de dato (se transformará a 'type_data')
+  minValue: number | null; // Rango mínimo (se transformará a 'min_value')
+  maxValue: number | null; // Rango máximo (se transformará a 'max_value')
+}
+
+export interface ApiUpdateSensorResponse {
+  statusCode: number;
+  message: string;
+  data: SensorDto;
+}
+
 @Injectable({ providedIn: 'root' })
 export class IoTService {
   private readonly baseUrl = environment.apiUrl;
@@ -89,7 +104,16 @@ export class IoTService {
   GetFeed(): void { }
 
   // Update Feed
-  UpdateFeed(): void { }
+  UpdateFeed(key: string, payload: UpdateFeedRequest): Observable<ApiUpdateSensorResponse> {
+    const body = {
+      name: payload.nombre.trim(),
+      status: payload.activo, // true/false
+      type_data: payload.tipoDato,
+      min_value: payload.minValue,
+      max_value: payload.maxValue
+    };
+    return this.http.put<ApiUpdateSensorResponse>(`${this.baseUrl}${environment.endpoints.bossendpoints.updatefeed}/${encodeURIComponent(key)}`, body);
+  }
 
   // Delete Feed by key
   DeleteFeed(key: string): Observable<ApiDeleteSensorResponse> {

@@ -21,6 +21,7 @@ export const environment = {
         bossendpoints: {
             allfeeds: '/allfeeds',
             createfeed: '/createfeed',
+            updatefeed: '/updatefeed',
             deletefeed: '/deletefeed'
         }
     }

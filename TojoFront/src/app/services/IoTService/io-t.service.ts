@@ -11,14 +11,18 @@ export interface CreateFeedRequest {
   tipoDato: string;       // Tipo de dato (se transformará a 'type_data')
   minValue: number | null; // Rango mínimo (se transformará a 'min_value')
   maxValue: number | null; // Rango máximo (se transformará a 'max_value')
+  unidad?: string | null; // Unidad física (unit)
+  formato?: string | null; // data_format (number, boolean, string, id)
 }
 
 export interface SensorDto {
   id?: number;
   key: string;
   name: string;
-  state: string; // 'activo' | 'inactivo'
+  status: boolean;
   type_data: string;
+  unit?: string | null;
+  data_format?: string | null;
   min_value: number | null;
   max_value: number | null;
   created_at?: string;
@@ -60,12 +64,29 @@ export class IoTService {
 
   // Create Feed (nuevo sensor) – transforma nombres del formulario al contrato backend
   CreateFeed(payload: CreateFeedRequest): Observable<ApiCreateSensorResponse> {
+    // Inferir unidad y formato si no vienen explícitos
+    const mapUnidad: Record<string,string> = {
+      temperatura: '°C',
+      distancia: 'cm',
+      humedad: '%',
+      peso: 'g',
+      gas: 'ppm',
+      presencia: 'bool',
+      puerta: 'grados',
+      rfid: 'id'
+    };
+    const mapFormato: Record<string,string> = {
+      temperatura: 'number', distancia: 'number', humedad: 'number', peso: 'number', gas: 'number', presencia: 'boolean', puerta: 'number', rfid: 'string', presencia_bool: 'boolean'
+    };
+    const unit = payload.unidad ?? mapUnidad[payload.tipoDato] ?? null;
+    const data_format = payload.formato ?? mapFormato[payload.tipoDato] ?? null;
     const body = {
       key: payload.key.trim(),
       name: payload.nombre.trim(),
-      // Backend ahora espera 'status' boolean y 'type_data'
-      status: payload.activo, // true/false
+      status: payload.activo,
       type_data: payload.tipoDato,
+      unit,
+      data_format,
       min_value: payload.minValue,
       max_value: payload.maxValue
     };

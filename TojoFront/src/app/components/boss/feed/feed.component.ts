@@ -49,6 +49,11 @@ export class FeedComponent {
     { value: 'presencia', label: 'Presencia (bool)' }
   ];
 
+  // Determina si el tipo seleccionado es de naturaleza booleana (no requiere rangos)
+  isTipoBooleano(tipo: string): boolean {
+    return tipo === 'presencia';
+  }
+
   openAddSensorModal() {
     this.resetNuevoSensor();
     this.showAddSensorModal = true;
@@ -77,11 +82,19 @@ export class FeedComponent {
     const { key, nombre, tipoDato, activo, minValue, maxValue } = this.nuevoSensor;
     if (!key.trim() || !nombre.trim()) return;
     if (this.sensores.map(s => s.toLowerCase()).includes(nombre.toLowerCase())) return;
-    // Validación rango (si ambos definidos)
-    if (minValue != null && maxValue != null && minValue > maxValue) return;
+    // Validación rango (si ambos definidos y el tipo NO es booleano)
+    if (!this.isTipoBooleano(tipoDato) && minValue != null && maxValue != null && minValue > maxValue) return;
     this.savingSensor = true;
 
-    const payload: CreateFeedRequest = { key, nombre, tipoDato, activo, minValue, maxValue };
+    // Forzar null en min/max si es booleano
+    const payload: CreateFeedRequest = {
+      key,
+      nombre,
+      tipoDato,
+      activo,
+      minValue: this.isTipoBooleano(tipoDato) ? null : minValue,
+      maxValue: this.isTipoBooleano(tipoDato) ? null : maxValue
+    };
     this.iot.CreateFeed(payload).subscribe({
       next: (resp) => {
         // Actualizar lista local (optimista)

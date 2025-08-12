@@ -77,7 +77,7 @@
                     <option *ngFor="let t of tiposDato" [value]="t.value">{{ t.label }}</option>
                 </select>
             </div>
-                            <div class="form-row dual" [ngClass]="{'range-invalid': nuevoSensor.minValue !== null && nuevoSensor.maxValue !== null && nuevoSensor.minValue > nuevoSensor.maxValue}">
+                            <div *ngIf="!isTipoBooleano(nuevoSensor.tipoDato)" class="form-row dual" [ngClass]="{'range-invalid': nuevoSensor.minValue !== null && nuevoSensor.maxValue !== null && nuevoSensor.minValue > nuevoSensor.maxValue}">
                                 <div class="dual-field min-field">
                             <label for="minValue">Valor Mínimo</label>
                                     <div class="input-wrapper">

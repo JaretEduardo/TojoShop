@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             ProductsSeeder::class,
             EmployeeUserSeeder::class,
             ManagerUserSeeder::class,
+            SensorsSeeder::class,
         ]);
     }
 }

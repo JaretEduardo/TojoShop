@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, finalize } from 'rxjs/operators';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-boss-dashboard',
@@ -13,8 +14,8 @@ import { filter } from 'rxjs/operators';
 })
 export class BossDashboardComponent implements OnInit, OnDestroy {
 // Propiedades del usuario
-  userName: string = 'Ana García';
-  userRole: string = 'Gerente General';
+  userName: string = 'Invitado';
+  userRole: string = 'Gerente';
   
   // Propiedades de navegación
   activeTab: string = 'feed';
@@ -24,7 +25,25 @@ export class BossDashboardComponent implements OnInit, OnDestroy {
 
   private routerSubscription: Subscription = new Subscription();
 
-  constructor(private router: Router) {}
+  // Logout modal state
+  showLogoutModal = false;
+  loggingOut = false;
+
+  constructor(private router: Router, private authService: AuthService) {
+    // Cargar nombre y rol desde localStorage (igual que employee dashboard)
+    try {
+      const storedName = localStorage.getItem('user_name');
+      if (storedName && storedName.trim().length > 0) {
+        this.userName = storedName;
+      }
+      const storedRole = localStorage.getItem('user_role');
+      if (storedRole && storedRole.trim().length > 0) {
+        this.userRole = this.capitalize(storedRole);
+      }
+    } catch {
+      // ignorar
+    }
+  }
 
   ngOnInit() {
     console.log('BossDashboardComponent inicializado');
@@ -82,5 +101,41 @@ export class BossDashboardComponent implements OnInit, OnDestroy {
   openNotifications() {
     console.log('Abrir panel de notificaciones ejecutivas');
     // Implementar modal de notificaciones para gerencia
+  }
+
+  private capitalize(value: string): string {
+    if (!value) return value;
+    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  }
+
+  // ===== Logout Flow =====
+  openLogoutConfirm() {
+    this.showLogoutModal = true;
+  }
+
+  cancelLogout() {
+    if (this.loggingOut) return;
+    this.showLogoutModal = false;
+  }
+
+  confirmLogout() {
+    if (this.loggingOut) return;
+    this.loggingOut = true;
+    this.authService.Logout()
+      .pipe(finalize(() => {
+        this.loggingOut = false;
+        this.showLogoutModal = false;
+      }))
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/auth/login']);
+        },
+        error: () => {
+          try { localStorage.removeItem('access_token'); } catch {}
+          try { localStorage.removeItem('user_role'); } catch {}
+          try { localStorage.removeItem('user_name'); } catch {}
+          this.router.navigate(['/auth/login']);
+        }
+      });
   }
 }

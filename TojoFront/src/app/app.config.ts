@@ -7,6 +7,7 @@ import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import { SpinnerInterceptor } from './interceptors/spinner.interceptor';
 import { ApiResponseInterceptor } from './interceptors/api-response.interceptor';
+import { AuthTokenInterceptor } from './interceptors/auth-token.interceptor';
 
 // Limpia localStorage al inicio: mantiene solo 'access_token'
 function sanitizeStorageFactory() {
@@ -30,6 +31,11 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     provideHttpClient(withInterceptorsFromDi()),
     { provide: APP_INITIALIZER, useFactory: sanitizeStorageFactory, multi: true },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthTokenInterceptor,
+      multi: true
+    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: SpinnerInterceptor,

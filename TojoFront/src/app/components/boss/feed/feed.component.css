@@ -21,7 +21,6 @@
     overflow: hidden;
 }
 
-/* Líneas de escaneo retro */
 .parent::before {
     content: '';
     position: absolute;
@@ -102,7 +101,6 @@
     z-index: 2;
 }
 
-/* Estilos para contadores/filtros */
 .div1,
 .div2 {
     background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
@@ -125,7 +123,6 @@
     box-shadow: 0 0.375rem 1.25rem rgba(0, 255, 255, 0.5);
 }
 
-/* Estado activo de filtros */
 .filtro-activo {
     background: linear-gradient(145deg, #2d2d2d, #3d3d3d) !important;
     border-color: #ff0066 !important;
@@ -148,7 +145,6 @@
     text-shadow: 0 0 0.625rem #00ff00;
 }
 
-/* Botón agregar sensor */
 .div3 {
     display: flex;
     align-items: center;
@@ -184,7 +180,6 @@
     font-weight: bold;
 }
 
-/* Tarjetas de sensores */
 .tarjeta-sensor {
     background:
         linear-gradient(135deg,
@@ -397,6 +392,326 @@
             #ff0066 100%);
     background-size: 300% 300%;
 }
+
+/* ===== MODAL AGREGAR SENSOR ===== */
+.add-sensor-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.25s ease;
+}
+
+.add-sensor-modal {
+    width: 700px;
+    max-width: 95%;
+    background: linear-gradient(135deg, rgba(15,15,25,0.95), rgba(35,15,45,0.92));
+    border: 2px solid rgba(0,255,255,0.35);
+    box-shadow: 0 0 35px rgba(0,255,255,0.35), 0 0 55px rgba(255,0,102,0.25);
+    padding: 2.2rem 2.4rem 2rem;
+    border-radius: 28px;
+    font-family: 'Orbitron', monospace;
+    position: relative;
+    animation: popIn 0.3s ease;
+}
+
+.add-sensor-header {
+    font-size: 1.6rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg,#00ffff,#ff0066,#00ffff);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 18px rgba(0,255,255,0.45);
+    margin-bottom: 1.25rem;
+    animation: shimmerTitle 4s linear infinite;
+}
+
+.add-sensor-disclaimer {
+    background: linear-gradient(90deg, rgba(255,0,102,0.18), rgba(0,255,255,0.14));
+    border: 1px solid rgba(255,0,102,0.55);
+    padding: 1rem 1.15rem;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    letter-spacing: 0.6px;
+    color: #f5f5f5;
+    margin-bottom: 1.4rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.add-sensor-disclaimer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.12), transparent);
+    animation: sweep 6s linear infinite;
+}
+
+.add-sensor-disclaimer .adafruit {
+    color: #00ffff;
+    font-weight: 600;
+    text-shadow: 0 0 6px rgba(0,255,255,0.6);
+}
+
+.add-sensor-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.form-row.inline {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.form-row.dual {
+    flex-direction: row;
+    gap: 1.2rem;
+}
+
+.dual-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.dual-field input[type="number"] {
+    width: 100%;
+}
+
+.dual-field .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(0,255,255,0.4);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color .25s;
+}
+
+.dual-field .input-wrapper:focus-within {
+    border-color: #ff0066;
+    box-shadow: 0 0 0 3px rgba(255,0,102,0.25);
+}
+
+.dual-field .prefix {display:flex;align-items:center;padding:0 0.6rem;font-size:0.6rem;letter-spacing:1px;font-weight:700;background:#0c1d23;color:#00ffff;border-right:1px solid rgba(0,255,255,0.3);}
+
+.dual-field .input-wrapper input[type="number"] {background:transparent;border:none;flex:1;padding:0.75rem 0.75rem;font-size:0.8rem;font-family:'Orbitron',monospace;color:#fff;outline:none;letter-spacing:0.5px;}
+
+.form-row.dual.range-invalid .dual-field .input-wrapper {border-color:#ff3d3d;}
+
+.form-row.dual.range-invalid .dual-field .prefix {background:#3d0404;color:#ff8a8a;border-right-color:rgba(255,61,61,0.5);}
+
+.form-row.dual.range-invalid .dual-field .input-wrapper input[type="number"] {color:#ffbdbd;}
+
+@media (max-width: 640px) {
+    .form-row.dual { flex-direction: column; }
+}
+
+.form-row label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #c2ecff;
+    font-weight: 700;
+}
+
+.form-row input[type="text"],
+.form-row select {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(0,255,255,0.45);
+    border-radius: 14px;
+    padding: 0.85rem 1rem;
+    color: #fff;
+    font-size: 0.85rem;
+    font-family: 'Orbitron', monospace;
+    outline: none;
+    transition: all 0.25s ease;
+    letter-spacing: 0.6px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: linear-gradient(135deg, rgba(0,255,255,0.15), rgba(255,0,102,0.15));
+    position: relative;
+}
+
+.form-row input[type="text"]:focus,
+.form-row select:focus {
+    border-color: #ff0066;
+    box-shadow: 0 0 0 3px rgba(255,0,102,0.25);
+}
+
+/* Opciones del select: asegurar contraste */
+/* Opciones visibles siempre; evitar que la seleccion se vuelva blanca al hover de otro */
+.form-row select option {
+    background: #141821;
+    color: #e6ffff;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+.form-row select option:hover {
+    background: #1d2733 !important;
+    color: #ffffff !important;
+}
+
+.form-row select option:checked {
+    background: #082029 !important; /* Mantiene contraste aun cuando se hoverea otra opción */
+    color: #00ffff !important;
+    font-weight: 600;
+}
+
+.form-row select option:checked:hover {
+    background: #0d2e3d !important;
+    color: #00ffff !important;
+}
+
+/* Fallback para navegadores que ignoran estilos de option: envolver si se requiere más adelante */
+
+/* Switch */
+.switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.switch input { display: none; }
+
+.slider {
+    position: relative;
+    width: 48px;
+    height: 22px;
+    background: linear-gradient(135deg,#222,#333);
+    border: 1px solid rgba(0,255,255,0.4);
+    border-radius: 30px;
+    box-shadow: inset 0 0 10px rgba(0,255,255,0.1);
+    transition: all 0.35s ease;
+}
+
+.slider::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg,#00ffff,#ff0066);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0,255,255,0.6), 0 0 15px rgba(255,0,102,0.4);
+    transition: all 0.35s ease;
+}
+
+.switch input:checked + .slider {
+    background: linear-gradient(135deg,#003333,#330022);
+    box-shadow: inset 0 0 12px rgba(0,255,255,0.2), inset 0 0 18px rgba(255,0,102,0.25);
+}
+
+.switch input:checked + .slider::after {
+    transform: translateX(24px);
+}
+
+.switch-text {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    min-width: 70px;
+    text-align: left;
+    letter-spacing: 1px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 0.4rem;
+}
+
+.btn-cancel, .btn-save {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 1.4px;
+    padding: 0.85rem 1.35rem;
+    border-radius: 14px;
+    border: 1px solid rgba(0,255,255,0.5);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    transition: all 0.25s ease;
+    position: relative;
+}
+
+.btn-cancel {
+    background: rgba(0,255,255,0.08);
+    color: #8be7ff;
+}
+
+.btn-cancel:hover:not(:disabled) {
+    background: rgba(0,255,255,0.15);
+}
+
+.btn-save {
+    background: linear-gradient(90deg,#00ffff,#00b4ff,#ff0066);
+    background-size: 220% 220%;
+    color: #fff;
+    border-color: rgba(255,0,102,0.5);
+    box-shadow: 0 0 10px rgba(0,255,255,0.35),0 0 18px rgba(255,0,102,0.25);
+    animation: gradientMove 6s ease infinite;
+}
+
+.btn-save:hover:not(:disabled) {
+    box-shadow: 0 0 16px rgba(0,255,255,0.55),0 0 28px rgba(255,0,102,0.45);
+    transform: translateY(-2px);
+}
+
+.btn-save:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(10%);
+}
+
+.spinner {
+    width: 22px;
+    height: 22px;
+    border: 3px solid rgba(255,255,255,0.25);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes popIn { 0% { transform: scale(0.85); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes shimmerTitle { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+@keyframes sweep { 0% { left: -50%; } 100% { left: 150%; } }
+@keyframes gradientMove { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
 
 .sensor-inactivo:hover {
     box-shadow:

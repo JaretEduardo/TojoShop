@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ModalDataComponent } from '../modal-data/modal-data.component';
+import { IoTService, CreateFeedRequest } from '../../../services/IoTService/io-t.service';
 
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [CommonModule, ModalDataComponent],
+  imports: [CommonModule, FormsModule, ModalDataComponent],
   templateUrl: './feed.component.html',
   styleUrl: './feed.component.css'
 })
@@ -26,6 +28,75 @@ export class FeedComponent {
     id: '',
     nombre: ''
   };
+
+  // ===== Modal agregar nuevo sensor =====
+  showAddSensorModal = false;
+  savingSensor = false;
+  nuevoSensor = {
+    key: '',
+    nombre: '',
+    activo: true,
+  tipoDato: 'temperatura',
+  minValue: null as number | null,
+  maxValue: null as number | null
+  };
+  tiposDato = [
+    { value: 'temperatura', label: 'Temperatura (°C)' },
+    { value: 'distancia', label: 'Distancia (cm)' },
+    { value: 'humedad', label: 'Humedad (%)' },
+    { value: 'peso', label: 'Peso (g)' },
+    { value: 'gas', label: 'Gas (ppm)' },
+    { value: 'presencia', label: 'Presencia (bool)' }
+  ];
+
+  openAddSensorModal() {
+    this.resetNuevoSensor();
+    this.showAddSensorModal = true;
+  }
+
+  closeAddSensorModal() {
+    if (this.savingSensor) return;
+    this.showAddSensorModal = false;
+  }
+
+  private resetNuevoSensor() {
+    this.nuevoSensor = {
+      key: '',
+      nombre: '',
+      activo: true,
+  tipoDato: 'temperatura',
+  minValue: null,
+  maxValue: null
+    };
+  }
+
+  constructor(private iot: IoTService) {}
+
+  guardarNuevoSensor() {
+    if (this.savingSensor) return;
+    const { key, nombre, tipoDato, activo, minValue, maxValue } = this.nuevoSensor;
+    if (!key.trim() || !nombre.trim()) return;
+    if (this.sensores.map(s => s.toLowerCase()).includes(nombre.toLowerCase())) return;
+    // Validación rango (si ambos definidos)
+    if (minValue != null && maxValue != null && minValue > maxValue) return;
+    this.savingSensor = true;
+
+    const payload: CreateFeedRequest = { key, nombre, tipoDato, activo, minValue, maxValue };
+    this.iot.CreateFeed(payload).subscribe({
+      next: (resp) => {
+        // Actualizar lista local (optimista)
+        this.sensores.push(nombre);
+        this.estadoSensores.push(activo);
+        this.actualizarContadores();
+        this.savingSensor = false;
+        this.showAddSensorModal = false;
+      },
+      error: (err) => {
+        console.error('Error creando sensor', err);
+        this.savingSensor = false;
+      }
+    });
+  }
 
   getSensoresActivos(): number {
     return this.sensoresActivos;

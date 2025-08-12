@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\FavoritesController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\SensorController;
 
 // Auth routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -36,4 +37,9 @@ Route::middleware(['auth:sanctum', 'role:user'])->group(function () {
 
 	// Orders
 	Route::get('/orders', [OrdersController::class, 'index']);
+});
+
+
+Route::middleware(['auth:sanctum', 'role:encargado'])->group(function () {
+	Route::post('/sensors', [SensorController::class, 'CreateFeed']);
 });

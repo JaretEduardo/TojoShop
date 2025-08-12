@@ -13,7 +13,7 @@
 
     <!-- div3: botón para agregar sensor -->
     <div class="div3">
-        <button class="btn-agregar">
+        <button class="btn-agregar" (click)="openAddSensorModal()">
             <span>➕</span>
             Agregar Sensor
         </button>
@@ -46,3 +46,60 @@
     (closeModal)="cerrarModal()"
     (dataUpdated)="onDatosActualizados($event)">
 </app-modal-data>
+
+<!-- Modal agregar nuevo sensor -->
+<div class="add-sensor-backdrop" *ngIf="showAddSensorModal">
+    <div class="add-sensor-modal">
+        <div class="add-sensor-header">Registrar Nuevo Sensor</div>
+        <div class="add-sensor-disclaimer">
+            <strong>Importante:</strong> Antes de registrar aquí el sensor debes crearlo previamente en <span class="adafruit">Adafruit IO</span> y obtener su <code>KEY</code> / feed.
+        </div>
+        <form (ngSubmit)="guardarNuevoSensor()" class="add-sensor-form" autocomplete="off">
+            <div class="form-row">
+                <label for="sensorKey">Key del Sensor *</label>
+                <input id="sensorKey" type="text" [(ngModel)]="nuevoSensor.key" name="sensorKey" maxlength="100" placeholder="Ej: a1b2c3d4-feed" required />
+            </div>
+            <div class="form-row">
+                <label for="sensorNombre">Nombre del Sensor *</label>
+                <input id="sensorNombre" type="text" [(ngModel)]="nuevoSensor.nombre" name="sensorNombre" maxlength="40" placeholder="Ej: Temp Bodega" required />
+            </div>
+            <div class="form-row inline">
+                <label class="switch-label">Estado</label>
+                <label class="switch">
+                    <input type="checkbox" [(ngModel)]="nuevoSensor.activo" name="sensorActivo" />
+                    <span class="slider"></span>
+                    <span class="switch-text">{{ nuevoSensor.activo ? 'Activo' : 'Inactivo' }}</span>
+                </label>
+            </div>
+            <div class="form-row">
+                <label for="tipoDato">Tipo de Dato</label>
+                <select id="tipoDato" [(ngModel)]="nuevoSensor.tipoDato" name="tipoDato">
+                    <option *ngFor="let t of tiposDato" [value]="t.value">{{ t.label }}</option>
+                </select>
+            </div>
+                            <div class="form-row dual" [ngClass]="{'range-invalid': nuevoSensor.minValue !== null && nuevoSensor.maxValue !== null && nuevoSensor.minValue > nuevoSensor.maxValue}">
+                                <div class="dual-field min-field">
+                            <label for="minValue">Valor Mínimo</label>
+                                    <div class="input-wrapper">
+                                        <span class="prefix">MIN</span>
+                                        <input id="minValue" type="number" step="0.0001" [(ngModel)]="nuevoSensor.minValue" name="minValue" placeholder="Ej: 0" />
+                                    </div>
+                        </div>
+                                <div class="dual-field max-field">
+                            <label for="maxValue">Valor Máximo</label>
+                                    <div class="input-wrapper">
+                                        <span class="prefix">MAX</span>
+                                        <input id="maxValue" type="number" step="0.0001" [(ngModel)]="nuevoSensor.maxValue" name="maxValue" placeholder="Ej: 100" />
+                                    </div>
+                        </div>
+                    </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" (click)="closeAddSensorModal()" [disabled]="savingSensor">Cancelar</button>
+                <button type="submit" class="btn-save" [disabled]="savingSensor || !nuevoSensor.key.trim() || !nuevoSensor.nombre.trim()">
+                    <span *ngIf="!savingSensor">Guardar</span>
+                    <span *ngIf="savingSensor" class="spinner"></span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

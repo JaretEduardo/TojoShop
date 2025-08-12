@@ -1,12 +1,26 @@
 export const environment = {
     production: false,
-    apiUrl: 'http://localhost:8000/api',
+    apiUrl: 'your api url',
     endpoints: {
         register: '/register',
         login: '/login',
         logout: '/logout',
-    productsSearch: '/products/search',
-    productsIndex: '/products',
-    productsCategories: '/products/categories',
+        productsSearch: '/products/search',
+        productsIndex: '/products',
+        productsCategories: '/products/categories',
+        productsDecrementStock: '/products/decrement-stock',
+        favoritesIndex: '/favorites',
+        favoritesAdd: '/favorites',
+        favoritesRemove: '/favorites',
+        cartIndex: '/cart',
+        cartAdd: '/cart',
+        cartRemove: '/cart',
+        cartUpdate: '/cart',
+        cartCheckout: '/cart/checkout',
+        ordersIndex: '/orders',
+        bossendpoints: {
+            allfeeds: '/allfeeds',
+            createfeed: '/sensors'
+        }
     }
 };

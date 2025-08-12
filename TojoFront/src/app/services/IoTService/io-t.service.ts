@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environment.example';
+import { environment } from '../../environment';
 
 // Interfaces relacionadas a sensores / feeds
 export interface CreateFeedRequest {
@@ -11,18 +11,14 @@ export interface CreateFeedRequest {
   tipoDato: string;       // Tipo de dato (se transformará a 'type_data')
   minValue: number | null; // Rango mínimo (se transformará a 'min_value')
   maxValue: number | null; // Rango máximo (se transformará a 'max_value')
-  unidad?: string | null; // Unidad física (unit)
-  formato?: string | null; // data_format (number, boolean, string, id)
 }
 
 export interface SensorDto {
   id?: number;
   key: string;
   name: string;
-  status: boolean;
+  state: string; // 'activo' | 'inactivo'
   type_data: string;
-  unit?: string | null;
-  data_format?: string | null;
   min_value: number | null;
   max_value: number | null;
   created_at?: string;
@@ -33,6 +29,12 @@ export interface ApiCreateSensorResponse {
   statusCode: number;
   message: string;
   data: SensorDto;
+}
+
+export interface ApiListSensorsResponse {
+  statusCode: number;
+  message?: string;
+  data: SensorDto[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -59,38 +61,23 @@ export class IoTService {
   // Chart Feed Data
   ChartFeedData(): void { }
 
-  // All Feeds
-  AllFeeds(): void { }
+  // All Feeds (lista de sensores)
+  AllFeeds(): Observable<ApiListSensorsResponse> {
+    return this.http.get<ApiListSensorsResponse>(`${this.baseUrl}${environment.endpoints.bossendpoints.allfeeds}`);
+  }
 
   // Create Feed (nuevo sensor) – transforma nombres del formulario al contrato backend
   CreateFeed(payload: CreateFeedRequest): Observable<ApiCreateSensorResponse> {
-    // Inferir unidad y formato si no vienen explícitos
-    const mapUnidad: Record<string,string> = {
-      temperatura: '°C',
-      distancia: 'cm',
-      humedad: '%',
-      peso: 'g',
-      gas: 'ppm',
-      presencia: 'bool',
-      puerta: 'grados',
-      rfid: 'id'
-    };
-    const mapFormato: Record<string,string> = {
-      temperatura: 'number', distancia: 'number', humedad: 'number', peso: 'number', gas: 'number', presencia: 'boolean', puerta: 'number', rfid: 'string', presencia_bool: 'boolean'
-    };
-    const unit = payload.unidad ?? mapUnidad[payload.tipoDato] ?? null;
-    const data_format = payload.formato ?? mapFormato[payload.tipoDato] ?? null;
     const body = {
       key: payload.key.trim(),
       name: payload.nombre.trim(),
-      status: payload.activo,
+      // Backend ahora espera 'status' boolean y 'type_data'
+      status: payload.activo, // true/false
       type_data: payload.tipoDato,
-      unit,
-      data_format,
       min_value: payload.minValue,
       max_value: payload.maxValue
     };
-    return this.http.post<ApiCreateSensorResponse>(`${this.baseUrl}/sensors`, body);
+    return this.http.post<ApiCreateSensorResponse>(`${this.baseUrl}${environment.endpoints.bossendpoints.createfeed}`, body);
   }
 
   // Get Feed

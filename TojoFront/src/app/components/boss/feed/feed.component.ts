@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalDataComponent } from '../modal-data/modal-data.component';
@@ -11,16 +11,17 @@ import { IoTService, CreateFeedRequest } from '../../../services/IoTService/io-t
   templateUrl: './feed.component.html',
   styleUrl: './feed.component.css'
 })
-export class FeedComponent {
-  sensores = ['RFID', 'Temperatura', 'Peso', 'Presencia', 'Apertura', 'Gas'];
-  sensoresActivos = 4; // Valor fijo para evitar el error
-  sensoresInactivos = 2; // Valor fijo para evitar el error
+export class FeedComponent implements OnInit {
+  sensores: string[] = [];
+  sensoresActivos = 0;
+  sensoresInactivos = 0;
   
   // Estado de cada sensor (true = activo, false = inactivo)
-  estadoSensores = [true, true, false, true, false, true]; // 4 activos, 2 inactivos
+  estadoSensores: boolean[] = [];
   
   // Filtro actual: 'todos', 'activos', 'inactivos'
   filtroActual = 'activos';
+
 
   // Variables para el modal
   modalVisible = false;
@@ -28,6 +29,11 @@ export class FeedComponent {
     id: '',
     nombre: ''
   };
+
+  // Modal eliminar
+  showDeleteModal = false;
+  deleting = false;
+  sensorAEliminar: { nombre: string, index: number } | null = null;
 
   // ===== Modal agregar nuevo sensor =====
   showAddSensorModal = false;
@@ -77,6 +83,31 @@ export class FeedComponent {
 
   constructor(private iot: IoTService) {}
 
+  ngOnInit(): void {
+    this.cargarSensores();
+  }
+
+  private cargarSensores() {
+    this.iot.AllFeeds().subscribe({
+      next: resp => {
+        const lista = Array.isArray(resp.data) ? resp.data : [];
+        this.sensores = lista.map(s => s.name || s.key);
+        // Mapear estados (fallback). Si API devuelve 'status' boolean preferirlo; si state string usarlo.
+        this.estadoSensores = lista.map(s => {
+          const raw: any = s;
+          // Preferir status boolean; fallback a state string
+            if (typeof raw.status !== 'undefined') return !!raw.status;
+            if (typeof raw.state === 'string') return raw.state.toLowerCase() === 'activo';
+            return true; // default activo si falta
+        });
+        this.actualizarContadores();
+      },
+      error: err => {
+        console.error('Error cargando sensores', err);
+      }
+    });
+  }
+
   guardarNuevoSensor() {
     if (this.savingSensor) return;
     const { key, nombre, tipoDato, activo, minValue, maxValue } = this.nuevoSensor;
@@ -121,30 +152,24 @@ export class FeedComponent {
 
   // Obtiene los sensores filtrados según el filtro actual
   getSensoresFiltrados(): string[] {
+    let base: string[];
     if (this.filtroActual === 'activos') {
-      return this.sensores.filter((_, index) => this.estadoSensores[index]);
+      base = this.sensores.filter((_, index) => this.estadoSensores[index]);
     } else if (this.filtroActual === 'inactivos') {
-      return this.sensores.filter((_, index) => !this.estadoSensores[index]);
+      base = this.sensores.filter((_, index) => !this.estadoSensores[index]);
+    } else {
+      base = this.sensores;
     }
-    return this.sensores; // 'todos'
+  return base;
   }
 
-  // Cambia el filtro
-  cambiarFiltro(filtro: string): void {
-    // Si el filtro seleccionado ya está activo, cambiar a 'todos'
-    if (this.filtroActual === filtro) {
-      this.filtroActual = 'todos';
-    } else {
-      this.filtroActual = filtro;
-    }
-  }
+  // (cambiarFiltro original eliminado; se redefine más abajo con soporte de paginación)
 
   // Activa o desactiva un sensor
   toggleSensor(index: number): void {
-    // Obtener el índice original del sensor en el array completo
-    const sensoresFiltrados = this.getSensoresFiltrados();
-    const sensorNombre = sensoresFiltrados[index];
-    const indiceOriginal = this.sensores.indexOf(sensorNombre);
+  const sensoresPagina = this.getSensoresFiltrados();
+  const sensorNombre = sensoresPagina[index];
+  const indiceOriginal = this.sensores.indexOf(sensorNombre);
     
     // Obtener el estado actual antes del cambio
     const estadoAnterior = this.estadoSensores[indiceOriginal];
@@ -175,17 +200,21 @@ export class FeedComponent {
 
   // Verifica si un sensor está activo
   isSensorActivo(index: number): boolean {
-    // Necesitamos mapear el índice del array filtrado al índice original
-    const sensoresFiltrados = this.getSensoresFiltrados();
-    const sensorNombre = sensoresFiltrados[index];
-    const indiceOriginal = this.sensores.indexOf(sensorNombre);
-    return this.estadoSensores[indiceOriginal];
+  const sensoresPagina = this.getSensoresFiltrados();
+  const sensorNombre = sensoresPagina[index];
+  const indiceOriginal = this.sensores.indexOf(sensorNombre);
+  return indiceOriginal >= 0 ? this.estadoSensores[indiceOriginal] : false;
   }
 
-  // Mapea la posición del sensor a la clase de tarjeta correspondiente (div4-div9)
-  getTarjetaClass(index: number): string {
-    const clases = ['div4', 'div5', 'div6', 'div7', 'div8', 'div9'];
-    return clases[index] || '';
+  // Mapea la posición del sensor a la clase de tarjeta correspondiente
+  // Eliminado getTarjetaClass y paginación: la grilla ahora muestra todos
+
+  cambiarFiltro(filtro: string): void {
+    if (this.filtroActual === filtro) {
+      this.filtroActual = 'todos';
+    } else {
+      this.filtroActual = filtro;
+    }
   }
 
   // Abrir modal con datos del sensor
@@ -214,5 +243,37 @@ export class FeedComponent {
   onDatosActualizados(data: any): void {
     console.log('Datos del sensor actualizados:', data);
     // Aquí puedes implementar la lógica para actualizar los datos en el backend
+  }
+
+  // ====== Eliminar (solo UI por ahora) ======
+  openDeleteModal(index: number) {
+    const sensoresLista = this.getSensoresFiltrados();
+    const nombre = sensoresLista[index];
+    this.sensorAEliminar = { nombre, index: this.sensores.indexOf(nombre) };
+    this.showDeleteModal = true;
+  }
+
+  cancelDelete() {
+    if (this.deleting) return;
+    this.showDeleteModal = false;
+    this.sensorAEliminar = null;
+  }
+
+  confirmDelete() {
+    if (!this.sensorAEliminar) return;
+    this.deleting = true;
+    // Simulación de espera; futura integración backend aquí
+    setTimeout(() => {
+      // Eliminación local simulada
+      const idx = this.sensorAEliminar?.index ?? -1;
+      if (idx > -1) {
+        this.sensores.splice(idx, 1);
+        this.estadoSensores.splice(idx, 1);
+        this.actualizarContadores();
+      }
+      this.deleting = false;
+      this.showDeleteModal = false;
+      this.sensorAEliminar = null;
+    }, 600);
   }
 }

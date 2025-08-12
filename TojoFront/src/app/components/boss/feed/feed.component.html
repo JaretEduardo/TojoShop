@@ -1,67 +1,95 @@
 <div class="parent">
-    <!-- div1: filtro de sensores activos -->
-    <div class="div1" [class.filtro-activo]="filtroActual === 'activos'" (click)="cambiarFiltro('activos')">
-        <h3>Sensores Activos</h3>
-        <span class="contador">{{ getSensoresActivos() }}</span>
+    <div class="filters-row">
+        <!-- div1: filtro de sensores activos -->
+        <div class="div1" [class.filtro-activo]="filtroActual === 'activos'" (click)="cambiarFiltro('activos')">
+            <h3>Sensores Activos</h3>
+            <span class="contador">{{ getSensoresActivos() }}</span>
+        </div>
+
+        <!-- div2: filtro de sensores inactivos -->
+        <div class="div2" [class.filtro-activo]="filtroActual === 'inactivos'" (click)="cambiarFiltro('inactivos')">
+            <h3>Sensores Inactivos</h3>
+            <span class="contador">{{ getSensoresInactivos() }}</span>
+        </div>
+
+        <!-- div3: botón para agregar sensor -->
+        <div class="div3">
+            <button class="btn-agregar" (click)="openAddSensorModal()">
+                <span>➕</span>
+                Agregar Sensor
+            </button>
+        </div>
     </div>
 
-    <!-- div2: filtro de sensores inactivos -->
-    <div class="div2" [class.filtro-activo]="filtroActual === 'inactivos'" (click)="cambiarFiltro('inactivos')">
-        <h3>Sensores Inactivos</h3>
-        <span class="contador">{{ getSensoresInactivos() }}</span>
-    </div>
-
-    <!-- div3: botón para agregar sensor -->
-    <div class="div3">
-        <button class="btn-agregar" (click)="openAddSensorModal()">
-            <span>➕</span>
-            Agregar Sensor
-        </button>
-    </div>
-
-    <!-- div4 a div9: tarjetas dinámicas de sensores filtrados -->
-    <div *ngFor="let sensor of getSensoresFiltrados(); let i = index" [ngClass]="getTarjetaClass(i)"
-        class="tarjeta-sensor" [class.sensor-activo]="isSensorActivo(i)" [class.sensor-inactivo]="!isSensorActivo(i)">
-
-        <button class="btn-toggle-esquina" [class.toggle-activo]="!isSensorActivo(i)"
-            [class.toggle-inactivo]="isSensorActivo(i)" (click)="toggleSensor(i)">
-            {{ isSensorActivo(i) ? 'OFF' : 'ON' }}
-        </button>
-
-        <h4>{{ sensor }}</h4>
-        <div class="sensor-icon">📡</div>
-        <span class="sensor-status">Estado: {{ isSensorActivo(i) ? 'Activo' : 'Inactivo' }}</span>
-
-        <button class="btn-datos-tarjeta" (click)="verDatosSensor(i)">
-            Ver Datos
-        </button>
+    <!-- Disposición estilo original (3 columnas, múltiples filas) mostrando todos -->
+    <div class="sensores-fixed-layout">
+        <div *ngFor="let sensor of getSensoresFiltrados(); let i = index" class="tarjeta-sensor sensor-appear"
+            [style.animationDelay]="(i * 90) + 'ms'" [class.sensor-activo]="isSensorActivo(i)"
+            [class.sensor-inactivo]="!isSensorActivo(i)">
+            <button class="btn-toggle-esquina" [class.toggle-activo]="!isSensorActivo(i)"
+                [class.toggle-inactivo]="isSensorActivo(i)" (click)="toggleSensor(i)">
+                {{ isSensorActivo(i) ? 'OFF' : 'ON' }}
+            </button>
+            <button class="btn-delete-esquina" type="button" title="Eliminar sensor" (click)="openDeleteModal(i)">
+                🗑️
+            </button>
+            <div class="sensor-body">
+                <div class="sensor-top">
+                    <div class="sensor-icon">📡</div>
+                </div>
+                <h4 class="sensor-name">{{ sensor }}</h4>
+                <span class="sensor-status">Estado: {{ isSensorActivo(i) ? 'Activo' : 'Inactivo' }}</span>
+                <button class="btn-datos-tarjeta" (click)="verDatosSensor(i)">Ver Datos</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Modal de datos del sensor -->
-<app-modal-data
-    [isVisible]="modalVisible"
-    [sensorId]="sensorSeleccionado.id"
-    [sensorName]="sensorSeleccionado.nombre"
-    (closeModal)="cerrarModal()"
-    (dataUpdated)="onDatosActualizados($event)">
+<app-modal-data [isVisible]="modalVisible" [sensorId]="sensorSeleccionado.id" [sensorName]="sensorSeleccionado.nombre"
+    (closeModal)="cerrarModal()" (dataUpdated)="onDatosActualizados($event)">
 </app-modal-data>
+
+<!-- Modal confirmación eliminar sensor -->
+<div class="delete-confirm-backdrop" *ngIf="showDeleteModal">
+    <div class="delete-confirm-modal">
+        <div class="delete-header">CONFIRMAR ELIMINACIÓN</div>
+        <div class="delete-body">
+            <p>
+                ¿Seguro que deseas eliminar el sensor
+                <span class="sensor-tag">{{ sensorAEliminar?.nombre }}</span>?<br>
+                Esta acción no se puede deshacer.
+            </p>
+            <div class="delete-warning">Se perderá la configuración asociada.</div>
+        </div>
+        <div class="delete-actions">
+            <button class="btn-cancel-del" (click)="cancelDelete()">Cancelar</button>
+            <button class="btn-confirm-del" (click)="confirmDelete()" [disabled]="deleting">
+                <span *ngIf="!deleting">Eliminar</span>
+                <span *ngIf="deleting" class="spinner small"></span>
+            </button>
+        </div>
+    </div>
+</div>
 
 <!-- Modal agregar nuevo sensor -->
 <div class="add-sensor-backdrop" *ngIf="showAddSensorModal">
     <div class="add-sensor-modal">
         <div class="add-sensor-header">Registrar Nuevo Sensor</div>
         <div class="add-sensor-disclaimer">
-            <strong>Importante:</strong> Antes de registrar aquí el sensor debes crearlo previamente en <span class="adafruit">Adafruit IO</span> y obtener su <code>KEY</code> / feed.
+            <strong>Importante:</strong> Antes de registrar aquí el sensor debes crearlo previamente en <span
+                class="adafruit">Adafruit IO</span> y obtener su <code>KEY</code> / feed.
         </div>
         <form (ngSubmit)="guardarNuevoSensor()" class="add-sensor-form" autocomplete="off">
             <div class="form-row">
                 <label for="sensorKey">Key del Sensor *</label>
-                <input id="sensorKey" type="text" [(ngModel)]="nuevoSensor.key" name="sensorKey" maxlength="100" placeholder="Ej: a1b2c3d4-feed" required />
+                <input id="sensorKey" type="text" [(ngModel)]="nuevoSensor.key" name="sensorKey" maxlength="100"
+                    placeholder="Ej: a1b2c3d4-feed" required />
             </div>
             <div class="form-row">
                 <label for="sensorNombre">Nombre del Sensor *</label>
-                <input id="sensorNombre" type="text" [(ngModel)]="nuevoSensor.nombre" name="sensorNombre" maxlength="40" placeholder="Ej: Temp Bodega" required />
+                <input id="sensorNombre" type="text" [(ngModel)]="nuevoSensor.nombre" name="sensorNombre" maxlength="40"
+                    placeholder="Ej: Temp Bodega" required />
             </div>
             <div class="form-row inline">
                 <label class="switch-label">Estado</label>
@@ -77,25 +105,30 @@
                     <option *ngFor="let t of tiposDato" [value]="t.value">{{ t.label }}</option>
                 </select>
             </div>
-                            <div *ngIf="!isTipoBooleano(nuevoSensor.tipoDato)" class="form-row dual" [ngClass]="{'range-invalid': nuevoSensor.minValue !== null && nuevoSensor.maxValue !== null && nuevoSensor.minValue > nuevoSensor.maxValue}">
-                                <div class="dual-field min-field">
-                            <label for="minValue">Valor Mínimo</label>
-                                    <div class="input-wrapper">
-                                        <span class="prefix">MIN</span>
-                                        <input id="minValue" type="number" step="0.0001" [(ngModel)]="nuevoSensor.minValue" name="minValue" placeholder="Ej: 0" />
-                                    </div>
-                        </div>
-                                <div class="dual-field max-field">
-                            <label for="maxValue">Valor Máximo</label>
-                                    <div class="input-wrapper">
-                                        <span class="prefix">MAX</span>
-                                        <input id="maxValue" type="number" step="0.0001" [(ngModel)]="nuevoSensor.maxValue" name="maxValue" placeholder="Ej: 100" />
-                                    </div>
-                        </div>
+            <div *ngIf="!isTipoBooleano(nuevoSensor.tipoDato)" class="form-row dual"
+                [ngClass]="{'range-invalid': nuevoSensor.minValue !== null && nuevoSensor.maxValue !== null && nuevoSensor.minValue > nuevoSensor.maxValue}">
+                <div class="dual-field min-field">
+                    <label for="minValue">Valor Mínimo</label>
+                    <div class="input-wrapper">
+                        <span class="prefix">MIN</span>
+                        <input id="minValue" type="number" step="0.0001" [(ngModel)]="nuevoSensor.minValue"
+                            name="minValue" placeholder="Ej: 0" />
                     </div>
+                </div>
+                <div class="dual-field max-field">
+                    <label for="maxValue">Valor Máximo</label>
+                    <div class="input-wrapper">
+                        <span class="prefix">MAX</span>
+                        <input id="maxValue" type="number" step="0.0001" [(ngModel)]="nuevoSensor.maxValue"
+                            name="maxValue" placeholder="Ej: 100" />
+                    </div>
+                </div>
+            </div>
             <div class="modal-actions">
-                <button type="button" class="btn-cancel" (click)="closeAddSensorModal()" [disabled]="savingSensor">Cancelar</button>
-                <button type="submit" class="btn-save" [disabled]="savingSensor || !nuevoSensor.key.trim() || !nuevoSensor.nombre.trim()">
+                <button type="button" class="btn-cancel" (click)="closeAddSensorModal()"
+                    [disabled]="savingSensor">Cancelar</button>
+                <button type="submit" class="btn-save"
+                    [disabled]="savingSensor || !nuevoSensor.key.trim() || !nuevoSensor.nombre.trim()">
                     <span *ngIf="!savingSensor">Guardar</span>
                     <span *ngIf="savingSensor" class="spinner"></span>
                 </button>

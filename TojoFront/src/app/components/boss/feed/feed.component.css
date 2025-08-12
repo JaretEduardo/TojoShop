@@ -1,11 +1,10 @@
 .parent {
-    display: grid;
-    grid-template-columns: repeat(13, 1fr);
-    grid-template-rows: repeat(12, 1fr);
-    grid-column-gap: 1rem;
-    grid-row-gap: 4rem;
-    height: 100vh;
-    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    min-height: 100vh; /* base */
+    height: auto; /* permite crecer */
+    padding: 1.5rem 1.5rem 3rem;
     background:
         linear-gradient(135deg,
             rgba(10, 10, 10, 0.9) 0%,
@@ -18,7 +17,7 @@
     color: #00ffff;
     font-family: 'Arial', monospace;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .parent::before {
@@ -47,59 +46,37 @@
     }
 }
 
-.div1 {
-    grid-area: 2 / 2 / 3 / 5;
-    position: relative;
-    z-index: 2;
+.filters-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    width: 100%;
 }
 
-.div2 {
-    grid-area: 2 / 6 / 3 / 9;
-    position: relative;
-    z-index: 2;
+.div1, .div2, .div3 { flex: 1 1 220px; position: relative; z-index: 2; }
+
+/* Nueva grilla responsive para tarjetas de sensores */
+/* Grilla para todos los sensores */
+/* Layout estilo original (3 columnas fijas) */
+.sensores-fixed-layout { 
+        display: grid; 
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4rem 1.2rem; 
+        align-content: start; 
+        width: 100%;
+    justify-items: center;
 }
 
-.div3 {
-    grid-area: 2 / 10 / 3 / 13;
-    position: relative;
-    z-index: 2;
+@media (max-width: 1200px) {
+    .sensores-fixed-layout { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 700px) {
+    .sensores-fixed-layout { grid-template-columns: 1fr; }
 }
 
-.div4 {
-    grid-area: 4 / 2 / 8 / 5;
-    position: relative;
-    z-index: 2;
-}
-
-.div5 {
-    grid-area: 4 / 6 / 8 / 9;
-    position: relative;
-    z-index: 2;
-}
-
-.div6 {
-    grid-area: 4 / 10 / 8 / 13;
-    position: relative;
-    z-index: 2;
-}
-
-.div7 {
-    grid-area: 8 / 2 / 12 / 5;
-    position: relative;
-    z-index: 2;
-}
-
-.div8 {
-    grid-area: 8 / 6 / 12 / 9;
-    position: relative;
-    z-index: 2;
-}
-
-.div9 {
-    grid-area: 8 / 10 / 12 / 13;
-    position: relative;
-    z-index: 2;
-}
+/* Animación de entrada */
+.sensor-appear { opacity:0; animation:sensorFadeIn .55s ease forwards; }
+@keyframes sensorFadeIn { from { opacity:0; transform:translateY(14px) scale(.94); } to { opacity:1; transform:translateY(0) scale(1); } }
 
 .div1,
 .div2 {
@@ -204,7 +181,31 @@
         0 0.9375rem 2.5rem rgba(0, 0, 0, 0.6),
         inset 0 0 2.5rem rgba(0, 255, 255, 0.05);
     z-index: 1;
+    min-height: 320px;
+    max-height: 320px;
+    width: 100%;
+    max-width: 340px;
 }
+
+/* Contenedor interno para bajar el contenido y evitar superposición con el toggle */
+.sensor-body {
+    margin-top: 3.2rem; /* espacio para el botón superior */
+    height: calc(100% - 3.2rem);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end; /* empuja nombre/estado hacia abajo */
+    gap: 0.55rem;
+    padding-bottom: 0.25rem;
+}
+
+.sensor-body .sensor-icon { margin-top: auto; }
+.sensor-name { margin-top: 0.2rem; }
+.sensor-status { margin-bottom: 0.4rem; }
+
+/* Ajuste para que el icono no quede demasiado arriba en tarjetas altas futuras */
+.sensor-top { width:100%; display:flex; justify-content:center; }
 
 .tarjeta-sensor::before {
     content: '';
@@ -963,3 +964,134 @@
     border-color: #00ff00;
     color: #00ff00;
 }
+
+/* Botón eliminar en esquina superior derecha */
+.btn-delete-esquina {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: linear-gradient(145deg, #1a0008, #330013);
+    border: 0.1875rem solid #ff003c;
+    border-radius: 0.5rem;
+    color: #ffffff;
+    padding: 0.45rem 0.65rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.05rem;
+    transition: all 0.35s ease;
+    font-family: inherit;
+    z-index: 10;
+    box-shadow:
+        0 0 1.25rem rgba(255, 0, 60, 0.5),
+        0 0.25rem 0.75rem rgba(0, 0, 0, 0.85),
+        inset 0 0 0.5rem rgba(255, 0, 60, 0.2);
+    text-shadow: 0 0 0.4rem rgba(255, 0, 60, 0.7);
+}
+.btn-delete-esquina:hover {
+    transform: scale(1.12) translateY(-0.1rem);
+    box-shadow:
+        0 0 1.8rem rgba(255, 0, 60, 0.85),
+        0 0 3.2rem rgba(255, 0, 60, 0.55),
+        inset 0 0 0.8rem rgba(255, 0, 60, 0.4);
+    background: linear-gradient(145deg, #330013, #52001d);
+}
+.btn-delete-esquina:active { transform: scale(0.95); }
+
+/* ===== Delete confirmation modal ===== */
+.delete-confirm-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.72);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 12000;
+    animation: fadeIn .3s ease;
+}
+.delete-confirm-modal {
+    width: 600px;
+    max-width: 95%;
+    background: linear-gradient(135deg, rgba(20,15,25,0.95), rgba(45,15,55,0.92));
+    border: 2px solid rgba(255,0,102,0.5);
+    box-shadow: 0 0 45px rgba(255,0,102,0.5), 0 0 70px rgba(0,255,255,0.28);
+    border-radius: 30px;
+    padding: 2.4rem 2.6rem 2.2rem;
+    position: relative;
+    font-family: 'Orbitron', monospace;
+    animation: popIn .35s ease;
+}
+.delete-header {
+    font-size: 1.25rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg,#ff0066,#00ffff,#ff0066);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 14px rgba(255,0,102,0.55);
+    margin-bottom: 1rem;
+    animation: shimmerTitle 5s linear infinite;
+    text-align: center;
+}
+.delete-body p {
+    margin: 0 0 1.1rem;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: #e8f9ff;
+    text-align: center;
+    font-weight: 500;
+    padding: 0 .4rem;
+}
+.sensor-tag {
+    color: #00ffff;
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(0,255,255,0.6);
+}
+.delete-warning {
+    background: linear-gradient(90deg, rgba(255,0,102,0.25), rgba(0,255,255,0.18));
+    border: 1px solid rgba(255,0,102,0.55);
+    padding: .8rem 1.1rem;
+    border-radius: 16px;
+    font-size: .75rem;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: 700;
+    color: #ffeef5;
+}
+.delete-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 1.8rem;
+    flex-wrap: wrap;
+}
+.btn-cancel-del, .btn-confirm-del {
+    font-family: 'Orbitron', monospace;
+    font-size: .75rem;
+    letter-spacing: 1.4px;
+    padding: 0.85rem 1.4rem;
+    border-radius: 16px;
+    cursor: pointer;
+    border: 1px solid rgba(0,255,255,0.5);
+    background: rgba(0,255,255,0.12);
+    color: #b9f9ff;
+    transition: all .3s ease;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+}
+.btn-cancel-del:hover { background: rgba(0,255,255,0.2); }
+.btn-confirm-del {
+    border-color: rgba(255,0,102,0.7);
+    background: linear-gradient(135deg, rgba(255,0,102,0.6), rgba(0,255,255,0.25));
+    color: #fff;
+    box-shadow: 0 0 18px rgba(255,0,102,0.35), 0 0 22px rgba(0,255,255,0.25);
+}
+.btn-confirm-del:hover { box-shadow: 0 0 24px rgba(255,0,102,0.55), 0 0 30px rgba(0,255,255,0.35); }
+.btn-confirm-del:disabled { opacity: .55; cursor: not-allowed; }
+.spinner.small { width: 18px; height: 18px; border-width: 3px; }

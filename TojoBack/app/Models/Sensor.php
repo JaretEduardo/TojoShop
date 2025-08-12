@@ -23,6 +23,7 @@ class Sensor extends Model
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'status' => 'boolean',
     ];
 
     // Usamos la columna 'key' para relacionar con sensor_data
@@ -34,6 +35,6 @@ class Sensor extends Model
     // Scope para activos
     public function scopeActivos($query)
     {
-    return $query->where('status', true);
+        return $query->where('status', true);
     }
 }

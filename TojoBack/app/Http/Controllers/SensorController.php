@@ -37,9 +37,14 @@ class SensorController extends Controller
         // Lógica para manejar la solicitud de datos por sensor
     }
 
-    public function AllFeeds(Request $request, $sensorKey)
+    public function AllFeeds(Request $request)
     {
-        // Lógica para manejar la solicitud de datos de un sensor específico
+        // Lista todos los sensores (encargado)
+        $sensors = Sensor::all();
+        return response()->json([
+            'statusCode' => 200,
+            'data' => $sensors,
+        ]);
     }
 
     // Agrega un nuevo sensor

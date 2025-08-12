@@ -615,6 +615,7 @@ body {
     font-weight: 700;
     letter-spacing: 1px;
     background: linear-gradient(90deg, #ff6b35, #8b5cf6);
+    background-clip: text; /* Standard property for compatibility (lint warning fix) */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     text-shadow: 0 0 12px rgba(255,107,53,0.4);

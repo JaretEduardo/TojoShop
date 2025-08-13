@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Sensor;
 use App\Models\SensorData;
+use App\Events\SensorDataIngested;
 
 class SensorController extends Controller
 {
@@ -148,7 +149,8 @@ class SensorController extends Controller
     public function Ingest(Request $request)
     {
         // Seguridad: se requiere aio_key (header X-AIO-KEY o campo JSON aio_key) que debe coincidir con env('AIO_KEY')
-        $expectedAio = env('AIO_KEY');
+        // Permitimos fallback a ADAFRUIT_AIO_KEY para no romper si el .env existente usa otro nombre
+        $expectedAio = env('AIO_KEY') ?: env('ADAFRUIT_AIO_KEY');
         if (!$expectedAio) {
             return response()->json(['statusCode' => 500, 'message' => 'AIO_KEY no configurado en el backend'], 500);
         }
@@ -182,7 +184,7 @@ class SensorController extends Controller
             $feedId = random_int(1, PHP_INT_MAX);
         }
 
-        $sensorData = SensorData::create([
+    $sensorData = SensorData::create([
             'sensor_key'  => $sensor->key,
             'feed_key'    => $validated['feed_name'],
             'feed_id'     => $feedId,
@@ -190,10 +192,52 @@ class SensorController extends Controller
             'received_at' => $validated['timestamp'] ?? now(),
         ]);
 
+    // Emitir evento broadcast
+    event(new SensorDataIngested($sensorData));
+
         return response()->json([
             'statusCode' => 201,
             'message' => 'Dato almacenado',
             'data' => $sensorData,
         ], 201);
+    }
+
+    // Obtener datos recientes de un sensor específico
+    public function GetSensorRecentData(Request $request, $sensorKey)
+    {
+        $sensor = Sensor::where('key', $sensorKey)->first();
+        if (!$sensor) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Sensor no encontrado',
+            ], 404);
+        }
+
+        // Obtener últimos 50 registros de datos del sensor
+        $recentData = SensorData::where('sensor_key', $sensor->key)
+            ->orderBy('received_at', 'desc')
+            ->limit(50)
+            ->get()
+            ->map(function ($data) {
+                return [
+                    'id' => $data->id,
+                    'value' => $data->value,
+                    'received_at' => $data->received_at->toISOString(),
+                    'feed_key' => $data->feed_key,
+                ];
+            });
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Datos obtenidos correctamente',
+            'data' => $recentData,
+            'sensor' => [
+                'key' => $sensor->key,
+                'name' => $sensor->name,
+                'type_data' => $sensor->type_data,
+                'min_value' => $sensor->min_value,
+                'max_value' => $sensor->max_value,
+            ]
+        ], 200);
     }
 }

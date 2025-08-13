@@ -21,6 +21,22 @@ try {
 }
 const INGEST_URL = VALID_INGEST_URL;
 const INGEST_TOKEN = process.env.INGEST_TOKEN || null; // Debe coincidir con env('INGEST_TOKEN') en Laravel si se usa
+// Intentar cargar clave AIO desde env.json (si existe) sin depender de variables de otros módulos
+let LOCAL_AIO_KEY = null;
+try {
+    const fs = require('fs');
+    const path = require('path');
+    const envCfgPath = path.join(__dirname, 'env.json');
+    if (fs.existsSync(envCfgPath)) {
+        const envCfg = JSON.parse(fs.readFileSync(envCfgPath, 'utf8'));
+        if (envCfg && envCfg.AIO_KEY) LOCAL_AIO_KEY = envCfg.AIO_KEY;
+    }
+} catch (e) {
+    // Silencioso: sólo log informativo
+    console.log(JSON.stringify({ type: 'ingest_env_warning', message: 'No se pudo leer AIO_KEY de env.json', error: e.message }));
+}
+// Clave efectiva: variable de entorno tiene prioridad
+const AIO_KEY = process.env.AIO_KEY || LOCAL_AIO_KEY || null;
 console.log(JSON.stringify({ type: 'ingest_config', ingest_url: INGEST_URL, has_token: !!INGEST_TOKEN }));
 
 function postIngest(payload) {
@@ -42,6 +58,9 @@ function postIngest(payload) {
             if (INGEST_TOKEN) {
                 options.headers['X-INGEST-TOKEN'] = INGEST_TOKEN;
             }
+            if (AIO_KEY) {
+                options.headers['X-AIO-KEY'] = AIO_KEY;
+            }
             const transport = urlObj.protocol === 'https:' ? https : http;
             const req = transport.request(options, (res) => {
                 let body = '';
@@ -50,7 +69,11 @@ function postIngest(payload) {
                     if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
                         resolve({ statusCode: res.statusCode, body });
                     } else {
-                        reject(new Error('Ingest response ' + res.statusCode + ': ' + body));
+                        const err = new Error('Ingest response ' + res.statusCode + ': ' + body);
+                        // Adjuntamos status para lógica de reintentos
+                        err.statusCode = res.statusCode;
+                        err.body = body;
+                        reject(err);
                     }
                 });
             });
@@ -82,14 +105,30 @@ function processQueue() {
             console.log(JSON.stringify({ type: 'ingest_success', feed_name: next.payload.feed_name, timestamp: new Date().toISOString() }));
         })
         .catch(err => {
-            console.log(JSON.stringify({ type: 'ingest_error', feed_name: next.payload.feed_name, error: err.message, retries: next.retries, timestamp: new Date().toISOString() }));
-            // Reintento con pequeño backoff exponencial
-            if (next.retries < 3) {
-                const delay = RETRY_DELAY_MS * Math.pow(2, next.retries);
-                setTimeout(() => {
-                    queue.push({ payload: next.payload, retries: next.retries + 1 });
-                    processQueue();
-                }, delay);
+            const status = err.statusCode || 0;
+            console.log(JSON.stringify({ type: 'ingest_error', feed_name: next.payload.feed_name, error: err.message, status, retries: next.retries, timestamp: new Date().toISOString() }));
+            // Política de reintentos:
+            // 401 (clave inválida) o 500 por falta de clave -> no reintentar
+            if (status === 401 || status === 500) {
+                // no reintentos adicionales
+            } else if (status === 429) {
+                // Too Many Requests: reintentar menos veces pero con backoff más grande
+                if (next.retries < 2) {
+                    const delay = 2000 * (next.retries + 1);
+                    setTimeout(() => {
+                        queue.push({ payload: next.payload, retries: next.retries + 1 });
+                        processQueue();
+                    }, delay);
+                }
+            } else {
+                // Otros errores: hasta 3 reintentos exponenciales
+                if (next.retries < 3) {
+                    const delay = RETRY_DELAY_MS * Math.pow(2, next.retries);
+                    setTimeout(() => {
+                        queue.push({ payload: next.payload, retries: next.retries + 1 });
+                        processQueue();
+                    }, delay);
+                }
             }
         })
         .finally(() => {

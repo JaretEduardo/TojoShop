@@ -26,9 +26,8 @@ timeout /t 2 >nul
 REM -------- Node MQTT ------
 if exist "%ROOT%\Adafruit\package.json" (
 	echo [Node MQTT] Iniciando...
-	set "INGEST_URL=http://localhost:8000/api/ingest"
-	REM set "INGEST_TOKEN=TU_TOKEN_OPCIONAL"
-	start "Node MQTT" /D "%ROOT%\Adafruit" cmd /k "set INGEST_URL=%INGEST_URL% && npm run dev"
+	REM Forzamos asignación inline para evitar que quede incompleta
+	start "Node MQTT" /D "%ROOT%\Adafruit" cmd /k "set INGEST_URL=http://localhost:8000/api/ingest && REM set INGEST_TOKEN=TU_TOKEN_OPCIONAL && npm run dev"
 ) else (
 	echo [Node MQTT] FALTA: %ROOT%\Adafruit\package.json
 )

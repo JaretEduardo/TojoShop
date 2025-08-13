@@ -40,7 +40,12 @@ Route::middleware(['auth:sanctum', 'role:user'])->group(function () {
 });
 
 
+// Sensores: acceso de lectura (allfeeds) para empleado o encargado; creación/edición/borrado solo encargado
+Route::middleware(['auth:sanctum', 'role:encargado,employee'])->get('/allfeeds', [SensorController::class, 'AllFeeds']);
+Route::middleware(['auth:sanctum', 'role:encargado,employee'])->get('/sensor/{key}/data', [SensorController::class, 'GetSensorRecentData']);
+
 Route::middleware(['auth:sanctum', 'role:encargado'])->group(function () {
+	// Route::get('/allfeeds', [SensorController::class, 'AllFeeds']); ???
 	Route::post('/createfeed', [SensorController::class, 'CreateFeed']);
 	Route::put('/updatefeed/{key}', [SensorController::class, 'UpdateFeed']);
 	Route::delete('/deletefeed/{key}', [SensorController::class, 'DeleteFeed']);

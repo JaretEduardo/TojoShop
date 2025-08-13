@@ -23,16 +23,16 @@ class SensorsSeeder extends Seeder
                 'name' => 'Sensor de Temperatura',
                 'status' => true,
                 'type_data' => 'temperatura',
-                'min_value' => -10,
-                'max_value' => 60,
+                'min_value' => 25,
+                'max_value' => 29,
             ],
             [ // 3 Gas (ppm)
                 'key' => 'sensor-gas',
                 'name' => 'Sensor de Gas',
                 'status' => true,
                 'type_data' => 'gas',
-                'min_value' => 0,
-                'max_value' => 1000,
+                'min_value' => 1500,
+                'max_value' => 1600,
             ],
             [ // 4 Peso HX711
                 'key' => 'peso-hx711',
@@ -47,7 +47,7 @@ class SensorsSeeder extends Seeder
                 'name' => 'Sensor de Puerta',
                 'status' => true,
                 'type_data' => 'puerta',
-                'min_value' => 90,
+                'min_value' => 0,
                 'max_value' => 90,
             ],
             [ // 6 RFID UID
@@ -57,6 +57,14 @@ class SensorsSeeder extends Seeder
                 'type_data' => 'rfid',
                 'min_value' => null,
                 'max_value' => null,
+            ],
+            [ // 7 Humedad
+                'key' => 'sensor-humedad',
+                'name' => 'Sensor de Humedad',
+                'status' => true,
+                'type_data' => 'humedad',
+                'min_value' => 50,
+                'max_value' => 70,
             ],
         ];
 

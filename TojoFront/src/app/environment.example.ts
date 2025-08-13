@@ -1,6 +1,8 @@
 export const environment = {
     production: false,
     apiUrl: 'your api url',
+    pusherKey: 'your_pusher_key',
+    pusherCluster: 'mt1',
     endpoints: {
         register: '/register',
         login: '/login',

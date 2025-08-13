@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environment';
+import { SKIP_SPINNER } from '../../interceptors/http-context-tokens';
 
 // Interfaces relacionadas a sensores / feeds
 export interface CreateFeedRequest {
@@ -17,7 +18,8 @@ export interface SensorDto {
   id?: number;
   key: string;
   name: string;
-  state: string; // 'activo' | 'inactivo'
+  state: string; // legacy string form 'activo' | 'inactivo' (si se usa)
+  status?: boolean; // backend devuelve boolean verdadero/falso
   type_data: string;
   min_value: number | null;
   max_value: number | null;
@@ -55,6 +57,26 @@ export interface ApiUpdateSensorResponse {
   statusCode: number;
   message: string;
   data: SensorDto;
+}
+
+export interface SensorDataReading {
+  id: number;
+  value: string;
+  received_at: string;
+  feed_key: string;
+}
+
+export interface ApiSensorDataResponse {
+  statusCode: number;
+  message: string;
+  data: SensorDataReading[];
+  sensor: {
+    key: string;
+    name: string;
+    type_data: string;
+    min_value: number | null;
+    max_value: number | null;
+  };
 }
 
 @Injectable({ providedIn: 'root' })
@@ -118,5 +140,11 @@ export class IoTService {
   // Delete Feed by key
   DeleteFeed(key: string): Observable<ApiDeleteSensorResponse> {
     return this.http.delete<ApiDeleteSensorResponse>(`${this.baseUrl}${environment.endpoints.bossendpoints.deletefeed}/${encodeURIComponent(key)}`);
+  }
+
+  // Get Sensor Recent Data
+  GetSensorData(key: string, skipSpinner: boolean = false): Observable<ApiSensorDataResponse> {
+    const context = skipSpinner ? new HttpContext().set(SKIP_SPINNER, true) : new HttpContext();
+    return this.http.get<ApiSensorDataResponse>(`${this.baseUrl}/sensor/${encodeURIComponent(key)}/data`, { context });
   }
 }

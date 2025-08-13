@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Sensor;
+use App\Models\SensorData;
 
 class SensorController extends Controller
 {
@@ -141,5 +142,58 @@ class SensorController extends Controller
             'statusCode' => 200,
             'message' => 'Sensor eliminado correctamente',
         ], 200);
+    }
+
+    // Ingesta externa (Node bridge) para almacenar datos entrantes de Adafruit vía WebSocket
+    public function Ingest(Request $request)
+    {
+        // Seguridad: se requiere aio_key (header X-AIO-KEY o campo JSON aio_key) que debe coincidir con env('AIO_KEY')
+        $expectedAio = env('AIO_KEY');
+        if (!$expectedAio) {
+            return response()->json(['statusCode' => 500, 'message' => 'AIO_KEY no configurado en el backend'], 500);
+        }
+        $providedAio = $request->header('X-AIO-KEY');
+        if (!$providedAio) {
+            $providedAio = $request->input('aio_key');
+        }
+        if (!$providedAio || !hash_equals($expectedAio, $providedAio)) {
+            return response()->json(['statusCode' => 401, 'message' => 'AIO key inválida'], 401);
+        }
+
+        // JSON esperado (ejemplo): {"feed_name":"sensor-gas","value":"2059","timestamp":"2025-08-13T01:43:18.580Z","aio_key":"***"}
+        $validated = validator($request->all(), [
+            'feed_name'  => 'required|string|max:255',
+            'value'      => 'required|string|max:255',
+            'timestamp'  => 'nullable|date',
+            'aio_key'    => 'sometimes', // ya validado manualmente
+        ])->validate();
+
+        $sensor = Sensor::where('key', $validated['feed_name'])->first();
+        if (!$sensor) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Sensor no encontrado (feed_name no coincide con sensor.key)',
+            ], 404);
+        }
+
+        // Generar un feed_id numérico (requerido por migración). Usamos tiempo + aleatorio para minimizar colisiones.
+        $feedId = (int) (microtime(true) * 1000) % 2147483647; // cabe en unsignedBigInteger; ajuste simple
+        if ($feedId <= 0) {
+            $feedId = random_int(1, PHP_INT_MAX);
+        }
+
+        $sensorData = SensorData::create([
+            'sensor_key'  => $sensor->key,
+            'feed_key'    => $validated['feed_name'],
+            'feed_id'     => $feedId,
+            'value'       => $validated['value'],
+            'received_at' => $validated['timestamp'] ?? now(),
+        ]);
+
+        return response()->json([
+            'statusCode' => 201,
+            'message' => 'Dato almacenado',
+            'data' => $sensorData,
+        ], 201);
     }
 }

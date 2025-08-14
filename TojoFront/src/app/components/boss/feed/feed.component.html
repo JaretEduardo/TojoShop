@@ -57,7 +57,7 @@
 
 <!-- Modal de datos del sensor -->
 <app-modal-data [isVisible]="modalVisible" [sensorId]="sensorSeleccionado.id" [sensorName]="sensorSeleccionado.nombre"
-    (closeModal)="cerrarModal()" (dataUpdated)="onDatosActualizados($event)">
+    [sensorData]="sensorDataForModal" (closeModal)="cerrarModal()" (dataUpdated)="onDatosActualizados($event)" (refreshData)="onRefreshSensorData()">
 </app-modal-data>
 
 <!-- Modal confirmación eliminar sensor -->

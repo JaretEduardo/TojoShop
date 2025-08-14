@@ -49,6 +49,12 @@ Route::middleware(['auth:sanctum', 'role:encargado'])->group(function () {
 	Route::post('/createfeed', [SensorController::class, 'CreateFeed']);
 	Route::put('/updatefeed/{key}', [SensorController::class, 'UpdateFeed']);
 	Route::delete('/deletefeed/{key}', [SensorController::class, 'DeleteFeed']);
+	Route::get('/getfeed/{key}', [SensorController::class, 'GetFeed']);
+	Route::get('/chartfeed/{key}', [SensorController::class, 'ChartFeedData']);
+	Route::get('/getfeeddata/{feedKey}', [SensorController::class, 'GetFeedData']);
+	Route::put('/updatedatapoint/{dataId}', [SensorController::class, 'UpdateDataPoint']);
+	Route::delete('/deletedatapoint/{dataId}', [SensorController::class, 'DeleteDataPoint']);
+	Route::post('/vincularrfid', [SensorController::class, 'vincularRFID']);
 });
 
 Route::post('/ingest', [SensorController::class, 'Ingest']);

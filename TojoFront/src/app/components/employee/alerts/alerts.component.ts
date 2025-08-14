@@ -155,18 +155,28 @@ export class AlertsComponent implements OnInit, OnDestroy {
             // Para RFID, mantener el valor como string (UID completo)
             // Para otros sensores, convertir a número
             let value: number | string;
+            let status: 'normal' | 'warning' | 'critical' = 'normal';
+            let statusText = 'Histórico';
+            
             if (sensor.unit === '' && (sensor.name.toLowerCase().includes('rfid') || sensor.icon === '🏷️')) {
               value = item.value; // Mantener como string para RFID
             } else {
               value = parseFloat(item.value) || 0; // Convertir a número para otros sensores
+              
+              // Verificar si el valor está fuera del rango permitido
+              const numericValue = value as number;
+              if (numericValue < sensor.minValue || numericValue > sensor.maxValue) {
+                status = 'critical';
+                statusText = 'Alerta';
+              }
             }
             
             return {
               id: item.id,
               value: value,
               timestamp: new Date(item.received_at),
-              status: 'normal' as const,
-              statusText: 'Histórico'
+              status: status,
+              statusText: statusText
             };
           });
           
@@ -273,12 +283,23 @@ export class AlertsComponent implements OnInit, OnDestroy {
       value = isNaN(numeric) ? 0 : numeric; // Convertir a número para otros sensores
     }
     
+    // Verificar si el valor está fuera del rango permitido (solo para sensores numéricos)
+    let status: 'normal' | 'warning' | 'critical' = 'normal';
+    let statusText = 'En tiempo real';
+    
+    if (typeof value === 'number') {
+      if (value < sensor.minValue || value > sensor.maxValue) {
+        status = 'critical';
+        statusText = 'Alerta';
+      }
+    }
+    
     const reading: SensorReading = {
       id: Date.now(),
       value: value,
       timestamp: new Date(evt.received_at),
-      status: 'normal',
-      statusText: 'En tiempo real'
+      status: status,
+      statusText: statusText
     };
     // Insertar al inicio y verificar duplicados por timestamp cercano
     const existingIndex = sensor.readings.findIndex(r => 

@@ -58,8 +58,12 @@ export class ApiResponseInterceptor implements HttpInterceptor {
             if (hasAuth) {
                 const role = (body.role || '').toLowerCase();
                 if (response.status === 201) {
-                    // Después de registrar, ir al login
-                    this.router.navigate(['/auth/login']);
+                    // Después de registrar, verificar si viene del componente identity
+                    // Si la ruta actual contiene 'identity', no redirigir
+                    const currentUrl = this.router.url;
+                    if (!currentUrl.includes('/identity')) {
+                        this.router.navigate(['/auth/login']);
+                    }
                 } else {
                     // Después de login, redirigir por rol
                     if (role === 'usuario') this.router.navigate(['/home']);

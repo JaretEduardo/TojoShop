@@ -79,6 +79,22 @@ export interface ApiSensorDataResponse {
   };
 }
 
+export interface UpdateDataPointRequest {
+  value: string;
+  received_at: string;
+}
+
+export interface ApiUpdateDataPointResponse {
+  statusCode: number;
+  message: string;
+  data: SensorDataReading;
+}
+
+export interface ApiDeleteDataPointResponse {
+  statusCode: number;
+  message: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class IoTService {
   private readonly baseUrl = environment.apiUrl;
@@ -92,16 +108,24 @@ export class IoTService {
   CreateData(): void { }
 
   // Update Data Point
-  UpdateDataPoint(): void { }
+  UpdateDataPoint(dataId: number, payload: UpdateDataPointRequest): Observable<ApiUpdateDataPointResponse> {
+    return this.http.put<ApiUpdateDataPointResponse>(`${this.baseUrl}${environment.endpoints.bossendpoints.updatedatapoint}/${dataId}`, payload);
+  }
 
   // Delete Data Point
-  DeleteDataPoint(): void { }
+  DeleteDataPoint(dataId: number): Observable<ApiDeleteDataPointResponse> {
+    return this.http.delete<ApiDeleteDataPointResponse>(`${this.baseUrl}${environment.endpoints.bossendpoints.deletedatapoint}/${dataId}`);
+  }
 
-  // Get Feed Data
-  GetFeedData(): void { }
+  // Get Feed Data - obtiene datos RFID no vinculados
+  GetFeedData(feedKey: string): Observable<ApiSensorDataResponse> {
+    return this.http.get<ApiSensorDataResponse>(`${this.baseUrl}${environment.endpoints.bossendpoints.getfeeddata}/${encodeURIComponent(feedKey)}`);
+  }
 
-  // Chart Feed Data
-  ChartFeedData(): void { }
+  // Chart Feed Data - obtiene datos para gráficas de un sensor específico
+  ChartFeedData(key: string): Observable<ApiSensorDataResponse> {
+    return this.http.get<ApiSensorDataResponse>(`${this.baseUrl}${environment.endpoints.bossendpoints.chartfeed}/${encodeURIComponent(key)}`);
+  }
 
   // All Feeds (lista de sensores)
   AllFeeds(): Observable<ApiListSensorsResponse> {
@@ -122,8 +146,10 @@ export class IoTService {
     return this.http.post<ApiCreateSensorResponse>(`${this.baseUrl}${environment.endpoints.bossendpoints.createfeed}`, body);
   }
 
-  // Get Feed
-  GetFeed(): void { }
+  // Get Feed - obtiene todos los datos históricos de un sensor específico
+  GetFeed(key: string): Observable<ApiSensorDataResponse> {
+    return this.http.get<ApiSensorDataResponse>(`${this.baseUrl}${environment.endpoints.bossendpoints.getfeed}/${encodeURIComponent(key)}`);
+  }
 
   // Update Feed
   UpdateFeed(key: string, payload: UpdateFeedRequest): Observable<ApiUpdateSensorResponse> {
@@ -146,5 +172,10 @@ export class IoTService {
   GetSensorData(key: string, skipSpinner: boolean = false): Observable<ApiSensorDataResponse> {
     const context = skipSpinner ? new HttpContext().set(SKIP_SPINNER, true) : new HttpContext();
     return this.http.get<ApiSensorDataResponse>(`${this.baseUrl}/sensor/${encodeURIComponent(key)}/data`, { context });
+  }
+
+  // Vincular RFID
+  VincularRFID(payload: { user_id: number; rfid_value: string }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}${environment.endpoints.bossendpoints.vincularrfid}`, payload);
   }
 }

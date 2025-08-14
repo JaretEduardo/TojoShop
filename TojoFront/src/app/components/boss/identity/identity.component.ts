@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AlertService } from '../../../services/alert.service';
+import { IoTService, SensorDataReading } from '../../../services/IoTService/io-t.service';
+import { AuthService } from '../../../services/auth/auth.service';
 
 interface EscaneoRFID {
   id: string;
@@ -14,7 +16,6 @@ interface EmpleadoForm {
   correo: string;
   password: string;
   tipoEmpleado: string;
-  sucursal: string;
 }
 
 @Component({
@@ -24,44 +25,63 @@ interface EmpleadoForm {
   templateUrl: './identity.component.html',
   styleUrl: './identity.component.css'
 })
-export class IdentityComponent {
+export class IdentityComponent implements OnInit {
   // Lista de escaneos RFID no asignados
-  escaneosRFID: EscaneoRFID[] = [
-    { id: 'RFID001', fecha: new Date('2025-08-04T08:30:00'), asignado: false },
-    { id: 'RFID002', fecha: new Date('2025-08-04T09:15:00'), asignado: false },
-    { id: 'RFID003', fecha: new Date('2025-08-04T10:45:00'), asignado: false },
-    { id: 'RFID004', fecha: new Date('2025-08-04T11:20:00'), asignado: false },
-    { id: 'RFID005', fecha: new Date('2025-08-04T14:30:00'), asignado: false },
-    { id: 'RFID006', fecha: new Date('2025-08-04T15:45:00'), asignado: false }
-  ];
+  escaneosRFID: EscaneoRFID[] = [];
+  
+  // Loading state
+  loadingRFID: boolean = false;
 
   // Formulario de empleado
   empleadoForm: EmpleadoForm = {
     nombre: '',
     correo: '',
     password: '',
-    tipoEmpleado: '',
-    sucursal: ''
+    tipoEmpleado: ''
   };
 
   // Opciones para los selectores
   tiposEmpleado = [
     { value: 'empleado', label: 'Empleado' },
-    { value: 'supervisor', label: 'Supervisor' },
-    { value: 'gerente', label: 'Gerente' }
+    { value: 'encargado', label: 'Encargado' }
   ];
 
-  sucursales = [
-    { value: 'sucursal1', label: 'Sucursal Centro' },
-    { value: 'sucursal2', label: 'Sucursal Norte' },
-    { value: 'sucursal3', label: 'Sucursal Sur' },
-    { value: 'sucursal4', label: 'Sucursal Oriente' }
-  ];
+
 
   // RFID seleccionado para asignar
   rfidSeleccionado: string = '';
 
-  constructor(private alertService: AlertService) {}
+  constructor(
+    private alertService: AlertService,
+    private iotService: IoTService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit(): void {
+    this.cargarDatosRFID();
+  }
+
+  // Cargar datos RFID no vinculados desde el backend
+  cargarDatosRFID(): void {
+    this.loadingRFID = true;
+    this.iotService.GetFeedData('rfid-uid').subscribe({
+      next: (response) => {
+        if (response.statusCode === 200) {
+          this.escaneosRFID = response.data.map((rfidData: SensorDataReading) => ({
+            id: rfidData.value,
+            fecha: new Date(rfidData.received_at),
+            asignado: false
+          }));
+        }
+        this.loadingRFID = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar datos RFID:', error);
+        this.alertService.showError('Error al cargar los datos RFID', 'Error');
+        this.loadingRFID = false;
+      }
+    });
+  }
 
   // Obtener escaneos no asignados
   getEscaneosNoAsignados(): EscaneoRFID[] {
@@ -79,7 +99,6 @@ export class IdentityComponent {
       this.empleadoForm.correo.trim() !== '' &&
       this.empleadoForm.password.trim() !== '' &&
       this.empleadoForm.tipoEmpleado !== '' &&
-      this.empleadoForm.sucursal !== '' &&
       this.rfidSeleccionado !== '';
   }
 
@@ -121,9 +140,9 @@ export class IdentityComponent {
       return;
     }
 
-    if (this.empleadoForm.password.length < 6) {
+    if (this.empleadoForm.password.length < 8) {
       this.alertService.showWarning(
-        'La contraseña debe tener al menos 6 caracteres',
+        'La contraseña debe tener al menos 8 caracteres',
         'Contraseña muy corta'
       );
       return;
@@ -138,15 +157,6 @@ export class IdentityComponent {
       return;
     }
 
-    // Validar sucursal
-    if (!this.empleadoForm.sucursal) {
-      this.alertService.showWarning(
-        'Por favor selecciona la sucursal donde trabajará el empleado',
-        'Campo requerido'
-      );
-      return;
-    }
-
     // Validar RFID seleccionado
     if (!this.rfidSeleccionado) {
       this.alertService.showError(
@@ -156,37 +166,81 @@ export class IdentityComponent {
       return;
     }
 
-    // Simular registro del empleado
-    console.log('Registrando empleado:', {
-      ...this.empleadoForm,
-      rfidAsignado: this.rfidSeleccionado
-    });
-
-    // Guardar datos para el mensaje antes de limpiar
+    // Guardar datos para el mensaje antes de procesar
     const nombreEmpleado = this.empleadoForm.nombre;
     const rfidAsignado = this.rfidSeleccionado;
 
-    // Marcar el RFID como asignado
-    const escaneo = this.escaneosRFID.find(e => e.id === this.rfidSeleccionado);
-    if (escaneo) {
-      escaneo.asignado = true;
-    }
-
-    // Limpiar formulario
-    this.empleadoForm = {
-      nombre: '',
-      correo: '',
-      password: '',
-      tipoEmpleado: '',
-      sucursal: ''
+    // Preparar payload para registro de usuario
+    const registerPayload = {
+      name: this.empleadoForm.nombre.trim(),
+      email: this.empleadoForm.correo.trim(),
+      password: this.empleadoForm.password,
+      password_confirmation: this.empleadoForm.password,
+      role: this.empleadoForm.tipoEmpleado as 'empleado' | 'encargado'
     };
-    this.rfidSeleccionado = '';
 
-    // Mostrar confirmación de éxito
-    this.alertService.showSuccess(
-      `El empleado ${nombreEmpleado} ha sido registrado exitosamente con el RFID ${rfidAsignado}`,
-      'Empleado registrado'
-    );
+    // Registrar usuario primero
+    this.authService.Register(registerPayload).subscribe({
+      next: (response: any) => {
+        // Una vez registrado el usuario, vincular el RFID
+        const userId = response.user?.id || response.data?.id;
+        if (userId) {
+          this.vincularRFIDConUsuario(userId, rfidAsignado, nombreEmpleado);
+        } else {
+          this.alertService.showError(
+            'Error al obtener el ID del usuario registrado',
+            'Error de registro'
+          );
+        }
+      },
+      error: (error) => {
+        console.error('Error al registrar usuario:', error);
+        this.alertService.showError(
+          'Error al registrar el empleado. Verifique los datos e intente nuevamente.',
+          'Error de registro'
+        );
+      }
+    });
+  }
+
+  // Método auxiliar para vincular RFID con usuario
+  private vincularRFIDConUsuario(userId: number, rfidValue: string, nombreEmpleado: string): void {
+    const vincularPayload = {
+      user_id: userId,
+      rfid_value: rfidValue
+    };
+
+    this.iotService.VincularRFID(vincularPayload).subscribe({
+      next: (response) => {
+        // Marcar el RFID como asignado
+        const escaneo = this.escaneosRFID.find(e => e.id === rfidValue);
+        if (escaneo) {
+          escaneo.asignado = true;
+        }
+
+        // Limpiar formulario
+         this.empleadoForm = {
+           nombre: '',
+           correo: '',
+           password: '',
+           tipoEmpleado: ''
+         };
+        this.rfidSeleccionado = '';
+
+        // Mostrar confirmación de éxito
+        this.alertService.showSuccess(
+          `El empleado ${nombreEmpleado} ha sido registrado exitosamente con el RFID ${rfidValue}`,
+          'Empleado registrado'
+        );
+      },
+      error: (error) => {
+        console.error('Error al vincular RFID:', error);
+        this.alertService.showError(
+          'El usuario fue registrado pero hubo un error al vincular el RFID. Contacte al administrador.',
+          'Error de vinculación RFID'
+        );
+      }
+    });
   }
 
   // Formatear fecha para mostrar

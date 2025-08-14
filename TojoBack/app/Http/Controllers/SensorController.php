@@ -19,24 +19,159 @@ class SensorController extends Controller
         // Lógica para manejar la solicitud de creación de datos de sensores
     }
 
-    public function UpdateDataPoint(Request $request)
+    public function UpdateDataPoint(Request $request, $dataId)
     {
-        // Lógica para manejar la solicitud de actualización de datos de sensores
+        // Validar los datos de entrada
+        $validated = validator($request->all(), [
+            'value' => 'required|string|max:255',
+            'received_at' => 'nullable|date',
+        ])->validate();
+
+        // Buscar el punto de datos por ID
+        $sensorData = SensorData::find($dataId);
+        
+        if (!$sensorData) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Punto de datos no encontrado',
+            ], 404);
+        }
+
+        // Actualizar los campos
+        $sensorData->value = $validated['value'];
+        if (isset($validated['received_at'])) {
+            $sensorData->received_at = $validated['received_at'];
+        }
+        
+        $sensorData->save();
+
+        // Emitir evento broadcast para notificar cambios en tiempo real
+        event(new SensorDataIngested($sensorData));
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Punto de datos actualizado correctamente',
+            'data' => [
+                'id' => $sensorData->id,
+                'value' => $sensorData->value,
+                'received_at' => $sensorData->received_at->toISOString(),
+                'feed_key' => $sensorData->feed_key,
+            ]
+        ], 200);
     }
 
-    public function DeleteDataPoint(Request $request)
+    public function DeleteDataPoint(Request $request, $dataId)
     {
-        // Lógica para manejar la solicitud de eliminación de datos de sensores
+        // Buscar el punto de datos por ID
+        $sensorData = SensorData::find($dataId);
+        
+        if (!$sensorData) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Punto de datos no encontrado',
+            ], 404);
+        }
+
+        // Eliminar el punto de datos
+        $sensorData->delete();
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Punto de datos eliminado correctamente',
+        ], 200);
     }
 
     public function GetFeedData(Request $request, $feedKey)
     {
-        // Lógica para manejar la solicitud de datos por feed
+        // Verificar si el feed es RFID
+        if ($feedKey !== 'rfid-uid') {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Este endpoint solo funciona para datos RFID',
+            ], 400);
+        }
+
+        // Obtener todos los datos del sensor RFID
+        $rfidData = SensorData::where('sensor_key', 'rfid-uid')
+            ->select('value')
+            ->distinct()
+            ->get()
+            ->pluck('value');
+
+        // Obtener los valores RFID que ya están vinculados en la tabla rfidauth
+        $linkedRfids = \App\Models\RFIDAuth::pluck('value');
+
+        // Filtrar para obtener solo los RFID no vinculados
+        $unlinkedRfids = $rfidData->diff($linkedRfids);
+
+        // Obtener los datos completos de los RFID no vinculados
+        $unlinkedRfidData = SensorData::where('sensor_key', 'rfid-uid')
+            ->whereIn('value', $unlinkedRfids)
+            ->orderBy('received_at', 'desc')
+            ->get()
+            ->groupBy('value')
+            ->map(function ($group) {
+                // Tomar solo el registro más reciente de cada valor RFID
+                return $group->first();
+            })
+            ->values()
+            ->map(function ($data) {
+                return [
+                    'id' => $data->id,
+                    'value' => $data->value,
+                    'received_at' => $data->received_at->toISOString(),
+                    'feed_key' => $data->feed_key,
+                ];
+            });
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Datos RFID no vinculados obtenidos correctamente',
+            'data' => $unlinkedRfidData,
+        ], 200);
     }
 
     public function ChartFeedData(Request $request, $sensorKey)
     {
-        // Lógica para manejar la solicitud de datos por sensor
+        // Buscar el sensor por su key
+        $sensor = Sensor::where('key', $sensorKey)->first();
+        
+        if (!$sensor) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Sensor no encontrado',
+            ], 404);
+        }
+
+        // Obtener datos del sensor para gráficas (últimos 100 registros)
+        $chartData = SensorData::where('sensor_key', $sensor->key)
+            ->orderBy('received_at', 'desc')
+            ->limit(100)
+            ->get()
+            ->reverse() // Invertir para mostrar cronológicamente
+            ->values() // Reindexar
+            ->map(function ($data) {
+                return [
+                    'id' => $data->id,
+                    'value' => $data->value,
+                    'received_at' => $data->received_at->toISOString(),
+                    'feed_key' => $data->feed_key,
+                ];
+            });
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Datos para gráfica obtenidos correctamente',
+            'data' => $chartData,
+            'sensor' => [
+                'key' => $sensor->key,
+                'name' => $sensor->name,
+                'type_data' => $sensor->type_data,
+                'min_value' => $sensor->min_value,
+                'max_value' => $sensor->max_value,
+                'status' => $sensor->status,
+            ]
+        ], 200);
     }
 
     public function AllFeeds(Request $request)
@@ -83,7 +218,42 @@ class SensorController extends Controller
 
     public function GetFeed(Request $request, $sensorKey)
     {
-        // Lógica para manejar la solicitud de eliminación de un feed específico
+        // Buscar el sensor por su key
+        $sensor = Sensor::where('key', $sensorKey)->first();
+        
+        if (!$sensor) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Sensor no encontrado',
+            ], 404);
+        }
+
+        // Obtener todos los datos históricos del sensor ordenados por fecha descendente
+        $sensorData = SensorData::where('sensor_key', $sensor->key)
+            ->orderBy('received_at', 'desc')
+            ->get()
+            ->map(function ($data) {
+                return [
+                    'id' => $data->id,
+                    'value' => $data->value,
+                    'received_at' => $data->received_at->toISOString(),
+                    'feed_key' => $data->feed_key,
+                ];
+            });
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Datos del sensor obtenidos correctamente',
+            'data' => $sensorData,
+            'sensor' => [
+                'key' => $sensor->key,
+                'name' => $sensor->name,
+                'type_data' => $sensor->type_data,
+                'min_value' => $sensor->min_value,
+                'max_value' => $sensor->max_value,
+                'status' => $sensor->status,
+            ]
+        ], 200);
     }
 
     public function UpdateFeed(Request $request, $sensorKey)
@@ -238,6 +408,36 @@ class SensorController extends Controller
                 'min_value' => $sensor->min_value,
                 'max_value' => $sensor->max_value,
             ]
+        ], 200);
+    }
+
+    public function vincularRFID(Request $request)
+    {
+        // Validar los datos de entrada
+        $validated = validator($request->all(), [
+            'user_id' => 'required|integer|exists:users,id',
+            'rfid_value' => 'required|string|max:255',
+        ])->validate();
+
+        // Verificar si el RFID ya está vinculado
+        $existingRFID = \App\Models\RFIDAuth::where('value', $validated['rfid_value'])->first();
+        if ($existingRFID) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Este RFID ya está vinculado a otro usuario',
+            ], 400);
+        }
+
+        // Crear la vinculación RFID
+        $rfidAuth = \App\Models\RFIDAuth::create([
+            'user_id' => $validated['user_id'],
+            'value' => $validated['rfid_value'],
+        ]);
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'RFID vinculado correctamente al usuario',
+            'data' => $rfidAuth
         ], 200);
     }
 }

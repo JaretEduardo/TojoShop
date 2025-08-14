@@ -867,7 +867,7 @@
     font-size: 0.55rem;
 }
 .sensor-key .valor {
-    max-width: 120px;
+    max-width: 200px;
     display: inline-block;
     white-space: nowrap;
     overflow: hidden;

@@ -7,8 +7,16 @@
         </div>
 
         <div class="rfid-list">
-            <div *ngFor="let escaneo of getEscaneosNoAsignados()" class="rfid-item"
-                [class.selected]="rfidSeleccionado === escaneo.id" (click)="seleccionarRFID(escaneo.id)">
+            <!-- Loading indicator -->
+            <div *ngIf="loadingRFID" class="loading-container">
+                <div class="loading-spinner">⏳</div>
+                <p>Cargando datos RFID...</p>
+            </div>
+            
+            <!-- RFID items -->
+            <ng-container *ngIf="!loadingRFID">
+                <div *ngFor="let escaneo of getEscaneosNoAsignados()" class="rfid-item"
+                    [class.selected]="rfidSeleccionado === escaneo.id" (click)="seleccionarRFID(escaneo.id)">
 
                 <div class="rfid-icon">🏷️</div>
                 <div class="rfid-info">
@@ -18,6 +26,13 @@
                 <div class="rfid-status" [class.selected]="rfidSeleccionado === escaneo.id">
                     {{ rfidSeleccionado === escaneo.id ? '✅' : '⚪' }}
                 </div>
+                </div>
+            </ng-container>
+            
+            <!-- Empty state -->
+            <div *ngIf="!loadingRFID && getEscaneosNoAsignados().length === 0" class="empty-state">
+                <div class="empty-icon">📭</div>
+                <p>No hay tarjetas RFID sin asignar</p>
             </div>
         </div>
 
@@ -60,19 +75,8 @@
             </select>
         </div>
 
-        <!-- div7: Campo Sucursal -->
+        <!-- div7: Botón Alta de Empleado -->
         <div class="div7">
-            <label for="sucursal">🏢 Sucursal</label>
-            <select id="sucursal" [(ngModel)]="empleadoForm.sucursal" class="form-select">
-                <option value="" disabled>Seleccione una sucursal</option>
-                <option *ngFor="let sucursal of sucursales" [value]="sucursal.value">
-                    {{ sucursal.label }}
-                </option>
-            </select>
-        </div>
-
-        <!-- div8: Botón Alta de Empleado -->
-        <div class="div8">
             <button class="btn-alta" [class.disabled]="!validarFormulario()" [disabled]="!validarFormulario()"
                 (click)="darDeAltaEmpleado()">
                 <span class="btn-icon">➕</span>

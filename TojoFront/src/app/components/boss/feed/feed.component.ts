@@ -33,6 +33,7 @@ export class FeedComponent implements OnInit {
     id: '',
     nombre: ''
   };
+  sensorDataForModal: any[] = [];
 
   // Modal eliminar
   showDeleteModal = false;
@@ -271,12 +272,80 @@ export class FeedComponent implements OnInit {
     const sensoresFiltrados = this.getSensoresFiltrados();
     const sensorNombre = sensoresFiltrados[index];
     
+    // Obtener el índice original del sensor
+    const originalIndex = this.sensores.indexOf(sensorNombre);
+    const sensorKey = originalIndex > -1 ? this.sensorKeys[originalIndex] : '';
+    
+    if (!sensorKey) {
+      console.error('No se pudo obtener la clave del sensor');
+      return;
+    }
+    
     this.sensorSeleccionado = {
-      id: sensorNombre.toLowerCase(),
+      id: sensorKey,
       nombre: sensorNombre
     };
     
-    this.modalVisible = true;
+    // Llamar al servicio GetFeed para obtener todos los datos históricos
+    this.iot.GetFeed(sensorKey).subscribe({
+      next: (response) => {
+        if (response.statusCode === 200 && response.data) {
+          // Transformar los datos del backend al formato esperado por el modal
+          this.sensorDataForModal = response.data.map((item: any) => {
+            const sensorType = response.sensor?.type_data || 'unknown';
+            const isNumericSensor = sensorType !== 'rfid';
+            const processedValue = isNumericSensor ? parseFloat(item.value) : item.value;
+            
+            return {
+              id: item.id,
+              value: processedValue,
+              timestamp: new Date(item.received_at),
+              status: this.determineStatus(processedValue, response.sensor),
+              sensorType: sensorType
+            };
+          });
+        } else {
+          console.error('Error en la respuesta del servidor:', response.message);
+          this.sensorDataForModal = [];
+        }
+        this.modalVisible = true;
+      },
+      error: (error) => {
+        console.error('Error obteniendo datos del sensor:', error);
+        this.sensorDataForModal = [];
+        this.modalVisible = true;
+      }
+    });
+  }
+  
+  // Método auxiliar para determinar el estado basado en los rangos del sensor
+  private determineStatus(value: number | string, sensor: any): 'normal' | 'warning' | 'critical' {
+    // Para sensores no numéricos (como RFID), siempre retornar normal
+    if (typeof value === 'string' || !sensor || sensor.min_value === null || sensor.max_value === null) {
+      return 'normal';
+    }
+    
+    const numericValue = typeof value === 'number' ? value : parseFloat(String(value));
+    if (isNaN(numericValue)) {
+      return 'normal';
+    }
+    
+    const minValue = parseFloat(sensor.min_value);
+    const maxValue = parseFloat(sensor.max_value);
+    
+    if (numericValue < minValue || numericValue > maxValue) {
+      return 'critical';
+    }
+    
+    // Zona de advertencia: 10% cerca de los límites
+    const range = maxValue - minValue;
+    const warningMargin = range * 0.1;
+    
+    if (numericValue <= minValue + warningMargin || numericValue >= maxValue - warningMargin) {
+      return 'warning';
+    }
+    
+    return 'normal';
   }
 
   // Cerrar modal
@@ -286,6 +355,7 @@ export class FeedComponent implements OnInit {
       id: '',
       nombre: ''
     };
+    this.sensorDataForModal = [];
   }
 
   // Manejar actualización de datos del sensor
@@ -293,6 +363,46 @@ export class FeedComponent implements OnInit {
     console.log('Datos del sensor actualizados:', data);
     // Aquí puedes implementar la lógica para actualizar los datos en el backend
   }
+
+  // Manejar solicitud de actualización de datos del sensor
+  onRefreshSensorData(): void {
+    const sensorKey = this.sensorSeleccionado.id;
+    
+    if (!sensorKey) {
+      console.error('No hay sensor seleccionado para actualizar');
+      return;
+    }
+    
+    // Volver a llamar al servicio GetFeed para obtener datos actualizados
+    this.iot.GetFeed(sensorKey).subscribe({
+      next: (response) => {
+        if (response.statusCode === 200 && response.data) {
+          // Transformar los datos del backend al formato esperado por el modal
+          this.sensorDataForModal = response.data.map((item: any) => {
+            const sensorType = response.sensor?.type_data || 'unknown';
+            const isNumericSensor = sensorType !== 'rfid';
+            const processedValue = isNumericSensor ? parseFloat(item.value) : item.value;
+            
+            return {
+              id: item.id,
+              value: processedValue,
+              timestamp: new Date(item.received_at),
+              status: this.determineStatus(processedValue, response.sensor),
+              sensorType: sensorType
+            };
+          });
+          console.log('Datos del sensor actualizados correctamente');
+        } else {
+          console.error('Error en la respuesta del servidor:', response.message);
+        }
+      },
+      error: (error) => {
+        console.error('Error obteniendo datos actualizados del sensor:', error);
+      }
+    });
+  }
+
+
 
   // ====== Eliminar (solo UI por ahora) ======
   openDeleteModal(index: number) {

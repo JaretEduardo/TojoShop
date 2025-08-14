@@ -43,7 +43,10 @@
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     padding: 1rem;
+    justify-items: center; /* center cards horizontally */
 }
+
+.favorite-card { width: 100%; max-width: 340px; }
 
 .favorite-card {
     background: linear-gradient(135deg, 

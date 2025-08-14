@@ -7,62 +7,70 @@
                 INVENTARIO DE PRODUCTOS
             </h2>
             <div class="category-filters">
-                <button class="category-btn" [class.active]="activeCategory === 'all'" (click)="setActiveCategory('all')">
-                    <span class="category-icon">🌟</span>
-                    TODOS
-                </button>
-                <button class="category-btn" [class.active]="activeCategory === 'bebidas'" (click)="setActiveCategory('bebidas')">
-                    <span class="category-icon">🥤</span>
-                    BEBIDAS
-                </button>
-                <button class="category-btn" [class.active]="activeCategory === 'snacks'" (click)="setActiveCategory('snacks')">
-                    <span class="category-icon">🍿</span>
-                    SNACKS
-                </button>
-                <button class="category-btn" [class.active]="activeCategory === 'dulces'" (click)="setActiveCategory('dulces')">
-                    <span class="category-icon">🍬</span>
-                    DULCES
-                </button>
-                <button class="category-btn" [class.active]="activeCategory === 'lacteos'" (click)="setActiveCategory('lacteos')">
-                    <span class="category-icon">🥛</span>
-                    LÁCTEOS
-                </button>
+                <div class="filter-group">
+                    <span class="filter-label">Categoría</span>
+                    <div class="select-wrap">
+                        <span class="select-icon">▾</span>
+                        <select class="filter-select" [ngModel]="activeCategory" (ngModelChange)="setActiveCategory($event)">
+                            <option [ngValue]="'all'">Todas las categorías</option>
+                            <option *ngFor="let cat of categories" [ngValue]="cat.id">{{ cat.name }}</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Grid de tarjetas de productos -->
     <div class="products-grid">
+        <div class="product-card" *ngIf="loading">
+            <div class="product-header">
+                <h3 class="product-name">Cargando productos…</h3>
+                <span class="product-id">Por favor espera</span>
+            </div>
+            <div class="stock-info total"><span class="stock-label">STOCK TOTAL</span><span class="stock-value">—</span></div>
+            <div class="stock-info price"><span class="stock-label">PRECIO</span><span class="stock-value">—</span></div>
+            <div class="stock-info available"><span class="stock-label">DISPONIBLE</span></div>
+        </div>
+
+        <div class="empty-state" *ngIf="!loading && getFilteredProducts().length === 0">
+            <div class="empty-icon">🗂️</div>
+            <div class="empty-text">No hay productos para mostrar en esta categoría.</div>
+        </div>
+
         <div class="product-card" *ngFor="let product of getFilteredProducts()">
             <!-- Nombre del producto y ID -->
             <div class="product-header">
                 <h3 class="product-name">{{ product.name }}</h3>
-                <span class="product-id">ID: {{ product.id }}</span>
+                <div class="product-meta">
+                    <span class="product-id">#{{ product.id }}</span>
+                    <span class="category-badge" [class.unknown]="!product.category">{{ product.category || 'Sin categoría' }}</span>
+                </div>
             </div>
             
-            <!-- Stock total -->
+            <!-- Información en filas como antes -->
             <div class="stock-info total">
                 <span class="stock-label">STOCK TOTAL</span>
                 <span class="stock-value">{{ product.stockTotal }}</span>
             </div>
-            
-            <!-- Stock en góndola -->
-            <div class="stock-info gondola">
-                <span class="stock-label">GÓNDOLA</span>
-                <span class="stock-value">{{ product.stockGondola }}</span>
+            <div class="stock-info price">
+                <span class="stock-label">PRECIO</span>
+                <span class="stock-value">{{ product.price | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
             </div>
-            
-            <!-- Stock en almacén -->
-            <div class="stock-info warehouse">
-                <span class="stock-label">ALMACÉN</span>
-                <span class="stock-value">{{ product.stockAlmacen }}</span>
+            <div class="stock-info available">
+                <span class="stock-label">DISPONIBLE</span>
+            </div>
+            <div class="stock-info updated" *ngIf="product.lastUpdated">
+                <span class="stock-label">ACTUALIZADO</span>
+                <span class="stock-value">{{ product.lastUpdated }}</span>
             </div>
             
             <!-- Botón actualizar -->
             <div class="button-container">
-                <button class="update-btn" (click)="updateStock(product.id)">
-                    <span class="btn-icon">🔄</span>
-                    ACTUALIZAR
+                <button class="update-btn" [class.loading]="product.updating" (click)="updateStock(product.id)" [disabled]="product.updating">
+                    <span class="btn-icon" *ngIf="!product.updating">🔄</span>
+                    <span class="btn-icon spinner" *ngIf="product.updating"></span>
+                    {{ product.updating ? 'ACTUALIZANDO...' : 'ACTUALIZAR' }}
                 </button>
             </div>
         </div>

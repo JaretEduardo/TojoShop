@@ -1,7 +1,7 @@
 <div class="register-form">
     <h2 class="form-title">Crear Cuenta</h2>
     
-    <form class="auth-form" id="authForm" (ngSubmit)="onSubmit()">
+    <form class="auth-form" id="authForm" (ngSubmit)="onSubmit()" novalidate>
         <div class="form-field">
             <label for="name" class="field-label">Nombre Completo</label>
             <input 
@@ -73,6 +73,7 @@
                 Acepto los términos y condiciones
             </label>
         </div>
+        
     </form>
 </div>
 

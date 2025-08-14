@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { StartComponent } from '../start/start.component';
+import { ProductsService, ProductDto } from '../../../services/products.service';
 
 interface FavoriteItem {
   id: number;
@@ -18,40 +19,35 @@ interface FavoriteItem {
   templateUrl: './favorites.component.html',
   styleUrl: './favorites.component.css'
 })
-export class FavoritesComponent {
-  favoriteItems: FavoriteItem[] = [
-    {
-      id: 1,
-      name: 'Cyberpunk Jacket',
-      description: 'Chaqueta futurista con luces LED integradas',
-      price: 299.99,
-      image: 'https://via.placeholder.com/300x200/ff6b35/ffffff?text=Cyberpunk+Jacket'
-    },
-    {
-      id: 3,
-      name: 'Holo Gloves',
-      description: 'Guantes con interfaz holográfica',
-      price: 199.99,
-      image: 'https://via.placeholder.com/300x200/ff6b35/ffffff?text=Holo+Gloves'
-    },
-    {
-      id: 5,
-      name: 'Data Visor',
-      description: 'Visor con pantalla de datos en tiempo real',
-      price: 799.99,
-      image: 'https://via.placeholder.com/300x200/ff6b35/ffffff?text=Data+Visor'
-    }
-  ];
+export class FavoritesComponent implements OnInit {
+  favoriteItems: FavoriteItem[] = [];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private productsService: ProductsService) { }
+
+  ngOnInit(): void {
+    this.loadFavorites();
+  }
+
+  private loadFavorites() {
+    this.productsService.favoritesList().subscribe((items: ProductDto[]) => {
+      this.favoriteItems = items.map(p => ({
+        id: p.id,
+        name: p.name,
+        description: p.description ?? '',
+        price: Number(p.price),
+        image: 'https://via.placeholder.com/300x200/ff6b35/ffffff?text=' + encodeURIComponent(p.name),
+      }));
+    });
+  }
 
   removeFromFavorites(item: FavoriteItem) {
-    this.favoriteItems = this.favoriteItems.filter(favorite => favorite.id !== item.id);
-    console.log(`${item.name} removido de favoritos`);
+    this.productsService.removeFavorite(item.id).subscribe(() => {
+      this.favoriteItems = this.favoriteItems.filter(f => f.id !== item.id);
+    });
   }
 
   addToCart(item: FavoriteItem) {
-    console.log(`${item.name} agregado al carrito`);
+    this.productsService.addToCart(item.id, 1).subscribe();
   }
 
   goToProducts() {

@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { AuthService } from '../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-start',
@@ -9,11 +10,20 @@ import { RouterModule, Router } from '@angular/router';
   templateUrl: './start.component.html',
   styleUrl: './start.component.css'
 })
-export class StartComponent {
-  userName = 'Usuario'; // Esto vendrá del servicio de autenticación
+export class StartComponent implements OnInit {
+  userName = 'Usuario';
   notificationCount = 3; // Número de notificaciones
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
+
+  ngOnInit(): void {
+    try {
+      const name = localStorage.getItem('user_name');
+      if (name && name.trim().length > 0) {
+        this.userName = name;
+      }
+    } catch {}
+  }
 
   // Navegación a diferentes secciones
   goToHome() {
@@ -33,9 +43,17 @@ export class StartComponent {
   }
 
   logout() {
-    // Aquí implementarás la lógica de logout
-    console.log('Cerrando sesión...');
-    this.router.navigate(['/auth/login']);
+    this.authService.Logout().subscribe({
+      next: () => {
+        try { localStorage.removeItem('user_name'); } catch {}
+        this.router.navigate(['/auth/login']);
+      },
+      error: () => {
+        // Si falla, igual limpiamos nombre local y redirigimos
+        try { localStorage.removeItem('user_name'); } catch {}
+        this.router.navigate(['/auth/login']);
+      }
+    });
   }
 
   openNotifications() {

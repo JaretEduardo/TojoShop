@@ -9,60 +9,13 @@
                 </h3>
             </div>
 
-            <!-- DIV 2: Sensor de Presencia -->
-            <div class="div2 sensor-button" [class.active]="selectedSensor === 'presence'"
-                (click)="selectSensor('presence')">
-                <button class="sensor-btn presence">
-                    <i class="sensor-icon">👁️</i>
-                    <span class="sensor-name">Presencia</span>
-                    <span class="sensor-type">PIR/Ultrasónico</span>
-                </button>
-            </div>
-
-            <!-- DIV 3: Sensor de Temperatura -->
-            <div class="div3 sensor-button" [class.active]="selectedSensor === 'temperature'"
-                (click)="selectSensor('temperature')">
-                <button class="sensor-btn temperature">
-                    <i class="sensor-icon">🌡️</i>
-                    <span class="sensor-name">Temperatura</span>
-                    <span class="sensor-type">DHT22/DS18B20</span>
-                </button>
-            </div>
-
-            <!-- DIV 4: Sensor de Apertura/Servo -->
-            <div class="div4 sensor-button" [class.active]="selectedSensor === 'door'" (click)="selectSensor('door')">
-                <button class="sensor-btn door">
-                    <i class="sensor-icon">💦</i>
-                    <span class="sensor-name">Humedad</span>
-                    <span class="sensor-type">DHT22/DS18B20</span>
-                </button>
-            </div>
-
-            <!-- DIV 5: Sensor de Peso -->
-            <div class="div5 sensor-button" [class.active]="selectedSensor === 'weight'"
-                (click)="selectSensor('weight')">
-                <button class="sensor-btn weight">
-                    <i class="sensor-icon">⚖️</i>
-                    <span class="sensor-name">Peso</span>
-                    <span class="sensor-type">Celda de Carga</span>
-                </button>
-            </div>
-
-            <!-- DIV 6: Sensor RFID -->
-            <div class="div6 sensor-button" [class.active]="selectedSensor === 'rfid'" (click)="selectSensor('rfid')">
-                <button class="sensor-btn rfid">
-                    <i class="sensor-icon">🏷️</i>
-                    <span class="sensor-name">RFID</span>
-                    <span class="sensor-type">RC522/MFRC522</span>
-                </button>
-            </div>
-
-            <!-- DIV 6A: Sensor de Gas -->
-            <div class="div6a sensor-button" [class.active]="selectedSensor === 'gas'" (click)="selectSensor('gas')">
-                <button class="sensor-btn gas">
-                    <i class="sensor-icon">💨</i>
-                    <span class="sensor-name">Gas</span>
-                    <span class="sensor-type">MQ-2/MQ-135</span>
+            <!-- Botones generados dinámicamente -->
+            <div class="sensor-button" *ngFor="let key of getSensorKeys(); let i = index"
+                 [class.active]="selectedSensor === key" (click)="selectSensor(key)">
+                <button class="sensor-btn" [ngClass]="getTypeClass(key)">
+                    <i class="sensor-icon">{{ sensorsData[key].icon }}</i>
+                    <span class="sensor-name">{{ sensorsData[key].name }}</span>
+                    <span class="sensor-type">{{ sensorsData[key].unit || sensorsData[key].statusText }}</span>
                 </button>
             </div>
         </div>
@@ -108,6 +61,7 @@
                 <h4 class="data-title">
                     <i class="data-icon">📊</i>
                     Lecturas Recientes
+                    <span class="auto-refresh-indicator" title="Se actualiza automáticamente cada 3 segundos">🔄</span>
                 </h4>
                 <button class="refresh-btn" (click)="refreshData()">
                     <i class="refresh-icon">🔄</i>

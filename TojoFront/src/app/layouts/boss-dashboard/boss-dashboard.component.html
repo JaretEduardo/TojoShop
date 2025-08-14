@@ -73,8 +73,8 @@
 
     <!-- Perfil del usuario (div8) -->
     <div class="div8">
-        <div class="user-profile">
-            <div class="user-avatar">�</div>
+        <div class="user-profile" (click)="openLogoutConfirm()">
+            <div class="user-avatar">👤</div>
             <div class="user-info">
                 <span class="user-name">{{ userName }}</span>
                 <span class="user-role">{{ userRole }}</span>
@@ -93,5 +93,22 @@
     <!-- Área de contenido principal -->
     <div class="content-area">
         <router-outlet></router-outlet>
+    </div>
+</div>
+
+<!-- Modal de confirmación de logout -->
+<div class="logout-modal-backdrop" *ngIf="showLogoutModal">
+    <div class="logout-modal">
+        <div class="logout-modal-header">Cerrar Sesión</div>
+        <div class="logout-modal-body">
+            ¿Deseas cerrar la sesión actual?
+        </div>
+        <div class="logout-modal-actions">
+            <button class="btn-cancel" (click)="cancelLogout()">Cancelar</button>
+            <button class="btn-confirm" [disabled]="loggingOut" (click)="confirmLogout()">
+                <span *ngIf="!loggingOut">Cerrar Sesión</span>
+                <span *ngIf="loggingOut" class="spinner"></span>
+            </button>
+        </div>
     </div>
 </div>

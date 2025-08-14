@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { IoTService, SensorDto, ApiSensorDataResponse, SensorDataReading } from '../../../services/IoTService/io-t.service';
+import { RealtimeService, RealtimeSensorEvent } from '../../../services/realtime/realtime.service';
 
 export interface SensorReading {
   id: number;
-  value: number;
+  value: number | string; // Soportar tanto números como strings (para RFID UIDs)
   timestamp: Date;
   status: 'normal' | 'warning' | 'critical';
   statusText: string;
@@ -27,111 +29,175 @@ export interface SensorData {
   templateUrl: './alerts.component.html',
   styleUrl: './alerts.component.css'
 })
-export class AlertsComponent {
-  selectedSensor: string = 'presence';
+export class AlertsComponent implements OnInit, OnDestroy {
+  selectedSensor: string = '';
+  loading = false;
+  error: string | null = null;
 
-  // Mock data para los sensores
-  sensorsData: { [key: string]: SensorData } = {
-    presence: {
-      name: 'Sensor de Presencia',
-      icon: '👁️',
-      minValue: 0,
-      maxValue: 100,
-      unit: 'cm',
-      status: 'online',
-      statusText: 'Activo',
-      readings: [
-        { id: 1, value: 15, timestamp: new Date(), status: 'normal', statusText: 'Normal' },
-        { id: 2, value: 8, timestamp: new Date(Date.now() - 30000), status: 'warning', statusText: 'Cerca' },
-        { id: 3, value: 25, timestamp: new Date(Date.now() - 60000), status: 'normal', statusText: 'Normal' },
-        { id: 4, value: 3, timestamp: new Date(Date.now() - 90000), status: 'critical', statusText: 'Muy Cerca' },
-        { id: 5, value: 45, timestamp: new Date(Date.now() - 120000), status: 'normal', statusText: 'Normal' }
-      ]
-    },
-    temperature: {
-      name: 'Sensor de Temperatura',
-      icon: '🌡️',
-      minValue: -10,
-      maxValue: 50,
-      unit: '°C',
-      status: 'online',
-      statusText: 'Funcionando',
-      readings: [
-        { id: 1, value: 22.5, timestamp: new Date(), status: 'normal', statusText: 'Óptima' },
-        { id: 2, value: 28.1, timestamp: new Date(Date.now() - 30000), status: 'warning', statusText: 'Alta' },
-        { id: 3, value: 21.8, timestamp: new Date(Date.now() - 60000), status: 'normal', statusText: 'Normal' },
-        { id: 4, value: 35.2, timestamp: new Date(Date.now() - 90000), status: 'critical', statusText: 'Crítica' },
-        { id: 5, value: 19.6, timestamp: new Date(Date.now() - 120000), status: 'normal', statusText: 'Fresca' }
-      ]
-    },
-    door: {
-      name: 'Sensor de Apertura',
-      icon: '🚪',
-      minValue: 0,
-      maxValue: 180,
-      unit: '°',
-      status: 'online',
-      statusText: 'Operativo',
-      readings: [
-        { id: 1, value: 0, timestamp: new Date(), status: 'normal', statusText: 'Cerrada' },
-        { id: 2, value: 90, timestamp: new Date(Date.now() - 30000), status: 'warning', statusText: 'Abierta' },
-        { id: 3, value: 0, timestamp: new Date(Date.now() - 60000), status: 'normal', statusText: 'Cerrada' },
-        { id: 4, value: 45, timestamp: new Date(Date.now() - 90000), status: 'warning', statusText: 'Entreabierta' },
-        { id: 5, value: 180, timestamp: new Date(Date.now() - 120000), status: 'critical', statusText: 'Completamente Abierta' }
-      ]
-    },
-    weight: {
-      name: 'Sensor de Peso',
-      icon: '⚖️',
-      minValue: 0,
-      maxValue: 1000,
-      unit: 'g',
-      status: 'warning',
-      statusText: 'Calibrando',
-      readings: [
-        { id: 1, value: 245.7, timestamp: new Date(), status: 'normal', statusText: 'Estable' },
-        { id: 2, value: 892.3, timestamp: new Date(Date.now() - 30000), status: 'warning', statusText: 'Pesado' },
-        { id: 3, value: 156.2, timestamp: new Date(Date.now() - 60000), status: 'normal', statusText: 'Ligero' },
-        { id: 4, value: 999.9, timestamp: new Date(Date.now() - 90000), status: 'critical', statusText: 'Sobrepeso' },
-        { id: 5, value: 78.5, timestamp: new Date(Date.now() - 120000), status: 'normal', statusText: 'Normal' }
-      ]
-    },
-    rfid: {
-      name: 'Sensor RFID',
-      icon: '🏷️',
-      minValue: 0,
-      maxValue: 1,
-      unit: 'tags',
-      status: 'online',
-      statusText: 'Escaneando',
-      readings: [
-        { id: 1, value: 1, timestamp: new Date(), status: 'normal', statusText: 'Tag Detectado' },
-        { id: 2, value: 0, timestamp: new Date(Date.now() - 30000), status: 'normal', statusText: 'Sin Tag' },
-        { id: 3, value: 1, timestamp: new Date(Date.now() - 60000), status: 'normal', statusText: 'Tag Válido' },
-        { id: 4, value: 1, timestamp: new Date(Date.now() - 90000), status: 'warning', statusText: 'Tag Desconocido' },
-        { id: 5, value: 0, timestamp: new Date(Date.now() - 120000), status: 'normal', statusText: 'Sin Detección' }
-      ]
-    },
-    gas: {
-      name: 'Sensor de Gas',
-      icon: '💨',
-      minValue: 0,
-      maxValue: 1000,
-      unit: 'ppm',
-      status: 'online',
-      statusText: 'Monitoreando',
-      readings: [
-        { id: 1, value: 45.2, timestamp: new Date(), status: 'normal', statusText: 'Nivel Seguro' },
-        { id: 2, value: 125.8, timestamp: new Date(Date.now() - 30000), status: 'warning', statusText: 'Nivel Elevado' },
-        { id: 3, value: 32.1, timestamp: new Date(Date.now() - 60000), status: 'normal', statusText: 'Normal' },
-        { id: 4, value: 850.5, timestamp: new Date(Date.now() - 90000), status: 'critical', statusText: 'Peligroso' },
-        { id: 5, value: 78.3, timestamp: new Date(Date.now() - 120000), status: 'normal', statusText: 'Aceptable' }
-      ]
-    }
+  sensorsData: { [key: string]: SensorData } = {};
+  private pendingEvents: RealtimeSensorEvent[] = []; // eventos recibidos antes de tener el mapa
+  private pollInterval: any; // Para el polling automático
+  // Mapa simple de iconos por tipo (fallback en caso de no reconocer)
+  private typeIcon: Record<string, string> = {
+    presencia: '👁️',
+    temperatura: '🌡️',
+    humedad: '💦',
+    puerta: '🚪',
+    peso: '⚖️',
+    rfid: '🏷️',
+    gas: '💨'
   };
 
-  selectSensor(sensorType: string): void {
-    this.selectedSensor = sensorType;
+  constructor(private iot: IoTService, private realtime: RealtimeService, private cdr: ChangeDetectorRef) {}
+
+  ngOnInit(): void {
+    this.fetchSensors();
+    this.realtime.init();
+    this.realtime.onSensorData().subscribe(evt => this.handleRealtime(evt));
+    
+    // Iniciar polling automático cada 3 segundos
+    this.startAutoRefresh();
+  }
+
+  ngOnDestroy(): void {
+    if (this.pollInterval) {
+      clearInterval(this.pollInterval);
+    }
+  }
+
+  private startAutoRefresh(): void {
+    this.pollInterval = setInterval(() => {
+      if (this.selectedSensor && !this.loading) {
+        console.debug('[AlertsComponent] Auto-refresh para sensor:', this.selectedSensor);
+        this.loadSensorData(this.selectedSensor, true); // silent = true para no mostrar loading
+      }
+    }, 3000); // cada 3 segundos
+  }
+
+  private fetchSensors(): void {
+    this.loading = true;
+    this.error = null;
+    this.iot.AllFeeds().subscribe({
+      next: resp => {
+        const list = resp.data || [];
+        const map: { [k: string]: SensorData } = {};
+        list.forEach((s: SensorDto) => {
+          const type = s.type_data.toLowerCase();
+          const isActive = (s as any).status !== undefined ? (s as any).status : (s.state === 'activo');
+          map[s.key] = {
+            name: s.name,
+            icon: this.typeIcon[type] || '🔧',
+            minValue: s.min_value ?? 0,
+            maxValue: s.max_value ?? 0,
+            unit: this.guessUnit(type),
+            status: isActive ? 'online' : 'offline',
+            statusText: isActive ? 'Activo' : 'Inactivo',
+            readings: [] // luego se llenará con endpoint de datos históricos
+          };
+        });
+        this.sensorsData = map;
+        // Seleccionar el primero disponible si no hay seleccionado
+        if (!this.selectedSensor) {
+          const firstKey = Object.keys(this.sensorsData)[0];
+          if (firstKey) {
+            this.selectedSensor = firstKey;
+            this.loadSensorData(firstKey, false); // Cargar datos al autoseleccionar sin silent
+          }
+        }
+        // Procesar eventos pendientes que llegaron antes de terminar el fetch
+        if (this.pendingEvents.length) {
+          console.debug('[AlertsComponent] Procesando eventos pendientes', this.pendingEvents.length);
+          const copy = [...this.pendingEvents];
+          this.pendingEvents = [];
+          copy.forEach(ev => this.handleRealtime(ev));
+        }
+        this.loading = false;
+      },
+      error: err => {
+        this.error = 'No se pudieron cargar los sensores';
+        this.loading = false;
+      }
+    });
+  }
+
+  private guessUnit(type: string): string {
+    switch (type) {
+      case 'temperatura': return '°C';
+      case 'humedad': return '%';
+      case 'gas': return 'ppm';
+      case 'peso': return 'g';
+      case 'puerta': return '°';
+      case 'presencia': return 'cm';
+      case 'rfid': return ''; // Sin unidad para RFID, mostrar UID tal como viene
+      default: return '';
+    }
+  }
+
+  selectSensor(sensorKey: string): void {
+    this.selectedSensor = sensorKey;
+    this.loadSensorData(sensorKey, false); // Carga manual, no silent
+    
+    // Reiniciar polling para el nuevo sensor
+    if (this.pollInterval) {
+      clearInterval(this.pollInterval);
+    }
+    this.startAutoRefresh();
+  }
+
+  private loadSensorData(sensorKey: string, silent: boolean = false): void {
+    // En modo silencioso, saltar el spinner del interceptor
+    this.iot.GetSensorData(sensorKey, silent).subscribe({
+      next: (resp: ApiSensorDataResponse) => {
+        const sensor = this.sensorsData[sensorKey];
+        if (sensor) {
+          // Convertir datos del backend a formato de lectura
+          const readings: SensorReading[] = resp.data.map(item => {
+            // Para RFID, mantener el valor como string (UID completo)
+            // Para otros sensores, convertir a número
+            let value: number | string;
+            let status: 'normal' | 'warning' | 'critical' = 'normal';
+            let statusText = 'Histórico';
+            
+            if (sensor.unit === '' && (sensor.name.toLowerCase().includes('rfid') || sensor.icon === '🏷️')) {
+              value = item.value; // Mantener como string para RFID
+            } else {
+              value = parseFloat(item.value) || 0; // Convertir a número para otros sensores
+              
+              // Verificar si el valor está fuera del rango permitido
+              const numericValue = value as number;
+              if (numericValue < sensor.minValue || numericValue > sensor.maxValue) {
+                status = 'critical';
+                statusText = 'Alerta';
+              }
+            }
+            
+            return {
+              id: item.id,
+              value: value,
+              timestamp: new Date(item.received_at),
+              status: status,
+              statusText: statusText
+            };
+          });
+          
+          // Ordenar por timestamp descendente (más reciente primero)
+          readings.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+          
+          sensor.readings = readings;
+          this.cdr.detectChanges(); // Forzar actualización de vista
+          
+          if (!silent) {
+            console.debug('[AlertsComponent] Cargados datos históricos para', sensorKey, readings.length);
+          }
+        }
+      },
+      error: err => {
+        if (!silent) {
+          console.warn('[AlertsComponent] Error cargando datos del sensor', sensorKey, err);
+        }
+        // Mantener readings existentes (de tiempo real) si falla el histórico
+      }
+    });
   }
 
   getSensorName(): string {
@@ -159,6 +225,27 @@ export class AlertsComponent {
     return this.getSensorData().readings || [];
   }
 
+  getSensorKeys(): string[] {
+    return Object.keys(this.sensorsData);
+  }
+
+  getTypeClass(key: string): string {
+    const type = (this.sensorsData[key]?.unit || '').toLowerCase();
+    // Usamos el type_data original si hace falta inferencia: buscar por nombre también
+    const sensor = this.sensorsData[key];
+    if (!sensor) return '';
+    // map simple según icono o heurística de nombre
+    const name = sensor.name.toLowerCase();
+    if (name.includes('presenc')) return 'presence';
+    if (name.includes('temperat')) return 'temperature';
+    if (name.includes('humedad')) return 'door'; /* reutilizamos estilo door (verde) */
+    if (name.includes('puerta')) return 'door';
+    if (name.includes('peso')) return 'weight';
+    if (name.includes('rfid')) return 'rfid';
+    if (name.includes('gas')) return 'gas';
+    return '';
+  }
+
   getStatusIcon(): string {
     const status = this.getSensorData().status;
     switch (status) {
@@ -170,22 +257,70 @@ export class AlertsComponent {
   }
 
   refreshData(): void {
-    // Simular nueva lectura
-    const sensorData = this.getSensorData();
-    if (sensorData.readings) {
-      const newReading: SensorReading = {
-        id: Date.now(),
-        value: Math.random() * (sensorData.maxValue - sensorData.minValue) + sensorData.minValue,
-        timestamp: new Date(),
-        status: Math.random() > 0.7 ? 'warning' : 'normal',
-        statusText: Math.random() > 0.7 ? 'Alerta' : 'Normal'
-      };
-      
-      // Agregar al inicio y mantener solo 10 lecturas
-      sensorData.readings.unshift(newReading);
-      if (sensorData.readings.length > 10) {
-        sensorData.readings = sensorData.readings.slice(0, 10);
+    if (this.selectedSensor) {
+      this.loadSensorData(this.selectedSensor, false); // Refresh manual, no silent
+    }
+  }
+
+  private handleRealtime(evt: RealtimeSensorEvent): void {
+    // Log inicial del evento recibido
+    console.debug('[AlertsComponent] Evento realtime recibido', evt);
+    const key = evt.feed_key || evt.sensor_key;
+    const sensor = this.sensorsData[key];
+    if (!sensor) {
+  console.warn('[AlertsComponent] Evento para sensor no listado aún, se encola', key);
+  this.pendingEvents.push(evt);
+  return; // se reprocesará tras fetch
+    }
+    
+    // Para RFID, mantener el valor como string (UID completo)
+    // Para otros sensores, convertir a número
+    let value: number | string;
+    if (sensor.unit === '' && (sensor.name.toLowerCase().includes('rfid') || sensor.icon === '🏷️')) {
+      value = evt.value; // Mantener como string para RFID
+    } else {
+      const numeric = parseFloat(evt.value);
+      value = isNaN(numeric) ? 0 : numeric; // Convertir a número para otros sensores
+    }
+    
+    // Verificar si el valor está fuera del rango permitido (solo para sensores numéricos)
+    let status: 'normal' | 'warning' | 'critical' = 'normal';
+    let statusText = 'En tiempo real';
+    
+    if (typeof value === 'number') {
+      if (value < sensor.minValue || value > sensor.maxValue) {
+        status = 'critical';
+        statusText = 'Alerta';
       }
     }
+    
+    const reading: SensorReading = {
+      id: Date.now(),
+      value: value,
+      timestamp: new Date(evt.received_at),
+      status: status,
+      statusText: statusText
+    };
+    // Insertar al inicio y verificar duplicados por timestamp cercano
+    const existingIndex = sensor.readings.findIndex(r => 
+      Math.abs(r.timestamp.getTime() - reading.timestamp.getTime()) < 1000 &&
+      r.value === reading.value
+    );
+    if (existingIndex === -1) {
+      sensor.readings.unshift(reading);
+      if (sensor.readings.length > 50) sensor.readings = sensor.readings.slice(0, 50);
+      console.debug('[AlertsComponent] Nueva lectura en tiempo real para', key, reading.value);
+      
+      // Forzar detección de cambios para actualizar la vista inmediatamente
+      this.cdr.detectChanges();
+    }
+    // Si no hay seleccionado aún, seleccionar este
+    if (!this.selectedSensor) {
+      this.selectedSensor = key;
+      console.debug('[AlertsComponent] Autoseleccionado sensor', key);
+      this.cdr.detectChanges();
+    }
+    // Forzar actualización (por si ChangeDetection OnPush se añade en el futuro)
+    // (sin OnPush no es estrictamente necesario)
   }
 }

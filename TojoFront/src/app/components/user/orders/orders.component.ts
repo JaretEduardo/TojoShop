@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { StartComponent } from '../start/start.component';
+import { ProductsService } from '../../../services/products.service';
 
 interface OrderItem {
   id: number;
@@ -26,63 +27,28 @@ interface Order {
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.css'
 })
-export class OrdersComponent {
-  orders: Order[] = [
-    {
-      id: 'ORD-2024-001',
-      date: new Date('2024-01-15'),
-      status: 'delivered',
-      items: [
-        {
-          id: 1,
-          name: 'Cyberpunk Jacket',
-          quantity: 1,
-          price: 299.99,
-          image: 'https://via.placeholder.com/60x60/ff6b35/ffffff?text=Jacket'
-        },
-        {
-          id: 2,
-          name: 'Neural Headset',
-          quantity: 1,
-          price: 599.99,
-          image: 'https://via.placeholder.com/60x60/8b5cf6/ffffff?text=Headset'
-        }
-      ],
-      total: 899.98
-    },
-    {
-      id: 'ORD-2024-002',
-      date: new Date('2024-01-20'),
-      status: 'shipped',
-      items: [
-        {
-          id: 3,
-          name: 'Holo Gloves',
-          quantity: 2,
-          price: 199.99,
-          image: 'https://via.placeholder.com/60x60/ff6b35/ffffff?text=Gloves'
-        }
-      ],
-      total: 399.98
-    },
-    {
-      id: 'ORD-2024-003',
-      date: new Date('2024-01-25'),
-      status: 'processing',
-      items: [
-        {
-          id: 5,
-          name: 'Data Visor',
-          quantity: 1,
-          price: 799.99,
-          image: 'https://via.placeholder.com/60x60/ff6b35/ffffff?text=Visor'
-        }
-      ],
-      total: 799.99
-    }
-  ];
+export class OrdersComponent implements OnInit {
+  orders: Order[] = [];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private productsService: ProductsService) { }
+
+  ngOnInit(): void {
+    this.productsService.orders().subscribe((orders: any[]) => {
+      this.orders = orders.map(o => ({
+        id: o.order_number || String(o.id),
+        date: new Date(o.created_at),
+        status: (o.status || 'processing') as Order['status'],
+        items: (o.items || []).map((it: any) => ({
+          id: it.product_id,
+          name: it.product?.name || `Producto ${it.product_id}`,
+          quantity: it.quantity,
+          price: Number(it.price),
+          image: 'https://via.placeholder.com/60x60/ff6b35/ffffff?text=' + encodeURIComponent(it.product?.name || 'Item')
+        })),
+        total: Number(o.total)
+      }));
+    });
+  }
 
   getStatusText(status: string): string {
     const statusMap = {

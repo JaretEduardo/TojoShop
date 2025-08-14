@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-dashboard-user',
@@ -12,7 +13,7 @@ export class DashboardUserComponent {
   userName = 'Usuario';
   notificationCount = 3;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   openNotifications() {
     console.log('Abrir notificaciones');
@@ -35,8 +36,9 @@ export class DashboardUserComponent {
   }
 
   logout() {
-    // Lógica para cerrar sesión
-    console.log('Cerrar sesión');
-    this.router.navigate(['/auth/login']);
+    this.authService.Logout().subscribe({
+      next: () => this.router.navigate(['/auth/login']),
+      error: () => this.router.navigate(['/auth/login'])
+    });
   }
 }

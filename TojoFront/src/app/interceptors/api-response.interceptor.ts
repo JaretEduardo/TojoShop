@@ -5,15 +5,18 @@ import { tap, catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { AlertService } from '../services/alert.service';
 import { ApiResponse, ApiError, ApiSuccess } from '../interfaces/api-response.interface';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class ApiResponseInterceptor implements HttpInterceptor {
 
-    constructor(private alertService: AlertService) { }
+    constructor(private alertService: AlertService, private router: Router) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        // Solo interceptar peticiones POST
-        if (req.method !== 'POST') {
+        // Interceptar métodos que modifican estado (POST, PUT, PATCH, DELETE) para mostrar alertas
+        const methodsToHandle = ['POST', 'PUT', 'PATCH', 'DELETE'];
+        const shouldHandle = methodsToHandle.includes(req.method);
+        if (!shouldHandle) {
             return next.handle(req);
         }
 
@@ -21,7 +24,7 @@ export class ApiResponseInterceptor implements HttpInterceptor {
             tap(event => {
                 // Manejar respuestas exitosas
                 if (event instanceof HttpResponse) {
-                    this.handleSuccessResponse(event);
+                    this.handleSuccessResponse(event, req.method);
                 }
             }),
             catchError((error: HttpErrorResponse) => {
@@ -32,20 +35,41 @@ export class ApiResponseInterceptor implements HttpInterceptor {
         );
     }
 
-    private handleSuccessResponse(response: HttpResponse<any>) {
+    private handleSuccessResponse(response: HttpResponse<any>, method: string) {
         const body = response.body;
 
-        // Verificar si la respuesta tiene la estructura esperada
-        if (this.isApiResponse(body)) {
-            const apiResponse = body as ApiResponse;
-
-            // Mostrar alerta de éxito si el statusCode está en rango 200-299
-            if (apiResponse.statusCode >= 200 && apiResponse.statusCode < 300) {
-                this.alertService.showSuccess(
-                    apiResponse.message || 'Operación realizada exitosamente',
-                    'Éxito',
-                    3000
-                );
+        // Mostrar alertas SOLO si el body tiene un 'message' string
+        if (response.status >= 200 && response.status < 300) {
+            const hasBodyObject = body && typeof body === 'object';
+            const hasMessage = hasBodyObject && typeof body.message === 'string';
+            if (hasMessage) {
+                // Personalizar título según método
+                let title = 'Éxito';
+                switch (method) {
+                    case 'DELETE': title = 'Eliminado'; break;
+                    case 'PUT':
+                    case 'PATCH': title = 'Actualizado'; break;
+                    case 'POST': title = response.status === 201 ? 'Creado' : 'Procesado'; break;
+                }
+                this.alertService.showSuccess(body.message, title, 0, response.status);
+            }
+            // Redirección: distinguir register (201) vs login (200)
+            const hasAuth = hasBodyObject && typeof body.access_token === 'string' && typeof body.role === 'string';
+            if (hasAuth) {
+                const role = (body.role || '').toLowerCase();
+                if (response.status === 201) {
+                    // Después de registrar, verificar si viene del componente identity
+                    // Si la ruta actual contiene 'identity', no redirigir
+                    const currentUrl = this.router.url;
+                    if (!currentUrl.includes('/identity')) {
+                        this.router.navigate(['/auth/login']);
+                    }
+                } else {
+                    // Después de login, redirigir por rol
+                    if (role === 'usuario') this.router.navigate(['/home']);
+                    else if (role === 'empleado') this.router.navigate(['/pos']);
+                    else if (role === 'encargado') this.router.navigate(['/feed']);
+                }
             }
         }
     }
@@ -61,17 +85,21 @@ export class ApiResponseInterceptor implements HttpInterceptor {
             errorMessage = apiError.message || errorMessage;
             errorTitle = this.getErrorTitle(apiError.statusCode);
             statusCode = apiError.statusCode;
+        } else if (error.error && typeof error.error.message === 'string') {
+            // Si el backend devuelve { message: '...' } sin campos extra
+            errorMessage = error.error.message;
         } else if (error.message) {
             errorMessage = error.message;
         }
 
-        // Mostrar alerta de error
-        this.alertService.showError(
-            errorMessage,
-            errorTitle,
-            statusCode,
-            5000 // 5 segundos para errores
-        );
+        // Sólo mostrar alerta si tenemos un mensaje específico del backend o algo significativo
+        if (errorMessage) {
+            this.alertService.showError(
+                errorMessage,
+                this.getErrorTitle(statusCode),
+                statusCode
+            );
+        }
     }
 
     private isApiResponse(obj: any): obj is ApiResponse {

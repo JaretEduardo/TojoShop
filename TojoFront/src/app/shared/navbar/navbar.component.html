@@ -41,7 +41,7 @@
                             {{ product.stockTotal > 0 ? 'Disponible' : 'Sin stock' }}
                         </p>
                     </div>
-                    <div class="result-category">
+                    <div class="result-category" *ngIf="product.category">
                         {{ product.category }}
                     </div>
                 </div>

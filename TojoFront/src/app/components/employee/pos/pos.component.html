@@ -79,6 +79,28 @@
                         Tarjeta
                     </button>
                 </div>
+                
+                                <!-- Modal de pago POS -->
+                                <app-pos-payment-modal
+                                    [visible]="showPaymentModal"
+                                    [mode]="paymentMode"
+                                    [total]="totalToPay"
+                                    [errorMessage]="paymentError"
+                                    (close)="onClosePaymentModal()"
+                                    (confirmCash)="onConfirmCash($event)"
+                                    (confirmCard)="onConfirmCard()"
+                                ></app-pos-payment-modal>
+
+                                                                <!-- Modal de confirmación Cancelar Todo -->
+                                                                                                <app-pos-confirm-modal
+                                                                    [visible]="showCancelConfirm"
+                                                                    title="Cancelar venta"
+                                                                                                    message="¿Estás seguro de cancelar toda la venta? Se perderán los productos marcados."
+                                                                    confirmText="Sí, cancelar"
+                                                                    cancelText="No, volver"
+                                                                    (close)="onCancelConfirmClose()"
+                                                                    (confirm)="onCancelConfirmAccept()"
+                                                                ></app-pos-confirm-modal>
             </div>
         </div>
 
@@ -87,11 +109,26 @@
             <div class="input-container">
                 <label class="input-label">Código del Producto</label>
                 <div class="input-wrapper">
-                    <input type="text" class="product-code-input" placeholder="Escanear o escribir código..."
-                        [(ngModel)]="productCode" (keyup.enter)="searchProduct()" #codeInput>
+                    <input type="text" class="product-code-input" placeholder="Escanear o escribir código o nombre..."
+                        [(ngModel)]="productCode" (input)="onCodeInput()" (keyup.enter)="searchProduct()"
+                        (blur)="onBlurSuggestions()" (focus)="onCodeInput()" #codeInput>
                     <button class="search-btn" (click)="searchProduct()">
                         <i class="search-icon">🔍</i>
                     </button>
+                </div>
+
+                <!-- Sugerencias (estilo igual al navbar) -->
+                <div class="search-results" *ngIf="showSuggestions && suggestions.length > 0">
+                    <div class="search-result-item" *ngFor="let s of suggestions" (mousedown)="selectSuggestion(s)">
+                        <div class="result-info">
+                            <h4 class="result-name">{{ s.name }}</h4>
+                            <p class="result-price">${{ s.price }}</p>
+                            <p class="result-stock" [class]="s.stock === 0 ? 'out-of-stock' : 'in-stock'">
+                                {{ s.stock > 0 ? 'Disponible' : 'Sin stock' }}
+                            </p>
+                        </div>
+                        <div class="result-category" *ngIf="s.category">{{ s.category.name }}</div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -2,18 +2,59 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\FavoritesController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\SensorController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+// Auth routes
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Products routes
+Route::get('/products', [ProductsController::class, 'index']);
+Route::get('/products/categories', [ProductsController::class, 'categories']);
+Route::get('/products/search', [ProductsController::class, 'search']);
+// POS action: only employees can decrement stock via POS
+Route::middleware(['auth:sanctum', 'role:employee'])->post('/products/decrement-stock', [ProductsController::class, 'decrementStock']);
+
+// Favorites routes (auth required)
+// Customer features: only 'user' role (not employee) can use favorites/cart/orders
+Route::middleware(['auth:sanctum', 'role:user'])->group(function () {
+	Route::get('/favorites', [FavoritesController::class, 'index']);
+	Route::post('/favorites', [FavoritesController::class, 'store']);
+	Route::delete('/favorites/{productId}', [FavoritesController::class, 'destroy']);
+	// Cart routes
+	Route::get('/cart', [CartController::class, 'index']);
+	Route::post('/cart', [CartController::class, 'store']);
+	Route::patch('/cart/{productId}', [CartController::class, 'update']);
+	Route::delete('/cart/{productId}', [CartController::class, 'destroy']);
+	// Checkout
+	Route::post('/cart/checkout', [CartController::class, 'checkout']);
+
+	// Orders
+	Route::get('/orders', [OrdersController::class, 'index']);
 });
+
+
+// Sensores: acceso de lectura (allfeeds) para empleado o encargado; creación/edición/borrado solo encargado
+Route::middleware(['auth:sanctum', 'role:encargado,employee'])->get('/allfeeds', [SensorController::class, 'AllFeeds']);
+Route::middleware(['auth:sanctum', 'role:encargado,employee'])->get('/sensor/{key}/data', [SensorController::class, 'GetSensorRecentData']);
+
+Route::middleware(['auth:sanctum', 'role:encargado'])->group(function () {
+	// Route::get('/allfeeds', [SensorController::class, 'AllFeeds']); ???
+	Route::post('/createfeed', [SensorController::class, 'CreateFeed']);
+	Route::put('/updatefeed/{key}', [SensorController::class, 'UpdateFeed']);
+	Route::delete('/deletefeed/{key}', [SensorController::class, 'DeleteFeed']);
+	Route::get('/getfeed/{key}', [SensorController::class, 'GetFeed']);
+	Route::get('/chartfeed/{key}', [SensorController::class, 'ChartFeedData']);
+	Route::get('/getfeeddata/{feedKey}', [SensorController::class, 'GetFeedData']);
+	Route::put('/updatedatapoint/{dataId}', [SensorController::class, 'UpdateDataPoint']);
+	Route::delete('/deletedatapoint/{dataId}', [SensorController::class, 'DeleteDataPoint']);
+	Route::post('/vincularrfid', [SensorController::class, 'vincularRFID']);
+});
+
+Route::post('/ingest', [SensorController::class, 'Ingest']);

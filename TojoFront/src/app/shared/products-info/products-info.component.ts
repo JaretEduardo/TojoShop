@@ -8,7 +8,6 @@ export interface Product {
   description?: string;
   image?: string;
   stockTotal: number;
-  stockExhibido: number;
   category?: string;
   stock?: number;
   isFavorite?: boolean;

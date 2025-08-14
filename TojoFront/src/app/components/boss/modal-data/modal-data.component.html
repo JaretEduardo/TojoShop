@@ -15,7 +15,8 @@
             <button class="toggle-btn" [class.active]="viewMode === 'list'" (click)="viewMode = 'list'">
                 📋 Lista
             </button>
-            <button class="toggle-btn" [class.active]="viewMode === 'chart'" (click)="viewMode = 'chart'">
+            <button class="toggle-btn" [class.active]="viewMode === 'chart'" (click)="toggleViewMode()" 
+                    *ngIf="sensorInfo && sensorInfo.min_value !== null && sensorInfo.max_value !== null">
                 📈 Gráfica
             </button>
         </div>
@@ -42,7 +43,7 @@
                                 {{ getStatusIcon(item.status) }}
                                 {{ getStatusText(item.status) }}
                             </span>
-                            <span class="value-cell">{{ item.value }}%</span>
+                            <span class="value-cell">{{ item.value }}</span>
                             <span class="timestamp-cell">{{ item.timestamp | date:'dd/MM/yyyy HH:mm' }}</span>
                             <div class="actions-cell">
                                 <button class="edit-btn" (click)="startEdit(item)">✏️</button>
@@ -59,7 +60,7 @@
                             <div class="edit-value">
                                 <input type="number" [(ngModel)]="editValue" min="0" max="100" step="0.1"
                                     class="value-input">
-                                <span>%</span>
+                                <span>{{ getSensorUnit() }}</span>
                             </div>
                             <div class="edit-timestamp">
                                 <input type="datetime-local" [(ngModel)]="editDate" class="date-input">
@@ -92,9 +93,9 @@
                         <line x1="0" y1="250" x2="600" y2="250" stroke="#0ff" stroke-width="1" opacity="0.5" />
 
                         <!-- Labels -->
-                        <text x="10" y="20" fill="#0ff" font-size="12">100%</text>
-                        <text x="10" y="130" fill="#0ff" font-size="12">50%</text>
-                        <text x="10" y="240" fill="#0ff" font-size="12">0%</text>
+                        <text x="10" y="20" fill="#0ff" font-size="12">{{ getChartMaxLabel() }}</text>
+                        <text x="10" y="130" fill="#0ff" font-size="12">{{ getChartMidLabel() }}</text>
+                        <text x="10" y="240" fill="#0ff" font-size="12">{{ getChartMinLabel() }}</text>
 
                         <!-- Línea de datos -->
                         <path [attr.d]="getChartPath()" fill="none" stroke="#ff0080" stroke-width="2"
@@ -104,7 +105,7 @@
                         <!-- Puntos de datos -->
                         <circle *ngFor="let point of getChartData()" [attr.cx]="point.x" [attr.cy]="point.y" r="4"
                             fill="#ff0080" stroke="#fff" stroke-width="1">
-                            <title>{{ point.value }}% - {{ point.timestamp | date:'dd/MM HH:mm' }}</title>
+                            <title>{{ point.value }} {{ getSensorUnit() }} - {{ point.timestamp | date:'dd/MM HH:mm' }}</title>
                         </circle>
                     </svg>
                 </div>
@@ -113,15 +114,15 @@
                 <div class="chart-stats">
                     <div class="stat-item">
                         <span class="stat-label">Promedio:</span>
-                        <span class="stat-value">{{ getAverageValue() }}%</span>
+                        <span class="stat-value">{{ getAverageValue() }} {{ getSensorUnit() }}</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Máximo:</span>
-                        <span class="stat-value">{{ getMaxValue() }}%</span>
+                        <span class="stat-value">{{ getMaxValue() }} {{ getSensorUnit() }}</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Mínimo:</span>
-                        <span class="stat-value">{{ getMinValue() }}%</span>
+                        <span class="stat-value">{{ getMinValue() }} {{ getSensorUnit() }}</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Total registros:</span>
@@ -134,10 +135,33 @@
 
         <!-- Footer del Modal -->
         <div class="modal-footer">
-            <button class="refresh-btn" (click)="generateMockData()">🔄 Actualizar Datos</button>
+            <button class="refresh-btn" (click)="refreshSensorData()">🔄 Actualizar Datos</button>
             <button class="export-btn">📥 Exportar</button>
             <button class="close-footer-btn" (click)="onCloseModal()">Cerrar</button>
         </div>
 
+    </div>
+</div>
+
+<!-- Modal confirmación eliminar dato -->
+<div class="delete-confirm-backdrop" *ngIf="showDeleteModal">
+    <div class="delete-confirm-modal">
+        <div class="delete-header">CONFIRMAR ELIMINACIÓN</div>
+        <div class="delete-body">
+            <p>
+                ¿Seguro que deseas eliminar este punto de datos?<br>
+                <span class="data-info">Valor: <strong>{{ itemToDelete?.value }}</strong></span><br>
+                <span class="data-info">Fecha: <strong>{{ itemToDelete?.timestamp | date:'dd/MM/yyyy HH:mm' }}</strong></span><br>
+                Esta acción no se puede deshacer.
+            </p>
+            <div class="delete-warning">Se perderá este registro permanentemente.</div>
+        </div>
+        <div class="delete-actions">
+            <button class="btn-cancel-del" (click)="cancelDelete()">Cancelar</button>
+            <button class="btn-confirm-del" (click)="confirmDelete()" [disabled]="deleting">
+                <span *ngIf="!deleting">Eliminar</span>
+                <span *ngIf="deleting" class="spinner small"></span>
+            </button>
+        </div>
     </div>
 </div>

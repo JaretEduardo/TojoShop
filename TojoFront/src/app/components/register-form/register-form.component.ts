@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AlertService } from '../../services/alert.service';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-register-form',
@@ -18,13 +19,13 @@ export class RegisterFormComponent {
     password: '',
     confirmPassword: ''
   };
-  
+
   acceptTerms = false;
   showPassword = false;
   showConfirmPassword = false;
   showTermsModal = false;
-
-  constructor(private alertService: AlertService) {}
+  isSubmitting = false;
+  constructor(private alertService: AlertService, private authService: AuthService) { }
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
@@ -62,10 +63,10 @@ export class RegisterFormComponent {
       return;
     }
 
-    // Validar contraseña
-    if (this.registerData.password.length < 6) {
+    // Validar contraseña (debe ser >= 8 como en el backend)
+    if (this.registerData.password.length < 8) {
       this.alertService.showWarning(
-        'La contraseña debe tener al menos 6 caracteres',
+        'La contraseña debe tener al menos 8 caracteres',
         'Contraseña muy corta'
       );
       return;
@@ -78,20 +79,34 @@ export class RegisterFormComponent {
       );
       return;
     }
-    
+
     if (!this.acceptTerms) {
       this.showTermsWarning();
       return;
     }
-    
-    // Simular registro exitoso (sin backend por ahora)
-    this.alertService.showSuccess(
-      'Tu cuenta ha sido creada exitosamente. Recibirás un email de confirmación.',
-      'Registro exitoso'
-    );
-    
-    console.log('Register data:', this.registerData);
-    // Aquí irá la lógica de registro cuando esté listo el backend
+    // Llamar al backend
+    this.isSubmitting = true;
+    const payload = {
+      name: this.registerData.name.trim(),
+      email: this.registerData.email.trim(),
+      password: this.registerData.password,
+      password_confirmation: this.registerData.confirmPassword,
+      role: 'usuario' as const,
+    };
+
+    this.authService.Register(payload).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        // El interceptor global mostrará el mensaje de éxito
+        // Limpiar campos sensibles
+        this.registerData.password = '';
+        this.registerData.confirmPassword = '';
+      },
+      error: () => {
+        this.isSubmitting = false;
+        // El interceptor global mostrará el mensaje de error
+      }
+    });
   }
 
   // Método para demostrar diferentes tipos de alertas

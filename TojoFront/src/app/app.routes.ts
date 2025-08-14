@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authRoleGuard } from './guards/auth-role.guard';
 import { AuthComponent } from './layouts/auth/auth.component';
 import { LoginFormComponent } from './components/login-form/login-form.component';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
@@ -40,6 +41,8 @@ export const routes: Routes = [
     {
         path: '', 
         component: DashboardUserComponent,
+        canActivate: [authRoleGuard],
+        data: { roles: ['usuario'] },
         children: [
             { path: 'warning', component: WarningComponent },
             { path: 'home', component: ProductsComponent },
@@ -51,6 +54,8 @@ export const routes: Routes = [
     {
         path: '',
         component: EmployeeDashboardComponent,
+        canActivate: [authRoleGuard],
+        data: { roles: ['empleado'] },
         children: [
             { path: 'pos', component: PosComponent },
             { path: 'tasks', component: TasksComponent },
@@ -61,6 +66,8 @@ export const routes: Routes = [
     {
         path: '',
         component: BossDashboardComponent,
+        canActivate: [authRoleGuard],
+        data: { roles: ['encargado'] },
         children: [
             { path: 'feed', component: FeedComponent },
             { path: 'identity', component: IdentityComponent },

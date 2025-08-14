@@ -1,0 +1,15 @@
+{
+  "name": "adafruit-multi-listener",
+  "version": "1.0.0",
+  "description": "Listeners MQTT WebSocket Adafruit para múltiples feeds",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mqtt": "^5.14.0",
+    "nodemon": "^3.1.10"
+  }
+}

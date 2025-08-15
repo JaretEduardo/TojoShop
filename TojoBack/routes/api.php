@@ -55,6 +55,7 @@ Route::middleware(['auth:sanctum', 'role:encargado'])->group(function () {
 	Route::put('/updatedatapoint/{dataId}', [SensorController::class, 'UpdateDataPoint']);
 	Route::delete('/deletedatapoint/{dataId}', [SensorController::class, 'DeleteDataPoint']);
 	Route::post('/vincularrfid', [SensorController::class, 'vincularRFID']);
+	Route::get('/getlastdata', [SensorController::class, 'GetLastData']);
 });
 
 Route::post('/ingest', [SensorController::class, 'Ingest']);

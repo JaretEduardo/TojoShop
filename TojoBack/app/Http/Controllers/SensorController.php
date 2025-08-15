@@ -11,7 +11,75 @@ class SensorController extends Controller
 {
     public function GetLastData(Request $request)
     {
-        // Lógica para manejar la solicitud de listado de sensores
+        // Validar la fecha de entrada
+        $validated = validator($request->all(), [
+            'date' => 'required|date_format:Y-m-d',
+        ])->validate();
+
+        $selectedDate = $validated['date'];
+        
+        // Obtener todos los datos RFID del día seleccionado
+        $rfidData = SensorData::where('sensor_key', 'rfid-uid')
+            ->whereDate('received_at', $selectedDate)
+            ->orderBy('received_at', 'asc')
+            ->get();
+
+        // Agrupar por valor RFID (cada empleado)
+        $groupedByRfid = $rfidData->groupBy('value');
+        
+        $timeRecords = [];
+        
+        foreach ($groupedByRfid as $rfidValue => $scans) {
+            // Buscar el usuario vinculado a este RFID
+            $rfidAuth = \App\Models\RFIDAuth::where('value', $rfidValue)
+                ->with('user')
+                ->first();
+            
+            if (!$rfidAuth || !$rfidAuth->user) {
+                continue; // Saltar RFIDs no vinculados
+            }
+            
+            $user = $rfidAuth->user;
+            
+            // Ordenar escaneos por tiempo
+            $orderedScans = $scans->sortBy('received_at');
+            
+            // Determinar entrada y salida
+            $entryTime = $orderedScans->first()->received_at;
+            $exitTime = null;
+            $totalHours = 0;
+            
+            // Si hay más de un escaneo, el último es la salida
+            if ($orderedScans->count() > 1) {
+                $exitTime = $orderedScans->last()->received_at;
+                
+                // Calcular horas trabajadas
+                $timeDiff = $exitTime->diffInMinutes($entryTime);
+                $totalHours = round($timeDiff / 60, 2);
+            } else {
+                // Si solo hay un escaneo y es del día actual, calcular tiempo trabajado hasta ahora
+                if ($selectedDate === now()->format('Y-m-d')) {
+                    $timeDiff = now()->diffInMinutes($entryTime);
+                    $totalHours = round($timeDiff / 60, 2);
+                }
+            }
+            
+            $timeRecords[] = [
+                'employeeId' => 'EMP' . str_pad($user->id, 3, '0', STR_PAD_LEFT),
+                'employeeName' => $user->name,
+                'entryTime' => $entryTime->toISOString(),
+                'exitTime' => $exitTime ? $exitTime->toISOString() : null,
+                'totalHours' => $totalHours,
+                'rfidValue' => $rfidValue
+            ];
+        }
+        
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Registros de tiempo obtenidos correctamente',
+            'data' => $timeRecords,
+            'date' => $selectedDate
+        ], 200);
     }
 
     public function CreateData(Request $request)

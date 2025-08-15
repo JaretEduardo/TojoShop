@@ -95,14 +95,33 @@ export interface ApiDeleteDataPointResponse {
   message: string;
 }
 
+export interface TimeRecord {
+  employeeId: string;
+  employeeName: string;
+  entryTime: string;
+  exitTime: string | null;
+  totalHours: number;
+  rfidValue: string;
+}
+
+export interface ApiGetLastDataResponse {
+  statusCode: number;
+  message: string;
+  data: TimeRecord[];
+  date: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class IoTService {
   private readonly baseUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
-  // Get Last Data
-  GetLastData(): void { }
+  // Get Last Data - obtiene registros de tiempo de empleados por fecha
+  GetLastData(date: string): Observable<ApiGetLastDataResponse> {
+    const params = { date };
+    return this.http.get<ApiGetLastDataResponse>(`${this.baseUrl}${environment.endpoints.bossendpoints.getlastdata}`, { params });
+  }
 
   // Create Data
   CreateData(): void { }

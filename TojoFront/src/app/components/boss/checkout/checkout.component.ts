@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { IoTService, TimeRecord as ApiTimeRecord } from '../../../services/IoTService/io-t.service';
 
 interface TimeRecord {
   employeeId: string;
@@ -8,6 +9,7 @@ interface TimeRecord {
   entryTime: Date;
   exitTime: Date | null;
   totalHours: number;
+  rfidValue?: string;
 }
 
 @Component({
@@ -22,7 +24,7 @@ export class CheckoutComponent implements OnInit {
   selectedDate: string = '';
   maxDate: string = '';
 
-  constructor() {
+  constructor(private iotService: IoTService) {
     console.log('CheckoutComponent inicializado');
     this.initializeDates();
   }
@@ -47,58 +49,51 @@ export class CheckoutComponent implements OnInit {
   }
 
   private loadTimeRecords() {
-    // Simulación de datos - en producción vendría del backend
-    const mockData: TimeRecord[] = [
-      {
-        employeeId: 'EMP001',
-        employeeName: 'Ana García López',
-        entryTime: new Date(`${this.selectedDate}T08:00:00`),
-        exitTime: new Date(`${this.selectedDate}T17:00:00`),
-        totalHours: 9
-      },
-      {
-        employeeId: 'EMP002',
-        employeeName: 'Carlos Martín Silva',
-        entryTime: new Date(`${this.selectedDate}T09:15:00`),
-        exitTime: new Date(`${this.selectedDate}T18:30:00`),
-        totalHours: 9.25
-      },
-      {
-        employeeId: 'EMP003',
-        employeeName: 'María Elena Torres',
-        entryTime: new Date(`${this.selectedDate}T07:45:00`),
-        exitTime: null,
-        totalHours: 0
-      },
-      {
-        employeeId: 'EMP004',
-        employeeName: 'José Luis Hernández',
-        entryTime: new Date(`${this.selectedDate}T08:30:00`),
-        exitTime: new Date(`${this.selectedDate}T16:45:00`),
-        totalHours: 8.25
-      },
-      {
-        employeeId: 'EMP005',
-        employeeName: 'Laura Patricia Ruiz',
-        entryTime: new Date(`${this.selectedDate}T09:00:00`),
-        exitTime: new Date(`${this.selectedDate}T17:15:00`),
-        totalHours: 8.25
-      }
-    ];
+    if (!this.selectedDate) {
+      console.warn('No hay fecha seleccionada');
+      return;
+    }
 
-    this.timeRecords = mockData;
-    this.calculateCurrentWorkingHours();
+    console.log('Cargando registros de tiempo para:', this.selectedDate);
+    
+    this.iotService.GetLastData(this.selectedDate).subscribe({
+      next: (response) => {
+        console.log('Datos recibidos del backend:', response);
+        
+        // Convertir los datos del API al formato local
+        this.timeRecords = response.data.map(record => ({
+          employeeId: record.employeeId,
+          employeeName: record.employeeName,
+          entryTime: new Date(record.entryTime),
+          exitTime: record.exitTime ? new Date(record.exitTime) : null,
+          totalHours: record.totalHours,
+          rfidValue: record.rfidValue
+        }));
+        
+        // Calcular horas actuales para empleados que siguen trabajando
+        this.calculateCurrentWorkingHours();
+      },
+      error: (error) => {
+        console.error('Error al cargar registros de tiempo:', error);
+        // En caso de error, mostrar array vacío
+        this.timeRecords = [];
+      }
+    });
   }
 
   private calculateCurrentWorkingHours() {
     const currentTime = new Date();
+    const today = this.formatDateForInput(currentTime);
     
-    this.timeRecords.forEach(record => {
-      if (!record.exitTime) {
-        const timeDiff = currentTime.getTime() - record.entryTime.getTime();
-        record.totalHours = Math.max(0, timeDiff / (1000 * 60 * 60)); // Convert to hours
-      }
-    });
+    // Solo calcular horas actuales si estamos viendo el día de hoy
+    if (this.selectedDate === today) {
+      this.timeRecords.forEach(record => {
+        if (!record.exitTime) {
+          const timeDiff = currentTime.getTime() - record.entryTime.getTime();
+          record.totalHours = Math.max(0, timeDiff / (1000 * 60 * 60)); // Convert to hours
+        }
+      });
+    }
   }
 
   formatTotalTime(hours: number): string {
